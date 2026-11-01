@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Operations · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=608065e-1793552446">
+<link rel="stylesheet" href="assets/site.css?v=4a82a3c-1793552821">
 </head>
 <body>
 <main>
@@ -17,8 +17,14 @@
       <p class="sub" id="sub"></p>
 
       <h2>Hidden states</h2>
-      <p class="sub">Each chart shows the median and unwidened 90% band of the filter's estimate for this operation, with the
-      truth (dashed). Shading marks nowcast and forecast months. The ⓘ button defines each quantity.</p>
+      <p class="sub">Hidden states are the quantities Model 2 estimates for this operation each month: capacity, output,
+      order book, price and the rest. The model never sees their true values. Observations measure them only
+      indirectly or imperfectly: with noise, weeks or months late, for some months only, and often summed over all of a
+      company's operations. Some states, such as finished inventory, have no observation at all, and the model's
+      dynamics alone carry them. The ensemble filter combines the dynamics with whatever observations exist into an
+      estimate with a 90% band.</p>
+      <p class="sub">Each chart shows the median and unwidened 90% band of that estimate, with the truth (dashed), which
+      only the synthetic world knows. Shading marks nowcast and forecast months. The ⓘ button defines each quantity.</p>
       <div id="leg1"></div>
       <div class="grid" id="states"></div>
 
@@ -39,7 +45,7 @@
     </div>
   </div>
 </main>
-<script src="assets/site.js?v=608065e-1793552446"></script>
+<script src="assets/site.js?v=4a82a3c-1793552821"></script>
 <script>
 const toT = (tr, v) => (tr === "log" ? Math.log(v) : tr === "logit" ? Math.log(v / (1 - v)) : v);
 (async () => {
