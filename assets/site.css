@@ -83,3 +83,13 @@ ul.plain { padding-left: 18px; max-width: 90ch; }
   .grid, .tiles { grid-template-columns: 1fr; }
   header.top .run { margin-left: 0; }
 }
+.card { position: relative; }
+.infowrap { display: inline; }
+button.info { font: 600 10px/1 "IBM Plex Serif", Georgia, serif; font-style: italic; width: 15px; height: 15px; padding: 0;
+  margin-left: 6px; border-radius: 50%; border: 1px solid var(--muted); background: transparent; color: var(--muted);
+  cursor: pointer; vertical-align: 1px; }
+button.info:hover, .infowrap.open button.info { background: var(--accent); border-color: var(--accent); color: var(--panel); }
+.infotip { display: none; position: absolute; left: 10px; right: 10px; top: 36px; z-index: 4; padding: 8px 10px;
+  background: var(--panel); color: var(--fg); border: 1px solid var(--line); border-radius: 6px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12); font-size: 13px; font-weight: 400; line-height: 1.45; }
+.infowrap:hover .infotip, .infowrap.open .infotip { display: block; }

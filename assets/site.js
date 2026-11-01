@@ -183,3 +183,58 @@ M2.fail = (e) => {
   document.querySelector("main").innerHTML = `<p class="bad">Could not load site data: ${M2.esc(e.message)}.</p>
     <p>Build it with <span class="mono">python scripts/build_site_data.py WORKSPACE</span> and serve <span class="mono">site/</span> over HTTP (see site/README.md).</p>`;
 };
+
+/* Plain-language definitions for the "i" buttons on sector charts. The default wording fits
+   make-to-order industries (steel); a template's entry replaces it where the meaning differs. */
+M2.EXPLAIN = {
+  capacity: "The most the sector could produce in a month with the plants and equipment it has.",
+  output: "What the sector actually produced in the month.",
+  utilization: "Output divided by capacity: how hard the existing plants are running. 100% would be every plant flat out.",
+  shipments: "Product delivered to customers in the month. It can differ from output when goods go into or come out of stock.",
+  backlog: "The order book: orders customers have placed but that have not been delivered yet, counted at the end of the month. A growing order book means demand is outrunning deliveries.",
+  new_orders: "Orders received in the month, minus orders cancelled.",
+  price: "Average selling price per unit, weighted by how much each operation shipped.",
+  unit_cost: "Average cost of producing one unit, weighted the same way as price. Price minus unit cost is the margin.",
+  lead_time: "How many months a customer ordering today is told to wait for delivery. It lengthens when the order book is long relative to output.",
+  backlog_overdue: "The part of the order book that is already past its promised delivery date.",
+  phantom_backlog: "Orders customers place beyond what they need (for example ordering from two mills when lead times are long) and later cancel. They inflate the order book without being real demand.",
+  input_inventory: "Raw materials on hand at the end of the month (for steel: scrap, iron ore, pig iron), in input units.",
+  finished_stock: "Finished goods produced but not yet shipped, at the end of the month.",
+  lost_demand: "Customers turned away because there was no room. A seat that flies empty cannot be sold later, so unmet demand is lost rather than queued.",
+  load_factor: "Share of the capacity flown that was sold: passenger-miles divided by seat-miles.",
+  capacity_in_use: "Capacity that is leased and in service at the end of the month.",
+  capacity_announced: "New capacity announced in the month (press releases, planning filings). Announced projects may still be dropped.",
+  capacity_under_construction: "Capacity being built at the end of the month, not yet in service.",
+};
+M2.EXPLAIN_TEMPLATE = {
+  perishable_service: {
+    capacity: "Seat-miles the airlines' fleets could fly in a month.",
+    output: "Seat-miles actually flown in the month (available seat-miles): one seat flown one mile is one seat-mile.",
+    utilization: "Seat-miles flown divided by what the fleet could fly: how much of the fleet is in the air.",
+    shipments: "Passenger-miles sold in the month (revenue passenger-miles): one paying passenger flown one mile.",
+    backlog: "Tickets already sold for future flights, in passenger-miles, at the end of the month.",
+    new_orders: "Tickets sold in the month, minus cancellations, in passenger-miles.",
+    price: "Average fare per passenger-mile (the airline 'yield').",
+    unit_cost: "Average cost of flying one seat-mile, weighted as the fare.",
+    lead_time: "How many months ahead of the flight tickets are bought, on average.",
+  },
+  contracted_capacity: {
+    capacity: "Total IT power the data centers have built, in megawatts (MW). It is a stock, not a monthly flow.",
+    output: "Capacity leased to tenants and in service, in MW.",
+    utilization: "Occupancy: leased capacity divided by built capacity.",
+    shipments: "Lease starts: MW of new leases that commenced in the month.",
+    backlog: "The order book: MW of leases signed but not yet commenced (data-center operators report it as 'signed not commenced').",
+    new_orders: "MW of new leases signed in the month, net of cancellations.",
+    price: "Average monthly rent per MW leased.",
+    unit_cost: "Average monthly cost of running one MW, weighted as rent.",
+    lead_time: "Months between signing a lease and the tenant moving in: the pre-leasing horizon plus any wait for free capacity.",
+  },
+};
+M2.explain = (v, template) => (M2.EXPLAIN_TEMPLATE[template] || {})[v] || M2.EXPLAIN[v] || "";
+// An "i" button; its text shows on hover, or on tap (click toggles). The card is the positioning box.
+M2.info = (text) => text ? `<span class="infowrap"><button type="button" class="info" aria-label="What is this?">i</button><span class="infotip" role="tooltip">${M2.esc(text)}</span></span>` : "";
+document.addEventListener("click", (ev) => {
+  const b = ev.target.closest(".info");
+  document.querySelectorAll(".infowrap.open").forEach((w) => { if (!b || w !== b.parentElement) w.classList.remove("open"); });
+  if (b) b.parentElement.classList.toggle("open");
+});

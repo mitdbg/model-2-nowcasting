@@ -57,11 +57,11 @@
                    "capacity_in_use", "capacity_announced", "capacity_under_construction", "backlog_overdue", "phantom_backlog",
                    "input_inventory", "finished_stock", "lost_demand", "load_factor"].filter((v) => d.series[v]);
     const ylab = (v) => { const n = (M2.SHORT_VAR[v] || v).replace(/ \(.*\)$/, ""), u = M2.isShare(v) ? "%" : (units[v] || {}).unit; return u ? `${n} (${u})` : n; };
-    const card = (parent, v, extra = "") => {
+    const card = (parent, v, extra = "", note = " Sector total: tracked operations plus representative entities.") => {
       const el = document.createElement("div");
       el.className = "card";
       const u = units[v] || {};
-      el.innerHTML = `<div class="head"><h3>${M2.SHORT_VAR[v] || v}</h3><span class="chip">${M2.esc(u.unit || "")}</span></div>
+      el.innerHTML = `<div class="head"><h3>${M2.SHORT_VAR[v] || v}${M2.info(M2.explain(v, d.template) + note)}</h3><span class="chip">${M2.esc(u.unit || "")}</span></div>
         <p class="desc">${M2.esc(u.description || "")}${extra}</p><div class="ch"></div>`;
       parent.appendChild(el);
       return el.querySelector(".ch");
@@ -82,7 +82,7 @@
       if (tr && rp && !["price", "unit_cost", "lead_time", "utilization", "load_factor"].includes(v)) {
         const tt = [[tr, "tracked", "var(--tracked)"], [rp, "representative", "var(--rep)"]]
           .filter(([c]) => c.truth).map(([c, l, col]) => ({ month: c.month, value: c.truth, color: col, label: `${l} truth` }));
-        M2.chart(card(split, v), { bands: [{ ...tr, label: "tracked", color: "var(--tracked)" },
+        M2.chart(card(split, v, "", " Here split into the tracked operations and the representative entities that make up the total."), { bands: [{ ...tr, label: "tracked", color: "var(--tracked)" },
                                           { ...rp, label: "representative", color: "var(--rep)", bandColor: "rgba(138,90,158,.16)" }],
                                    truth: tt, status: t, unit, yZero: true, yLabel: ylab(v) });
       }
@@ -99,7 +99,7 @@
     for (const [name, r] of rs) {
       const el = document.createElement("div");
       el.className = "card";
-      el.innerHTML = `<div class="head"><h3 class="mono">${M2.esc(name)}</h3></div><p class="desc">Model 1 mean (dots) and Model 2 mean (line); the band is ±1.645 sd of the member-wise gap around Model 2.</p><div class="ch"></div>`;
+      el.innerHTML = `<div class="head"><h3 class="mono">${M2.esc(name)}${M2.info(`An official statistic for this sector that Model 1 nowcasts (${name} is its FRED series code). Model 2 converts its own total into the same units; the two should agree within the band, which measures their disagreement across members.`)}</h3></div><p class="desc">Model 1 mean (dots) and Model 2 mean (line); the band is ±1.645 sd of the member-wise gap around Model 2.</p><div class="ch"></div>`;
       recon.appendChild(el);
       M2.chart(el.querySelector(".ch"), {
         bands: [{ month: r.month, q50: r.m2, q05: r.m2.map((v, i) => v - 1.645 * r.sd[i]), q95: r.m2.map((v, i) => v + 1.645 * r.sd[i]), label: "Model 2" }],
