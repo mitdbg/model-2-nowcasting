@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Overview · Model 2 (dev)</title>
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<main>
+  <h1>Firms behind the sector totals</h1>
+  <p class="sub">Model 2 estimates hidden monthly quantities for individual operations (steel mills, airline
+  networks, data-center campuses): capacity, how busy they are, order books, prices. It works from scattered
+  reports such as company filings, emissions, satellite readings and traffic statistics. Establishments
+  without their own data are covered by one representative entity per sector, size class and region. The
+  operations are summed to sector totals and checked against Model 1's sector nowcasts.</p>
+  <div id="runinfo" class="muted"></div>
+
+  <h2>This month, sector by sector</h2>
+  <div class="tiles" id="tiles"></div>
+  <div id="leg"></div>
+
+  <h2>Where to look</h2>
+  <ul class="plain">
+    <li><a href="sector.html">Sectors</a>: every sector total over time, with its 90% band, the truth, the split
+      between tracked operations and representative entities, and the check against Model 1.</li>
+    <li><a href="entity.html">Operations</a>: one page per operation. Its hidden states, each observation
+      against what the model predicted for it, and its fitted parameters against prior and truth.</li>
+    <li><a href="evidence.html">Evidence</a>: every observation type, where it comes from, how often and how
+      late it arrives, how well the model fits it, and what nothing observes yet.</li>
+    <li><a href="accuracy.html">Accuracy</a>: the backtest's errors and band coverage by horizon, the band
+      widening, and how well estimation recovers the true parameters.</li>
+  </ul>
+
+  <h2>Known problems</h2>
+  <ul class="plain">
+    <li>The model's own 90% bands are too narrow: in the backtest they held the truth 66% of the time across all sector variables (52% for the five main ones). The
+      published sector totals are widened by calibrated factors (PLAN decision 17). Entity charts show the
+      filter's own, unwidened spread.</li>
+    <li>Data centers: normal occupancy is fitted low (0.74 vs 0.86) and nothing observes it directly. Rent churn
+      (spec 0.7.5) fixed most of the lease-term error (81 vs 84 months, was 75), which halved the shipments error.</li>
+    <li>Data centers: at single sites the order book sits well above the truth even though company backlog
+      reports fit; the company total is split across its sites wrongly.</li>
+    <li>Steel: the order book runs high, about 8% at the nowcast.</li>
+    <li>Steel: finished-goods stock runs 4–5 times the truth (truth inside the band 1% of months). No observation
+      covers it, so it is set by the prior.</li>
+    <li>Lead time runs about 12% low at the sector level for steel and data centers (data centers: truth inside the band
+      0% of months). Lead-time reports carry a per-source bias the fit can absorb.</li>
+  </ul>
+</main>
+<script src="assets/site.js"></script>
+<script>
+(async () => {
+  try {
+    const meta = await M2.load("meta.json");
+    M2.header(meta, "index.html");
+    const g = meta.time_grid, o = meta.observations;
+    document.getElementById("runinfo").innerHTML =
+      `Run <span class="mono">${M2.esc(meta.run)}</span>, as of ${meta.as_of}: history ${g.history_start} to ${g.last_observed}, forecast to ${g.forecast_end}.
+       ${o.attached.toLocaleString()} observations attached (${o.unmatched} unmatched). Fit ${M2.esc(meta.param_version)}, ${meta.fit_rounds} estimation rounds.
+       Sector bands widened by ${Object.entries(meta.band_inflation || {}).map(([k, v]) => `${v}× (${k})`).join(", ")}.`;
+    const asOf = meta.as_of.slice(0, 7);
+    const tiles = document.getElementById("tiles");
+    for (const s of meta.sectors) {
+      const d = await M2.load(`sectors/${s.code}.json`);
+      const rows = ["capacity", "output", "utilization", "backlog", "shipments"].filter((v) => d.series[v]).map((v) => {
+        const t = d.series[v].total, i = t.month.indexOf(asOf);
+        if (i < 0) return "";
+        const tr = t.truth ? t.truth[i] : null;
+        const unit = M2.isShare(v) ? "share" : "";
+        const inside = tr != null && tr >= t.q05[i] && tr <= t.q95[i];
+        const err = tr == null ? "" : M2.isShare(v) ? `${((t.q50[i] - tr) * 100).toFixed(1)} pt` : M2.pct(Math.log(t.q50[i] / tr));
+        return `<span>${M2.SHORT_VAR[v]}</span><span class="v">${M2.fmt(t.q50[i], unit)} <span class="muted">[${M2.fmt(t.q05[i], unit)}–${M2.fmt(t.q95[i], unit)}]</span></span>
+                <span class="v ${tr == null ? "" : inside ? "good" : "bad"}" title="truth ${M2.fmt(tr, unit)}">${err}</span>`;
+      }).join("");
+      const el = document.createElement("div");
+      el.className = "card";
+      el.innerHTML = `<div class="head"><h3><a href="sector.html?s=${s.code}">${M2.esc(s.short)}</a></h3><span class="chip">${s.template} · ${s.unit}</span></div>
+        <p class="desc">${M2.esc(s.label)}. Nowcast for ${asOf}; last column: median minus truth (green inside the 90% band).</p>
+        <div class="kv">${rows}</div><div class="ch" style="margin-top:8px"></div>`;
+      tiles.appendChild(el);
+      const t = d.series.output.total, ou = d.variables.find((x) => x.variable === "output");
+      M2.chart(el.querySelector(".ch"), { bands: [{ ...t, label: "output" }], truth: t.truth ? { month: t.month, value: t.truth } : null,
+                                          status: t, unit: "", height: 150, yLabel: `Output (${ou ? ou.unit : s.unit})` });
+    }
+    document.getElementById("leg").innerHTML = M2.legend([["var(--accent)", "median"], ["var(--band)", "90% band"], ["var(--truth)", "truth", true],
+      ["var(--nowcast)", "nowcast"], ["var(--forecast)", "forecast"]]);
+  } catch (e) { M2.fail(e); }
+})();
+</script>
+</body>
+</html>

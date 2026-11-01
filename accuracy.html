@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Accuracy · Model 2 (dev)</title>
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<main>
+  <h1>Accuracy</h1>
+  <p class="sub">A real-time backtest on the synthetic world: Model 2 run at each as-of date with only what was published by
+  then (re-estimating each time), its sector totals scored against the truth. Error is the absolute log error of the
+  member median (absolute difference for utilization); coverage is the share of truths inside the 90% member band.
+  The backtest runs use unwidened bands. <span id="src" class="mono"></span></p>
+
+  <h2>All sectors and variables, by horizon</h2>
+  <div class="tablewrap"><table id="overall"></table></div>
+
+  <h2>By sector and variable</h2>
+  <p class="sub">Each cell: error / coverage. Red coverage is far from 90%.</p>
+  <div class="tablewrap"><table id="detail" class="heat"></table></div>
+
+  <h2>Band widening</h2>
+  <div id="bands"></div>
+
+  <h2>Parameter recovery</h2>
+  <p class="sub">Fitted against true parameters of the tracked operations in this run's fit, in prior sds: bias (mean of
+  fit − truth), RMSE, and the correlation across operations (whether differences between operations are recovered).</p>
+  <div class="tablewrap"><table id="recovery"></table></div>
+</main>
+<script src="assets/site.js"></script>
+<script>
+const H = ["smoothed_last12", "nowcast", "h+3", "h+6", "h+12"];
+const HL = { smoothed_last12: "last 12 months", nowcast: "nowcast", "h+3": "3 months ahead", "h+6": "6 months ahead", "h+12": "12 months ahead" };
+const covc = (c) => (c >= 0.8 && c <= 0.97 ? "good" : c >= 0.6 ? "warn" : "bad");
+(async () => {
+  try {
+    const [meta, a] = await Promise.all([M2.load("meta.json"), M2.load("accuracy.json")]);
+    M2.header(meta, "accuracy.html");
+    const short = Object.fromEntries(meta.sectors.map((s) => [s.code, s.short]));
+    document.getElementById("src").textContent = `Backtest workspace: ${meta.backtest}; as-of dates ${(a.as_of_dates || []).join(", ")}.`;
+    if (!a.overall) { document.getElementById("overall").outerHTML = `<p class="muted">No backtest_scores.csv in the backtest workspace.</p>`; }
+    else {
+      document.getElementById("overall").innerHTML = `<tr><th>horizon</th><th class="n">mean error</th><th class="n">90% coverage</th></tr>` +
+        a.overall.map((r) => `<tr><td>${HL[r.horizon]}</td><td class="n">${M2.pct(r.err)}</td><td class="n ${covc(r.cov)}">${M2.pct(r.cov, 0)}</td></tr>`).join("");
+      const rows = {};
+      a.scores.forEach((r) => { (rows[`${r.sector}|${r.variable}`] ||= {})[r.horizon] = r; });
+      document.getElementById("detail").innerHTML = `<tr><th>sector</th><th>variable</th>${H.map((h) => `<th class="n">${HL[h]}</th>`).join("")}</tr>` +
+        Object.entries(rows).map(([k, v]) => {
+          const [s, vr] = k.split("|");
+          return `<tr><td><a href="sector.html?s=${s}">${short[s] || s}</a></td><td>${M2.SHORT_VAR[vr] || vr}</td>` + H.map((h) => v[h]
+            ? `<td class="n">${M2.isShare(vr) ? (100 * v[h].err).toFixed(1) + " pt" : M2.pct(v[h].err)} / <span class="${covc(v[h].cov)}">${M2.pct(v[h].cov, 0)}</span></td>` : "<td></td>").join("") + "</tr>";
+        }).join("");
+    }
+    const b = a.bands;
+    let h = `<p class="sub">The model's members miss uncertainty it does not draw (weakly identified group means and sector
+      parameters, model error), so the published sector bands are widened around their median by a factor per status
+      (PLAN decision 17). This run uses ${Object.entries(a.band_inflation_in_run || {}).map(([k, v]) => `<b>${v}×</b> ${k}`).join(", ")}.
+      ${a.band_inflation_reason ? `Reason recorded: <i>${M2.esc(a.band_inflation_reason)}</i>.` : ""}</p>`;
+    if (b) {
+      h += `<div class="grid small"><div class="card"><h3>From the backtest</h3><div class="kv">
+        <span>coverage, unwidened</span><span></span><span class="v bad">${M2.pct(b.coverage_raw, 0)}</span>
+        ${Object.entries(b.factors).map(([k, v]) => `<span>factor, ${k}</span><span></span><span class="v">${v}×</span>`).join("")}
+        </div></div><div class="card"><h3>Held-out dates</h3><p class="desc">Coverage of each as-of date with factors fitted to the others.</p><div class="kv">
+        ${b.held_out.map((r) => `<span>${r.as_of}</span><span></span><span class="v ${covc(r.coverage)}">${M2.pct(r.coverage, 0)}</span>`).join("")}</div></div>
+        <div class="card"><h3>Factor each sector would need</h3><div class="kv">
+        ${Object.entries(b.by_sector).map(([k, v]) => { const [s, st] = k.split("|"); return `<span>${short[s] || s}</span><span class="muted">${st}</span><span class="v">${v}×</span>`; }).join("")}
+        </div></div></div>`;
+    }
+    document.getElementById("bands").innerHTML = h;
+    const rec = a.recovery || [];
+    document.getElementById("recovery").innerHTML = rec.length ? `<tr><th>sector</th><th>parameter</th><th>meaning</th><th class="n">bias (prior sd)</th><th class="n">RMSE (prior sd)</th><th class="n">correlation</th></tr>` +
+      rec.map((r) => `<tr><td>${short[r.sector] || r.sector}</td><td><b>${M2.esc(r.symbol)}</b> <span class="mono muted">${r.param}</span></td><td class="muted">${M2.esc(r.description)}</td>
+        <td class="n ${Math.abs(r.bias_sd) > 0.5 ? "bad" : ""}">${r.bias_sd?.toFixed(2) ?? "–"}</td><td class="n">${r.rmse_sd?.toFixed(2) ?? "–"}</td>
+        <td class="n">${r.corr == null ? "–" : r.corr.toFixed(2)}</td></tr>`).join("") : `<tr><td class="muted">No truth available.</td></tr>`;
+  } catch (e) { M2.fail(e); }
+})();
+</script>
+</body>
+</html>

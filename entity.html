@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Operations · Model 2 (dev)</title>
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<main>
+  <div class="layout">
+    <aside class="side">
+      <input type="search" id="q" placeholder="Filter operations…">
+      <div id="list"></div>
+    </aside>
+    <div>
+      <h1 id="title">Operation</h1>
+      <p class="sub" id="sub"></p>
+
+      <h2>Hidden states</h2>
+      <p class="sub">Member median and 90% band of the filter's estimate (not widened), with the truth. Shaded months are
+      nowcasts and forecasts.</p>
+      <div id="leg1"></div>
+      <div class="grid" id="states"></div>
+
+      <h2>Evidence: each observation against the model</h2>
+      <p class="sub">Dots are reported values. The line is the model's prediction of the reported quantity, and the band
+      adds the observation's own noise: about 90% of dots should fall inside it (red dots fall outside).
+      Company-level reports cover several operations, so they predict the sum over the report scope, not this operation alone.</p>
+      <div id="leg2"></div>
+      <div class="grid" id="obs"></div>
+
+      <h2>Fitted parameters</h2>
+      <p class="sub">Each free parameter of this operation: the prior's 90% range (grey), the fit's 90% range (outlined) and
+      point estimate, and the truth (orange tick). "sd ratio" is the fit's sd over the prior's: near 1 means the data
+      taught little. Offsets such as õ and α are measured from window constants (D̄, x̄, log K₀) that the fit sets from
+      its own window, so fit and truth can differ by a convention as well as by error.</p>
+      <div class="tablewrap"><table id="params"></table></div>
+    </div>
+  </div>
+</main>
+<script src="assets/site.js"></script>
+<script>
+const OBS_LABEL = {
+  revenue: "Revenue ($)", production: "Production", stated_capacity: "Stated capacity", export_volume: "Exports",
+  emissions: "log emissions", satellite_binary: "Satellite: activity seen (probability)", satellite_index: "Satellite activity index",
+  price: "Price", list_price: "List price", backlog: "Order book ($)", signed_not_commenced: "Signed-not-commenced (annual rent $)",
+  rent_churn: "Rent churn (share)", lead_time: "Quoted lead time (months)", traffic: "Traffic sold", capacity_offered: "Capacity offered",
+  load_factor: "Load factor", occupancy: "Occupancy", vacancy: "Vacancy", capacity_announced: "Capacity announced",
+  under_construction: "Under construction", employment: "Employment", census_shipments: "Census shipments ($)",
+};
+// y-axis titles of the observation charts; {u} is the sector's physical unit. Flows are summed
+// over each report's period, so they read "per period".
+const OBS_AXIS = {
+  revenue: "Revenue (USD per period)", production: "Production ({u} per period)", stated_capacity: "Stated capacity ({cap})",
+  export_volume: "Exports ({u} per period)", emissions: "log emissions", satellite_binary: "Probability of activity seen (%)",
+  satellite_index: "Activity index", price: "Price (USD/{u})", list_price: "List price (USD/{u})",
+  raw_inventory: "Raw inventory (input units)", finished_inventory: "Finished inventory ({u})", backlog: "Order book (USD)",
+  signed_not_commenced: "Signed, not commenced (USD/year)", rent_churn: "Rent churn (fraction of rent per period)",
+  book_to_bill: "Book-to-bill (ratio)", lead_time: "Lead time (months)", traffic: "Traffic ({u} per period)",
+  capacity_offered: "Capacity offered ({u} per period)", load_factor: "Load factor (%)", occupancy: "Occupancy (%)",
+  vacancy: "Vacancy (%)", capacity_announced: "Announced ({u} per period)", under_construction: "Under construction ({u})",
+  employment: "Employment (workers)", census_shipments: "Census shipments (USD per period)",
+};
+const toT = (tr, v) => (tr === "log" ? Math.log(v) : tr === "logit" ? Math.log(v / (1 - v)) : v);
+(async () => {
+  try {
+    const [meta, ents] = await Promise.all([M2.load("meta.json"), M2.load("entities.json")]);
+    M2.header(meta, "entity.html");
+    const id = M2.param("e") || ents.find((x) => x.kind === "tracked").id;
+    const short = Object.fromEntries(meta.sectors.map((s) => [s.code, s.short]));
+    const renderList = () => {
+      const q = document.getElementById("q").value.toLowerCase();
+      let h = "";
+      for (const s of meta.sectors) {
+        for (const kind of ["tracked", "representative"]) {
+          const xs = ents.filter((x) => x.sector === s.code && x.kind === kind && (x.name + x.operator + x.id).toLowerCase().includes(q));
+          if (!xs.length) continue;
+          h += `<div class="grp">${s.short} · ${kind}</div>` + xs.map((x) =>
+            `<a href="?e=${encodeURIComponent(x.id)}" class="${x.id === id ? "on" : ""}">${M2.esc(x.name)} <span class="muted">${x.n_obs}</span></a>`).join("");
+        }
+      }
+      document.getElementById("list").innerHTML = h;
+    };
+    document.getElementById("q").addEventListener("input", renderList);
+    renderList();
+    const d = await M2.load(`entities/${encodeURIComponent(id)}.json`);
+    const sec = await M2.load(`sectors/${d.sector}.json`);
+    const vunit = Object.fromEntries(sec.variables.map((x) => [x.variable, x.unit]));
+    const stateLabel = (v) => { const n = (M2.SHORT_VAR[v] || v).replace(/ \(.*\)$/, ""); const u = M2.isShare(v) ? "%" : vunit[v]; return u ? `${n} (${u})` : n; };
+    const obsLabel = (ot) => (OBS_AXIS[ot] || ot).replace("{cap}", vunit.capacity || sec.unit).replaceAll("{u}", sec.unit);
+    document.getElementById("title").textContent = d.name;
+    document.getElementById("sub").innerHTML = `<a href="sector.html?s=${d.sector}">${short[d.sector]}</a> · ${d.kind}${d.operator ? ` · ${M2.esc(d.operator)}` : ""}
+      · ${d.size}, ${d.region}${d.n_establishments > 1 ? ` · stands for ${d.n_establishments} establishments` : ""}
+      · ${d.n_obs} observations · <span class="mono">${M2.esc(d.id)}</span>`;
+
+    const order = ["capacity", "output", "utilization", "shipments", "backlog", "lead_time", "price", "unit_cost",
+                   "capacity_announced", "capacity_under_construction"];
+    const states = document.getElementById("states");
+    for (const v of order.filter((v) => d.states[v])) {
+      const s = d.states[v];
+      const el = document.createElement("div");
+      el.className = "card";
+      el.innerHTML = `<div class="head"><h3>${M2.SHORT_VAR[v] || v}</h3></div><div class="ch"></div>`;
+      states.appendChild(el);
+      M2.chart(el.querySelector(".ch"), { bands: [{ ...s, label: v }], truth: s.truth ? { month: s.month, value: s.truth } : null,
+                                          status: s, unit: M2.isShare(v) ? "share" : "", height: 180, yLabel: stateLabel(v) });
+    }
+    document.getElementById("leg1").innerHTML = M2.legend([["var(--accent)", "median"], ["var(--band)", "90% band"], ["var(--truth)", "truth", true]]);
+
+    const obs = document.getElementById("obs");
+    const types = Object.keys(d.observations);
+    if (!types.length) obs.innerHTML = `<p class="muted">No observation covers this operation.</p>`;
+    for (const ot of types) {
+      const o = d.observations[ot], nat = (y) => M2.natural(o.noise, y);
+      const bern = o.noise === "bernoulli";
+      const lo = bern ? o.pred_q05 : o.obs_q05, hi = bern ? o.pred_q95 : o.obs_q95;
+      let inside = 0, n = 0;
+      const pts = o.month.map((m, i) => {
+        const out = !bern && (o.y[i] < o.obs_q05[i] || o.y[i] > o.obs_q95[i]);
+        if (!bern) { n++; if (!out) inside++; }
+        return { month: m, y: nat(o.y[i]), out,
+                 label: `observed ${M2.fmt(nat(o.y[i]))} · ${M2.esc(o.source[i])}${o.reporter[i] ? ", " + M2.esc(o.reporter[i]) : ""}${o.scope_size[i] > 1 ? ` (scope: ${o.scope_size[i]} operations)` : ""}${o.published[i] ? `, published ${o.published[i]}` : ""}` };
+      });
+      const el = document.createElement("div");
+      el.className = "card";
+      const cov = n ? ` <span class="${inside / n >= 0.8 ? "good" : "bad"}">${M2.pct(inside / n, 0)} of ${n} inside the band.</span>` : "";
+      const scope = Math.max(...o.scope_size) > 1 ? ` Covers up to ${Math.max(...o.scope_size)} operations.` : "";
+      el.innerHTML = `<div class="head"><h3>${OBS_LABEL[ot] || ot}</h3><span class="chip">${ot} · ${o.noise}</span></div>
+        <p class="desc">${M2.esc(o.description)}.${scope}${cov}</p><div class="ch"></div>`;
+      obs.appendChild(el);
+      M2.chart(el.querySelector(".ch"), {
+        bands: [{ month: o.month, q50: o.pred_q50.map(nat), q05: lo.map(nat), q95: hi.map(nat), label: "predicted" }],
+        points: pts, unit: o.noise === "logit" || bern ? "share" : "", height: 180, yLabel: obsLabel(ot) });
+    }
+    document.getElementById("leg2").innerHTML = M2.legend([["var(--obs)", "reported"], ["var(--bad)", "outside the band"],
+      ["var(--accent)", "predicted"], ["var(--band)", "prediction + noise, 90%"]]);
+
+    const tab = document.getElementById("params");
+    if (!d.params.length) { tab.outerHTML = `<p class="muted">No free parameters: this entity takes its sector's or group's values.</p>`; return; }
+    const hasTruth = d.params.some((p) => p.truth != null);
+    tab.innerHTML = `<tr><th>parameter</th><th>meaning</th><th class="n">prior</th><th class="n">fit [90%]</th>${hasTruth ? `<th class="n">truth</th>` : ""}<th class="n">sd ratio</th><th></th></tr>` +
+      d.params.map((p) => {
+        const vs = [p.prior_lo, p.prior_hi, p.fit_lo, p.fit_hi, p.truth].filter((v) => v != null).map((v) => toT(p.transform, v)).filter(isFinite);
+        const a = Math.min(...vs), b = Math.max(...vs), pos = (v) => (100 * (toT(p.transform, v) - a) / ((b - a) || 1)).toFixed(1) + "%";
+        const w = (x, y) => `left:${pos(x)};width:calc(${pos(y)} - ${pos(x)})`;
+        const bar = `<div class="bar"><div class="pr" style="${w(p.prior_lo, p.prior_hi)}"></div><div class="ft" style="${w(p.fit_lo, p.fit_hi)}"></div>
+          <div class="md" style="left:${pos(p.fit)}"></div>${p.truth != null ? `<div class="tr" style="left:${pos(p.truth)}"></div>` : ""}</div>`;
+        return `<tr><td><b>${M2.esc(p.symbol)}</b> <span class="mono muted">${p.name}</span></td><td class="muted">${M2.esc(p.description)}</td>
+          <td class="n">${M2.fmt(p.prior)}</td><td class="n">${M2.fmt(p.fit)} <span class="muted">[${M2.fmt(p.fit_lo)}, ${M2.fmt(p.fit_hi)}]</span></td>
+          ${hasTruth ? `<td class="n">${M2.fmt(p.truth)}</td>` : ""}<td class="n ${p.sd_ratio > 0.8 ? "warn" : ""}">${p.sd_ratio ?? "–"}</td><td style="width:200px">${bar}</td></tr>`;
+      }).join("");
+  } catch (e) { M2.fail(e); }
+})();
+</script>
+</body>
+</html>

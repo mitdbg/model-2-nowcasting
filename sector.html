@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sectors · Model 2 (dev)</title>
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<main>
+  <div class="tabs" id="sectabs"></div>
+  <h1 id="title">Sector</h1>
+  <p class="sub" id="sub"></p>
+
+  <h2>Sector totals</h2>
+  <p class="sub">Member median and 90% band of the sector total (widened by the run's band factors), with the truth.
+  Shaded months are nowcasts (after the last data) and forecasts (after the as-of date).</p>
+  <div id="leg1"></div>
+  <div class="grid" id="totals"></div>
+
+  <h2>Tracked operations and representative entities</h2>
+  <p class="sub">Each sector total above is the sum of two parts. <b>Tracked operations</b> are specific plants,
+  airline networks and data-center campuses that the model follows one by one, each with its own reports.
+  <b>Representative entities</b> stand in for every other establishment in the sector: one per size class and region,
+  scaled to the establishment counts in Census County Business Patterns, and informed mostly by Census employment.
+  Dashed lines are each part's truth. The bands are the model's own 90% bands, not widened like the totals above,
+  so they are too narrow (see Accuracy). <span id="estab"></span></p>
+  <div id="leg2"></div>
+  <div class="grid" id="split"></div>
+
+  <h2>Check against Model 1</h2>
+  <p class="sub">Model 1's nowcast of an official sector series, which enters Model 2 as a pseudo-observation of the sector
+  total (L16), against Model 2's own total in the same units.</p>
+  <div class="grid" id="recon"></div>
+
+  <h2>What the data pin down</h2>
+  <p class="sub">Posterior-to-prior variance of each sector total over history: near 1 means the data say little beyond the
+  model's own dynamics (flagged as prior-dominated).</p>
+  <div class="tablewrap"><table id="ident"></table></div>
+
+  <h2>Operations in this sector</h2>
+  <div class="tablewrap"><table id="ents"></table></div>
+</main>
+<script src="assets/site.js"></script>
+<script>
+(async () => {
+  try {
+    const meta = await M2.load("meta.json");
+    M2.header(meta, "sector.html");
+    const code = M2.param("s") || meta.sectors[0].code;
+    document.getElementById("sectabs").innerHTML = meta.sectors.map((s) =>
+      `<button class="${s.code === code ? "on" : ""}" onclick="location.search='?s=${s.code}'">${M2.esc(s.short)}</button>`).join("");
+    const [d, ents] = await Promise.all([M2.load(`sectors/${code}.json`), M2.load("entities.json")]);
+    document.getElementById("title").textContent = d.label;
+    document.getElementById("sub").innerHTML = `Template <b>${d.template}</b>; physical unit <b>${d.unit}</b>. Sector code <span class="mono">${code}</span>.`;
+    const units = Object.fromEntries(d.variables.map((v) => [v.variable, v]));
+    const order = ["capacity", "output", "utilization", "shipments", "backlog", "new_orders", "price", "unit_cost", "lead_time",
+                   "capacity_in_use", "capacity_announced", "capacity_under_construction", "backlog_overdue", "phantom_backlog",
+                   "input_inventory", "finished_stock", "lost_demand", "load_factor"].filter((v) => d.series[v]);
+    const ylab = (v) => { const n = (M2.SHORT_VAR[v] || v).replace(/ \(.*\)$/, ""), u = M2.isShare(v) ? "%" : (units[v] || {}).unit; return u ? `${n} (${u})` : n; };
+    const card = (parent, v, extra = "") => {
+      const el = document.createElement("div");
+      el.className = "card";
+      const u = units[v] || {};
+      el.innerHTML = `<div class="head"><h3>${M2.SHORT_VAR[v] || v}</h3><span class="chip">${M2.esc(u.unit || "")}</span></div>
+        <p class="desc">${M2.esc(u.description || "")}${extra}</p><div class="ch"></div>`;
+      parent.appendChild(el);
+      return el.querySelector(".ch");
+    };
+    const totals = document.getElementById("totals"), split = document.getElementById("split");
+    for (const v of order) {
+      if (d.series[v].total.q95.every((x) => !x)) continue;          // identically zero for this template
+      const t = d.series[v].total, unit = M2.isShare(v) ? "share" : "";
+      let extra = "";
+      if (t.truth) {
+        const n = t.truth.filter((x, i) => x != null).length;
+        const inside = t.truth.filter((x, i) => x != null && x >= t.q05[i] && x <= t.q95[i]).length;
+        if (n) extra = ` <span class="${inside / n >= 0.8 ? "good" : "bad"}">Truth inside the band ${M2.pct(inside / n, 0)} of ${n} months.</span>`;
+      }
+      M2.chart(card(totals, v, extra), { bands: [{ ...t, label: "total" }], truth: t.truth ? { month: t.month, value: t.truth } : null,
+                                         status: t, unit, yZero: !M2.isShare(v) && v !== "price" && v !== "unit_cost", yLabel: ylab(v) });
+      const tr = d.series[v].tracked, rp = d.series[v].representative;
+      if (tr && rp && !["price", "unit_cost", "lead_time", "utilization", "load_factor"].includes(v)) {
+        const tt = [[tr, "tracked", "var(--tracked)"], [rp, "representative", "var(--rep)"]]
+          .filter(([c]) => c.truth).map(([c, l, col]) => ({ month: c.month, value: c.truth, color: col, label: `${l} truth` }));
+        M2.chart(card(split, v), { bands: [{ ...tr, label: "tracked", color: "var(--tracked)" },
+                                          { ...rp, label: "representative", color: "var(--rep)", bandColor: "rgba(138,90,158,.16)" }],
+                                   truth: tt, status: t, unit, yZero: true, yLabel: ylab(v) });
+      }
+    }
+    document.getElementById("leg1").innerHTML = M2.legend([["var(--accent)", "median"], ["var(--band)", "90% band"], ["var(--truth)", "truth", true],
+      ["var(--nowcast)", "nowcast"], ["var(--forecast)", "forecast"]]);
+    document.getElementById("leg2").innerHTML = M2.legend([["var(--tracked)", "tracked operations"], ["var(--rep)", "representative entities"],
+      ["var(--tracked)", "tracked truth", true], ["var(--rep)", "representative truth", true]]);
+    const e = d.establishments;
+    document.getElementById("estab").textContent = `${e.n_entities_tracked} tracked operations; ${e.n_entities_representative} representative entities standing for ${e.establishments_represented} establishments.`;
+    const recon = document.getElementById("recon");
+    const rs = Object.entries(d.reconciliation);
+    if (!rs.length) recon.innerHTML = `<p class="muted">No Model 1 series is reconciled for this sector.</p>`;
+    for (const [name, r] of rs) {
+      const el = document.createElement("div");
+      el.className = "card";
+      el.innerHTML = `<div class="head"><h3 class="mono">${M2.esc(name)}</h3></div><p class="desc">Model 1 mean (dots) and Model 2 mean (line); the band is ±1.645 sd of the member-wise gap around Model 2.</p><div class="ch"></div>`;
+      recon.appendChild(el);
+      M2.chart(el.querySelector(".ch"), {
+        bands: [{ month: r.month, q50: r.m2, q05: r.m2.map((v, i) => v - 1.645 * r.sd[i]), q95: r.m2.map((v, i) => v + 1.645 * r.sd[i]), label: "Model 2" }],
+        points: r.month.map((m, i) => ({ month: m, y: r.m1[i], label: `Model 1: ${M2.fmt(r.m1[i])}` })),
+        yLabel: `${name} (Model 1 units)` });
+    }
+    document.getElementById("ident").innerHTML = `<tr><th>variable</th><th class="n">posterior / prior variance</th><th>prior-dominated</th></tr>` +
+      d.identifiability.map((r) => `<tr><td>${M2.SHORT_VAR[r.variable] || r.variable}</td><td class="n">${(+r.posterior_to_prior_variance).toFixed(2)}</td>
+        <td class="${String(r.prior_dominated) === "true" ? "warn" : ""}">${r.prior_dominated}</td></tr>`).join("");
+    const mine = ents.filter((x) => x.sector === code);
+    document.getElementById("ents").innerHTML = `<tr><th>operation</th><th>kind</th><th>company</th><th>size</th><th>region</th><th class="n">observations</th><th>observation types</th></tr>` +
+      mine.map((x) => `<tr><td><a href="entity.html?e=${encodeURIComponent(x.id)}">${M2.esc(x.name)}</a></td><td>${x.kind}</td><td>${M2.esc(x.operator)}</td>
+        <td>${x.size}</td><td>${x.region}</td><td class="n">${x.n_obs}</td><td class="muted">${x.obs_types.join(", ")}</td></tr>`).join("");
+  } catch (e) { M2.fail(e); }
+})();
+</script>
+</body>
+</html>
