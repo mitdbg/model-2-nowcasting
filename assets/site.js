@@ -181,7 +181,9 @@ M2.legend = (items) => `<div class="legend">${items.map(([c, l, dash]) =>
 
 M2.fail = (e) => {
   document.querySelector("main").innerHTML = `<p class="bad">Could not load site data: ${M2.esc(e.message)}.</p>
-    <p>Build it with <span class="mono">python scripts/build_site_data.py WORKSPACE</span> and serve <span class="mono">site/</span> over HTTP (see site/README.md).</p>`;
+    <p>Try a hard reload (Shift-reload) in case the browser kept an old copy of the site's files. If the error stays, the
+    data files are missing or out of date: rebuild them with <span class="mono">python scripts/build_site_data.py WORKSPACE</span>
+    and redeploy with <span class="mono">scripts/deploy_site.sh</span> (site/README.md).</p>`;
 };
 
 /* Plain-language definitions for the "i" buttons on sector charts. The default wording fits
