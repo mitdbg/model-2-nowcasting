@@ -3,88 +3,64 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Evidence · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=af712ff-1793551378">
+<link rel="stylesheet" href="assets/site.css?v=8672d83-1793551661">
 </head>
 <body>
 <main>
   <h1>Evidence: observations and their sources</h1>
-  <p class="sub">Everything the model learns from outside data. Entity observations (§6.6) inform the hidden states of
-  the operations in their scope, and through estimation their parameters. Model 1's sector series enter as reconciliation
-  (see each sector page). The full written inventory is <span class="mono">OBSERVATION_SOURCES.md</span>.</p>
+  <p class="sub">Observations are everything the model learns from outside data. Each observation informs the hidden
+  states of the operations it covers (§6.6), and through estimation their parameters. Model 1's sector series enter
+  separately, as the check on each sector page. <span class="mono">OBSERVATION_SOURCES.md</span> holds the full written
+  inventory.</p>
   <div id="attach" class="muted"></div>
 
   <h2>Observation types</h2>
-  <p class="sub">Counts are observations published by the as-of date over the whole synthetic history; "in window" are
-  those attached to this run. Lag is the median time from the end of the period covered to publication. Fit:
-  the share of observations inside the model's 90% predictive band (should be near 90%; well above means σ is set too large), and the variance of the
-  filter's standardized innovations (should be near 1; above 1 means the noise σ is set too small or the model is
-  biased for that type).</p>
+  <ul class="plain sub">
+    <li>Observations: count published by the as-of date across the whole synthetic history.</li>
+    <li>In window: count attached to this run.</li>
+    <li>Lag: median days from the end of the period covered to publication.</li>
+    <li>In 90% band: share of observations inside the model's 90% predictive band. Near 90% is right; well above means σ is too large.</li>
+    <li>Innovation variance: variance of the filter's standardized innovations. Near 1 is right; above 1 means σ is too small or the model is biased for that type.</li>
+  </ul>
   <div class="tablewrap"><table id="types"></table></div>
 
-  <h2>When evidence arrives</h2>
-  <p class="sub">Observations per year by type (darker = more).</p>
+  <h2>Arrivals by year</h2>
+  <p class="sub">Each cell counts the observations of one type published in one year. Darker cells hold more.</p>
   <div class="tablewrap"><table id="timeline" class="heat"></table></div>
 
-  <h2>Which parts of the model each type informs</h2>
+  <h2>Model quantities each type informs</h2>
   <div class="tablewrap"><table id="informs"></table></div>
 
   <h2>Real data in hand</h2>
-  <p class="sub">Downloaded but not yet attached to any run: data-center REIT disclosures from SEC EDGAR 8-K exhibits
-  (<span class="mono">data/external/dc_backlog/</span>). Raw filings are kept out of git.</p>
+  <p class="sub">Data-center REIT disclosures from SEC EDGAR 8-K exhibits, downloaded but not yet attached to any run
+  (<span class="mono">data/external/dc_backlog/</span>). Git does not track the raw filings.</p>
   <div class="tablewrap"><table id="real"></table></div>
 
-  <h2>What nothing observes yet</h2>
+  <h2>Quantities no observation covers</h2>
   <div class="tablewrap"><table>
     <tr><th>model quantity</th><th>effect today</th><th>candidate data</th></tr>
-    <tr><td>Normal occupancy u<sup>norm</sup> (data centers)</td><td>fitted 0.74 vs 0.86 true</td><td>Broker vacancy by metro; REIT leased % (Iron Mountain in hand)</td></tr>
-    <tr><td>Representative data-center occupancy and scale</td><td>untracked capacity about 6% low</td><td>Broker market totals; Census construction spending</td></tr>
-    <tr><td>New orders as a flow (bookings)</td><td>seen only through the order book and lead times</td><td>REIT bookings (in hand, no observation type yet); Census M3 new orders</td></tr>
-    <tr><td>Cancellations and phantom orders (L6–L7)</td><td>set by priors</td><td>Book-to-bill; backlog roll-forwards (DLR, in hand)</td></tr>
-    <tr><td>Raw and finished inventories</td><td>set by priors</td><td>Balance-sheet notes; Census M3 inventories</td></tr>
-    <tr><td>Lease term, on real data</td><td>rent churn is specified but no real series is downloaded</td><td>Equinix MRR churn; other REITs' churn or retention</td></tr>
+    <tr><td>Normal occupancy (data centers)</td><td>Fits low: fitted 0.74, true 0.86</td><td>Broker vacancy by metro; REIT leased % (Iron Mountain in hand)</td></tr>
+    <tr><td>Finished inventory (steel)</td><td>Runs 4–5 times the truth; the prior sets it</td><td>Balance-sheet notes; Census M3 inventories</td></tr>
+    <tr><td>Input inventory</td><td>The prior sets it</td><td>Balance-sheet notes; Census M3 inventories</td></tr>
+    <tr><td>New orders as a flow</td><td>Seen only through the order book and lead time</td><td>REIT bookings (in hand, no observation type yet); Census M3 new orders</td></tr>
+    <tr><td>Cancellations and phantom orders (L6–L7)</td><td>The prior sets them</td><td>Book-to-bill; order-book roll-forwards (DLR, in hand)</td></tr>
+    <tr><td>Lease term on real data</td><td>Rent churn is specified, but no real series is downloaded</td><td>Equinix MRR churn; other REITs' churn or retention</td></tr>
   </table></div>
 </main>
-<script src="assets/site.js?v=af712ff-1793551378"></script>
+<script src="assets/site.js?v=8672d83-1793551661"></script>
 <script>
-const INFORMS = {
-  revenue: ["price × shipments (price × capacity in use for data centers), over the company's report scope", "SEC EDGAR 10-Q/10-K, segment notes"],
-  production: ["output Q", "trade associations, EIA, company reports"],
-  stated_capacity: ["capacity k", "trade press, industry reports, EIA-860"],
-  export_volume: ["shipments × the entity's export share", "customs and trade data"],
-  emissions: ["output Q, through the entity's emissions intercept and slope", "EPA GHGRP (annual)"],
-  satellite_binary: ["utilization z, through a fixed per-sensor curve", "Sentinel-2 / Landsat, per-site pipeline"],
-  satellite_index: ["utilization u, through a fixed per-sensor line", "VIIRS thermal, Sentinel-5P"],
-  price: ["price p = unit cost + markup", "trade press, company releases (airline yield)"],
-  list_price: ["price p plus the entity's list-price gap", "price surveys, mill price sheets"],
-  raw_inventory: ["raw-material stock S", "balance-sheet notes"],
-  finished_inventory: ["finished stock G", "balance-sheet notes"],
-  backlog: ["order book B (scheduled + overdue) × price", "EDGAR 10-Q remaining performance obligations"],
-  signed_not_commenced: ["data-center order book B × price, as annual rent", "REIT supplements (EDGAR 8-K)"],
-  rent_churn: ["lease term (turnover time of L18)", "REIT supplements (e.g. Equinix MRR churn)"],
-  book_to_bill: ["new orders net of cancellations relative to shipments", "company releases, associations"],
-  lead_time: ["lead time LT (order book relative to output), plus source bias", "lead-time surveys, trade press"],
-  traffic: ["shipments Sh (volume sold)", "BTS T-100"],
-  capacity_offered: ["output Q (volume offered)", "BTS T-100"],
-  load_factor: ["shipments / output", "BTS T-100"],
-  occupancy: ["utilization u (share leased)", "industry reports, broker surveys, REIT leased %"],
-  vacancy: ["1 − utilization", "broker surveys"],
-  capacity_announced: ["announcements Ann, start of the construction pipeline (L19)", "press releases, planning and interconnection filings"],
-  under_construction: ["capacity under construction U", "filings, construction spending, satellite"],
-  employment: ["labor per unit × output, hence the representative scale λ_r (L29)", "Census County Business Patterns"],
-  census_shipments: ["price × shipments of a representative group", "Economic Census (every 5 years)"],
-};
 (async () => {
   try {
     const [meta, ev] = await Promise.all([M2.load("meta.json"), M2.load("evidence.json")]);
     M2.header(meta, "evidence.html");
     const a = ev.attach_stats;
-    document.getElementById("attach").textContent = `This run: ${a.attached.toLocaleString()} observations attached, ${a.unmatched} could not be matched to an entity, ${a.outside_window.toLocaleString()} fall outside the estimation window.`;
+    document.getElementById("attach").textContent = `This run: ${a.attached.toLocaleString()} observations attached, ${a.unmatched} unmatched to any operation, ${a.outside_window.toLocaleString()} outside the estimation window.`;
     const fmtCov = (c) => (c == null ? "–" : `<span class="${c >= 0.8 && c <= 0.97 ? "good" : "bad"}">${M2.pct(c, 0)}</span>`);
     const fmtVar = (v) => (v == null ? "–" : `<span class="${v > 0.6 && v < 1.6 ? "good" : "bad"}">${v.toFixed(2)}</span>`);
     const ts = ev.types.slice().sort((x, y) => y.n - x.n);
     document.getElementById("types").innerHTML = `<tr><th>type</th><th>sources</th><th class="n">observations</th><th class="n">in window</th>
-      <th class="n">reporters</th><th>period</th><th class="n">lag (days)</th><th class="n">σ</th><th>noise</th><th class="n">fit: in 90% band</th><th class="n">innovation var</th></tr>` +
-      ts.map((t) => `<tr class="${t.n ? "" : "muted"}"><td class="mono">${t.name}</td><td>${Object.entries(t.sources).map(([k, v]) => `${k}`).join(", ") || "<span class=muted>none yet</span>"}</td>
+      <th class="n">reporters</th><th>period</th><th class="n">lag (days)</th><th class="n">σ</th><th>noise</th><th class="n">in 90% band</th><th class="n">innovation variance</th></tr>` +
+      ts.map((t) => `<tr class="${t.n ? "" : "muted"}"><td class="mono">${t.name}</td><td>${Object.entries(t.sources).map(([k, v]) => `${k}`).join(", ") || "<span class=muted>none</span>"}</td>
         <td class="n">${t.n.toLocaleString()}</td><td class="n">${t.attached.toLocaleString()}</td><td class="n">${t.objects || "–"}</td>
         <td>${t.first ? `${t.first} – ${t.last}` : ""}</td><td class="n">${t.lag_median_days ?? "–"}</td><td class="n">${t.sigma}</td><td>${t.noise}</td>
         <td class="n">${fmtCov(t.fit_coverage90)}</td><td class="n">${fmtVar(t.innovation_var)}</td></tr>`).join("");
@@ -92,9 +68,9 @@ const INFORMS = {
     document.getElementById("timeline").innerHTML = `<tr><th>type</th>${tl.years.map((y) => `<th class="n">${y.slice(2)}</th>`).join("")}</tr>` +
       Object.entries(tl.rows).sort((x, y) => y[1].reduce((p, q) => p + q, 0) - x[1].reduce((p, q) => p + q, 0)).map(([k, v]) =>
         `<tr><td class="mono">${k}</td>${v.map((c) => `<td class="n" style="background:rgba(31,111,120,${c ? (0.08 + 0.6 * Math.sqrt(c / max)).toFixed(2) : 0})">${c || ""}</td>`).join("")}</tr>`).join("");
-    document.getElementById("informs").innerHTML = `<tr><th>type</th><th>informs</th><th>parameters it brings</th><th>real-world source</th><th>description</th></tr>` +
-      ev.types.map((t) => `<tr><td class="mono">${t.name}</td><td>${M2.esc(INFORMS[t.name]?.[0] || "")}</td><td class="mono">${t.obs_params.join(", ")}</td>
-        <td>${M2.esc(INFORMS[t.name]?.[1] || "")}</td><td class="muted">${M2.esc(t.description)}</td></tr>`).join("");
+    document.getElementById("informs").innerHTML = `<tr><th>type</th><th>definition</th><th>informs</th><th>parameters it adds</th><th>real-world source</th><th>formula</th></tr>` +
+      ev.types.map((t) => { const ob = M2.OBS[t.name] || []; return `<tr><td class="mono">${t.name}</td><td>${M2.esc(ob[2] || "")}</td><td>${M2.esc(ob[3] || "")}</td>
+        <td class="mono">${t.obs_params.join(", ")}</td><td>${M2.esc(ob[4] || "")}</td><td class="muted">${M2.esc(t.description)}</td></tr>`; }).join("");
     const real = ev.real_dc_backlog || [];
     document.getElementById("real").innerHTML = real.length ? `<tr><th>company</th><th>measure</th><th class="n">rows</th><th>first</th><th>last</th></tr>` +
       real.map((r) => `<tr><td>${M2.esc(r.company)}</td><td class="mono">${r.measure}</td><td class="n">${r.n}</td><td>${r.first}</td><td>${r.last}</td></tr>`).join("")

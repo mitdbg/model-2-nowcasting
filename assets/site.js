@@ -21,7 +21,7 @@ M2.header = (meta, page) => {
   document.body.insertAdjacentHTML("afterbegin", `
     <header class="top"><div class="in"><span class="brand">Model 2 · firm states</span><nav>${nav}</nav>
     <span class="run" title="${M2.esc(meta.workspace)}">as of ${meta.as_of} · ${M2.esc(meta.param_version)} · ${meta.n_members} members</span></div></header>
-    ${meta.synthetic ? `<div class="banner"><div class="in"><b>Synthetic world.</b> Every observation here is simulated from a known truth, shown in <span style="color:var(--truth)">orange</span>. Development site.</div></div>` : ""}`);
+    ${meta.synthetic ? `<div class="banner"><div class="in"><b>Synthetic world.</b> A simulation generates every observation here from a known truth, shown in <span style="color:var(--truth)">orange</span>. Development site.</div></div>` : ""}`);
   document.title = `${M2.PAGES.find((p) => p[0] === page)?.[1] ?? "Model 2"} · Model 2 (dev)`;
 };
 
@@ -41,12 +41,14 @@ M2.pct = (v, d = 1) => (v == null || !isFinite(v) ? "–" : (100 * v).toFixed(d)
 
 M2.SHORT_VAR = {
   capacity: "Capacity", output: "Output", utilization: "Utilization", backlog: "Order book", shipments: "Shipments",
-  price: "Price", unit_cost: "Unit cost", lead_time: "Lead time (months)", new_orders: "New orders",
+  price: "Price", unit_cost: "Unit cost", lead_time: "Lead time", new_orders: "New orders",
   backlog_overdue: "Overdue orders", phantom_backlog: "Phantom orders", input_inventory: "Input inventory",
-  finished_stock: "Finished stock", lost_demand: "Lost demand", load_factor: "Load factor",
+  finished_stock: "Finished inventory", lost_demand: "Lost demand", load_factor: "Load factor",
   capacity_in_use: "Capacity in use", capacity_announced: "Capacity announced",
-  capacity_under_construction: "Under construction",
+  capacity_under_construction: "Capacity under construction",
 };
+// Display names of the run statuses (the data says "smoothed" for months with observations).
+M2.STATUS = { smoothed: "history", nowcast: "nowcast", forecast: "forecast" };
 M2.isShare = (v) => v === "utilization" || v === "load_factor";
 
 // Observation values from the noise scale back to reported units.
@@ -193,12 +195,12 @@ M2.EXPLAIN = {
   output: "What the sector actually produced in the month.",
   utilization: "Output divided by capacity: how hard the existing plants are running. 100% would be every plant flat out.",
   shipments: "Product delivered to customers in the month. It can differ from output when goods go into or come out of stock.",
-  backlog: "The order book: orders customers have placed but that have not been delivered yet, counted at the end of the month. A growing order book means demand is outrunning deliveries.",
+  backlog: "Orders customers have placed but not yet received, at the end of the month. A growing order book means demand is outrunning deliveries.",
   new_orders: "Orders received in the month, minus orders cancelled.",
   price: "Average selling price per unit, weighted by how much each operation shipped.",
   unit_cost: "Average cost of producing one unit, weighted the same way as price. Price minus unit cost is the margin.",
-  lead_time: "How many months a customer ordering today is told to wait for delivery. It lengthens when the order book is long relative to output.",
-  backlog_overdue: "The part of the order book that is already past its promised delivery date.",
+  lead_time: "Months a customer ordering today is quoted to wait for delivery. Lead time lengthens when the order book is long relative to output.",
+  backlog_overdue: "Orders in the order book already past their promised delivery date.",
   phantom_backlog: "Orders customers place beyond what they need (for example ordering from two mills when lead times are long) and later cancel. They inflate the order book without being real demand.",
   input_inventory: "Raw materials on hand at the end of the month (for steel: scrap, iron ore, pig iron), in input units.",
   finished_stock: "Finished goods produced but not yet shipped, at the end of the month.",
@@ -212,20 +214,20 @@ M2.EXPLAIN_TEMPLATE = {
   perishable_service: {
     capacity: "Seat-miles the airlines' fleets could fly in a month.",
     output: "Seat-miles actually flown in the month (available seat-miles): one seat flown one mile is one seat-mile.",
-    utilization: "Seat-miles flown divided by what the fleet could fly: how much of the fleet is in the air.",
+    utilization: "Seat-miles flown divided by the seat-miles the fleet could fly: how much of the fleet is in the air.",
     shipments: "Passenger-miles sold in the month (revenue passenger-miles): one paying passenger flown one mile.",
     backlog: "Tickets already sold for future flights, in passenger-miles, at the end of the month.",
     new_orders: "Tickets sold in the month, minus cancellations, in passenger-miles.",
     price: "Average fare per passenger-mile (the airline 'yield').",
     unit_cost: "Average cost of flying one seat-mile, weighted as the fare.",
-    lead_time: "How many months ahead of the flight tickets are bought, on average.",
+    lead_time: "Months between buying a ticket and the flight, on average.",
   },
   contracted_capacity: {
     capacity: "Total IT power the data centers have built, in megawatts (MW). It is a stock, not a monthly flow.",
     output: "Capacity leased to tenants and in service, in MW.",
-    utilization: "Occupancy: leased capacity divided by built capacity.",
-    shipments: "Lease starts: MW of new leases that commenced in the month.",
-    backlog: "The order book: MW of leases signed but not yet commenced (data-center operators report it as 'signed not commenced').",
+    utilization: "Leased capacity divided by built capacity (occupancy).",
+    shipments: "MW of leases that started in the month (lease starts).",
+    backlog: "MW of leases signed but not yet started, at the end of the month. Data-center operators report it as 'signed not commenced'.",
     new_orders: "MW of new leases signed in the month, net of cancellations.",
     price: "Average monthly rent per MW leased.",
     unit_cost: "Average monthly cost of running one MW, weighted as rent.",
@@ -240,3 +242,57 @@ document.addEventListener("click", (ev) => {
   document.querySelectorAll(".infowrap.open").forEach((w) => { if (!b || w !== b.parentElement) w.classList.remove("open"); });
   if (b) b.parentElement.classList.toggle("open");
 });
+
+/* Plain definitions of each free parameter, "Name: definition (equation)". */
+M2.PARAM = {
+  alpha: "Normal utilization: utilization in a month of normal demand, logit scale (L3).",
+  beta: "Demand response: how far utilization rises with demand pressure (L3).",
+  betaO: "Order response: elasticity of new orders to real demand (L6).",
+  c0: "Starting unit cost: unit cost in the first month, log scale.",
+  delta: "Capacity drift: monthly change in capacity outside announced projects (L1).",
+  ell: "Normal order-book cover: months of output the order book holds in a normal month (L8–L9).",
+  emis_a: "Emissions level: log emissions at the reference output.",
+  emis_b: "Emissions slope: percent change in emissions per percent change in output.",
+  export_share: "Export share: share of shipments exported.",
+  k0: "Starting capacity: capacity in the first month, log scale.",
+  lf_norm: "Normal load factor: share of seat-miles sold in a normal month (L17).",
+  list_gap: "List-price gap: log list price minus log transaction price.",
+  lt_bias: "Lead-time bias: quoted lead time over the model's lead time, log scale.",
+  m0: "Starting markup: markup in the first month, log scale.",
+  mu: "Normal markup: price over unit cost in a normal month, log scale (L5).",
+  o: "Order level: new orders relative to the level that keeps the order book steady, log scale (L6).",
+  oA: "Announcement rate: capacity announced per unit of capacity, relative to replacement, log scale (L19).",
+  u_norm: "Normal occupancy: share of capacity leased in a normal month (L18).",
+  z0: "Starting utilization: utilization in the first month relative to normal, logit scale.",
+};
+
+/* Observation types: chart title, y-axis title ({u}: the sector's physical unit, {cap}: its
+   capacity unit; flows sum over each observation's period), plain definition, the model
+   quantity it informs, and its real-world source. */
+M2.OBS = {
+  revenue: ["Revenue", "Revenue (USD per period)", "Company revenue over the period, from filings.", "Price × shipments over the company's operations (price × capacity in use for data centers)", "SEC EDGAR 10-Q and 10-K, segment notes"],
+  production: ["Production", "Production ({u} per period)", "Volume produced over the period.", "Output", "Trade associations, EIA, company reports"],
+  stated_capacity: ["Stated capacity", "Stated capacity ({cap})", "Capacity as the company or an industry report states it.", "Capacity", "Trade press, industry reports, EIA-860"],
+  export_volume: ["Exports", "Exports ({u} per period)", "Volume exported over the period.", "Shipments × the operation's export share", "Customs and trade data"],
+  emissions: ["Emissions", "log emissions", "Greenhouse-gas emissions reported for the year, on a log scale.", "Output, through the operation's emissions level and slope", "EPA GHGRP (annual)"],
+  satellite_binary: ["Satellite activity flag", "Probability of activity seen (%)", "Whether a satellite image shows the site active (for example a plume or heat).", "Utilization, through a fixed curve per sensor", "Sentinel-2 and Landsat, per-site pipeline"],
+  satellite_index: ["Satellite activity index", "Activity index", "Activity index measured from satellite data (heat, emissions).", "Utilization, through a fixed line per sensor", "VIIRS thermal, Sentinel-5P"],
+  price: ["Price", "Price (USD/{u})", "Transaction price per unit.", "Price (unit cost + markup)", "Trade press, company releases (airline yield)"],
+  list_price: ["List price", "List price (USD/{u})", "Published list price per unit.", "Price plus the operation's list-price gap", "Price surveys, mill price sheets"],
+  raw_inventory: ["Input inventory", "Input inventory (input units)", "Raw materials on hand at the end of the period.", "Input inventory", "Balance-sheet notes"],
+  finished_inventory: ["Finished inventory", "Finished inventory ({u})", "Finished goods on hand at the end of the period.", "Finished inventory", "Balance-sheet notes"],
+  backlog: ["Order book", "Order book (USD)", "Dollar value of orders not yet delivered (remaining performance obligations).", "Order book × price", "SEC EDGAR 10-Q remaining performance obligations"],
+  signed_not_commenced: ["Signed not commenced", "Signed not commenced (USD/year)", "Annual rent of leases signed but not yet started.", "Order book × price, as annual rent (data centers)", "REIT supplements (SEC EDGAR 8-K)"],
+  rent_churn: ["Rent churn", "Rent churn (fraction of rent per period)", "Share of rent lost to leases ending without renewal over the period.", "Lease term (turnover time, L18)", "REIT supplements (for example Equinix MRR churn)"],
+  book_to_bill: ["Book-to-bill", "Book-to-bill (ratio)", "New orders divided by shipments over the period.", "New orders net of cancellations, relative to shipments", "Company releases, trade associations"],
+  lead_time: ["Quoted lead time", "Lead time (months)", "Lead time quoted by a survey or trade source.", "Lead time, plus the source's bias", "Lead-time surveys, trade press"],
+  traffic: ["Traffic", "Traffic ({u} per period)", "Volume sold over the period (revenue passenger-miles for airlines).", "Shipments", "BTS T-100"],
+  capacity_offered: ["Capacity offered", "Capacity offered ({u} per period)", "Volume offered over the period (available seat-miles for airlines).", "Output", "BTS T-100"],
+  load_factor: ["Load factor", "Load factor (%)", "Share of the volume offered that was sold.", "Shipments ÷ output", "BTS T-100"],
+  occupancy: ["Occupancy", "Occupancy (%)", "Share of capacity leased.", "Utilization (share leased)", "Industry reports, broker surveys, REIT leased %"],
+  vacancy: ["Vacancy", "Vacancy (%)", "Share of capacity not leased.", "1 − utilization", "Broker surveys"],
+  capacity_announced: ["Capacity announced", "Capacity announced ({u} per period)", "New capacity announced over the period.", "Announcements, the start of the construction pipeline (L19)", "Press releases, planning and interconnection filings"],
+  under_construction: ["Capacity under construction", "Capacity under construction ({u})", "Capacity being built at the end of the period.", "Capacity under construction", "Filings, construction spending, satellite"],
+  employment: ["Employment", "Employment (workers)", "Workers employed by a group of establishments (Census County Business Patterns).", "Labor per unit × output, hence the scale of representative operations (L29)", "Census County Business Patterns"],
+  census_shipments: ["Census shipments", "Census shipments (USD per period)", "Value shipped by a group of establishments (Economic Census, every 5 years).", "Price × shipments of a representative operation", "Economic Census"],
+};
