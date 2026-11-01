@@ -3,16 +3,32 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Overview · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=8672d83-1793551661">
+<link rel="stylesheet" href="assets/site.css?v=608065e-1793552446">
 </head>
 <body>
 <main>
   <h1>Firms behind the sector totals</h1>
-  <p class="sub">Model 2 estimates monthly quantities for individual operations (steel mills, airline networks,
+  <p class="sub">Model 2 estimates monthly quantities for the operations in a sector (steel mills, airline networks,
   data-center campuses): capacity, output, order books and prices. It learns from scattered observations: company
-  filings, emissions, satellite readings and traffic statistics. Representative operations stand in for establishments
-  without their own data, one per sector, size class and region. Model 2 sums the operations to sector totals and
+  filings, emissions, satellite readings and traffic statistics. Model 2 sums the operations to sector totals and
   checks the totals against Model 1's sector nowcasts.</p>
+  <p class="sub">Operations come in two kinds. <b>Tracked operations</b> are specific sites with observations of their
+  own, and the model follows each one separately. <b>Representative operations</b> stand in for all the other
+  establishments, which have no observations of their own: one per sector, size class and region, scaled to the
+  establishment count in Census County Business Patterns. For example, steel has 14 tracked mills. One of them,
+  <a href="entity.html?e=op_acme_gary">Acme Gary Works</a>, has 358 observations: revenue and order book from its
+  company's filings, emissions, satellite images, stated capacity, list prices and lead times. The representative
+  operation <a href="entity.html?e=rep__naics_3311_2__medium__midwest">Steel: medium, midwest</a> stands for 10
+  medium-sized midwestern establishments together and has 7 observations: Census employment and Census shipments
+  for the whole group. The steel total is the 14 tracked mills plus 11 representative operations.</p>
+  <p class="sub"><b>Everything on this site is simulated.</b> A synthetic world runs Model 2's own equations with
+  known true parameters to produce a monthly history for every operation, and then generates observations from that
+  history, with noise and realistic publication delays. The operations and companies are invented (Acme, CloudFort,
+  Vertex): their sectors, sizes, regions, data sources and reporting schedules imitate real ones, but no figure comes
+  from a real firm. Model 1's input is synthetic too. Model 2 sees only the observations, and the site compares its
+  estimates with the hidden truth (orange). A good match shows that the estimation recovers what the data contain; it
+  does not show that the equations describe real firms. That test needs real data: the first real series
+  (data-center order books from REIT filings) is downloaded but not yet used.</p>
   <div id="runinfo" class="muted"></div>
 
   <h2>This month by sector</h2>
@@ -46,7 +62,7 @@
       model splits each company's order book across its sites wrongly.</li>
   </ul>
 </main>
-<script src="assets/site.js?v=8672d83-1793551661"></script>
+<script src="assets/site.js?v=608065e-1793552446"></script>
 <script>
 (async () => {
   try {
