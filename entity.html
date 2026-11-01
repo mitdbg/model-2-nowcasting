@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Operations · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=4a82a3c-1793552821">
+<link rel="stylesheet" href="assets/site.css?v=68b263f-1793552911">
 </head>
 <body>
 <main>
@@ -29,6 +29,12 @@
       <div class="grid" id="states"></div>
 
       <h2>Observations against the model</h2>
+      <p class="sub">Observations are the opposite of hidden states: the model never sees the states, but it sees every
+      observation exactly as published. Each observation is a number from an outside source (a company filing, a
+      satellite reading, a Census count) that depends on hidden states. Model 2 predicts each observation from its state
+      estimates, and the gap between prediction and observation is how the data correct the states. A model that tracks
+      the states well predicts its observations well, so these charts test the model against what it can see, while the
+      truth lines above test it against what it cannot.</p>
       <p class="sub">Each chart compares one type of observation with the model's prediction of it. Dots: observed values.
       Line: predicted value. Band: prediction plus the observation's own noise, which should hold about 90% of the dots;
       red dots fall outside it. Company-level observations cover several operations, so the model predicts their sum
@@ -45,7 +51,7 @@
     </div>
   </div>
 </main>
-<script src="assets/site.js?v=4a82a3c-1793552821"></script>
+<script src="assets/site.js?v=68b263f-1793552911"></script>
 <script>
 const toT = (tr, v) => (tr === "log" ? Math.log(v) : tr === "logit" ? Math.log(v / (1 - v)) : v);
 (async () => {
