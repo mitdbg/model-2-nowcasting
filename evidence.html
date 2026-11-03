@@ -3,14 +3,15 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Evidence · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=54fc240-1793553124">
+<link rel="stylesheet" href="assets/site.css?v=84bcc5f-1793742321">
 </head>
 <body>
 <main>
   <h1>Evidence: observations and their sources</h1>
-  <p class="sub">Observations are everything the model learns from outside data. Each observation informs the hidden
-  states of the operations it covers (§6.6), and through estimation their parameters. Model 1's sector series enter
-  separately, as the check on each sector page. <span class="mono">OBSERVATION_SOURCES.md</span> holds the full written
+  <p class="sub">Observations are everything the model learns from outside data. Each observation is about one subject:
+  an entity, or a <a href="groupings.html">grouping</a> of entities such as a company, a site or a Census cell. It
+  informs the hidden states of the entities it covers (§6.6), and through estimation their parameters. Model 1's
+  sector series enter separately, as the check on each sector page. <span class="mono">OBSERVATION_SOURCES.md</span> holds the full written
   inventory.</p>
   <div id="attach" class="muted"></div>
 
@@ -18,11 +19,21 @@
   <ul class="plain sub">
     <li>Observations: count published by the as-of date across the whole synthetic history.</li>
     <li>In window: count attached to this run.</li>
+    <li>Subjects: count of distinct entities and groupings the type's observations are about.</li>
     <li>Lag: median days from the end of the period covered to publication.</li>
     <li>In 90% band: share of observations inside the model's 90% predictive band. Near 90% is right; well above means σ is too large.</li>
     <li>Innovation variance: variance of the filter's standardized innovations. Near 1 is right; above 1 means σ is too small or the model is biased for that type.</li>
   </ul>
   <div class="tablewrap"><table id="types"></table></div>
+
+  <h2>What each type describes</h2>
+  <ul class="plain sub">
+    <li>About: the subjects an observation of the type may name. An observation about any other kind is not used.</li>
+    <li>Covers: which members of the subject the observation counts. Census counts leave out the tracked entities.</li>
+    <li>Needs: modules every covered entity's template must have. Rent churn needs leases, for example.</li>
+    <li>Combined as: how the covered entities' values become one predicted value.</li>
+  </ul>
+  <div class="tablewrap"><table id="describes"></table></div>
 
   <h2>Arrivals by year</h2>
   <p class="sub">Each cell counts the observations of one type published in one year. Darker cells hold more.</p>
@@ -47,23 +58,31 @@
     <tr><td>Lease term on real data</td><td>Rent churn is specified, but no real series is downloaded</td><td>Equinix MRR churn; other REITs' churn or retention</td></tr>
   </table></div>
 </main>
-<script src="assets/site.js?v=54fc240-1793553124"></script>
+<script src="assets/site.js?v=84bcc5f-1793742321"></script>
 <script>
 (async () => {
   try {
     const [meta, ev] = await Promise.all([M2.load("meta.json"), M2.load("evidence.json")]);
     M2.header(meta, "evidence.html");
     const a = ev.attach_stats;
-    document.getElementById("attach").textContent = `This run: ${a.attached.toLocaleString()} observations attached, ${a.unmatched} unmatched to any operation, ${a.outside_window.toLocaleString()} outside the estimation window.`;
+    document.getElementById("attach").textContent = `This run: ${a.attached.toLocaleString()} observations attached, ${a.unmatched} unmatched to any entity, ${a.outside_window.toLocaleString()} outside the estimation window${a.wrong_subject || a.wrong_template ? `, ${(a.wrong_subject || 0) + (a.wrong_template || 0)} about a subject their type does not describe` : ""}.`;
     const fmtCov = (c) => (c == null ? "–" : `<span class="${c >= 0.8 && c <= 0.97 ? "good" : "bad"}">${M2.pct(c, 0)}</span>`);
     const fmtVar = (v) => (v == null ? "–" : `<span class="${v > 0.6 && v < 1.6 ? "good" : "bad"}">${v.toFixed(2)}</span>`);
     const ts = ev.types.slice().sort((x, y) => y.n - x.n);
     document.getElementById("types").innerHTML = `<tr><th>type</th><th>sources</th><th class="n">observations</th><th class="n">in window</th>
-      <th class="n">reporters</th><th>period</th><th class="n">lag (days)</th><th class="n">σ</th><th>noise</th><th class="n">in 90% band</th><th class="n">innovation variance</th></tr>` +
+      <th class="n">subjects</th><th>period</th><th class="n">lag (days)</th><th class="n">σ</th><th>noise</th><th class="n">in 90% band</th><th class="n">innovation variance</th></tr>` +
       ts.map((t) => `<tr class="${t.n ? "" : "muted"}"><td class="mono">${t.name}</td><td>${Object.entries(t.sources).map(([k, v]) => `${k}`).join(", ") || "<span class=muted>none</span>"}</td>
         <td class="n">${t.n.toLocaleString()}</td><td class="n">${t.attached.toLocaleString()}</td><td class="n">${t.objects || "–"}</td>
         <td>${t.first ? `${t.first} – ${t.last}` : ""}</td><td class="n">${t.lag_median_days ?? "–"}</td><td class="n">${t.sigma}</td><td>${t.noise}</td>
         <td class="n">${fmtCov(t.fit_coverage90)}</td><td class="n">${fmtVar(t.innovation_var)}</td></tr>`).join("");
+    const kindName = (k) => (k === "entity" ? "entity" : (M2.GROUPING_KINDS[k] || [k])[0].toLowerCase());
+    const m1 = ev.model1_series;
+    document.getElementById("describes").innerHTML = `<tr><th>type</th><th>about</th><th>covers</th><th>needs</th><th>combined as</th><th>unit</th><th>definition</th></tr>` +
+      ev.types.map((t) => `<tr><td class="mono">${t.name}</td><td>${t.subjects.map(kindName).join(", ")}</td>
+        <td>${t.members === "all" ? "all members" : `${t.members} members only`}</td><td class="mono">${M2.esc(t.requires) || "–"}</td>
+        <td>${M2.esc(t.combine)}</td><td>${M2.esc(t.unit)}</td><td class="muted">${M2.esc(t.definition)}</td></tr>`).join("") +
+      (m1 ? `<tr><td class="mono">Model 1 series</td><td>sector</td><td>all members</td><td>–</td><td>${M2.esc(m1.combine_text)}</td>
+        <td>${M2.esc(m1.unit)}</td><td class="muted">${M2.esc(m1.definition)}</td></tr>` : "");
     const tl = ev.timeline, max = Math.max(...Object.values(tl.rows).flat());
     document.getElementById("timeline").innerHTML = `<tr><th>type</th>${tl.years.map((y) => `<th class="n">${y.slice(2)}</th>`).join("")}</tr>` +
       Object.entries(tl.rows).sort((x, y) => y[1].reduce((p, q) => p + q, 0) - x[1].reduce((p, q) => p + q, 0)).map(([k, v]) =>

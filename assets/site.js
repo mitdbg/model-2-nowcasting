@@ -13,8 +13,19 @@ M2.param = (k) => new URLSearchParams(location.search).get(k);
 
 M2.esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
-M2.PAGES = [["index.html", "Overview"], ["sector.html", "Sectors"], ["entity.html", "Operations"],
-            ["evidence.html", "Evidence"], ["accuracy.html", "Accuracy"]];
+M2.PAGES = [["index.html", "Overview"], ["sector.html", "Sectors"], ["entity.html", "Entities"],
+            ["groupings.html", "Groupings"], ["evidence.html", "Evidence"], ["accuracy.html", "Accuracy"]];
+
+// Grouping kinds (src/firm_model/registry/groupings.py): label, and how members are found.
+M2.GROUPING_KINDS = {
+  company: ["Company", "entities the company controls through its ownership chain, each at its consolidation share"],
+  segment: ["Segment", "entities a company assigns to a business segment in its filings"],
+  site: ["Site", "entities at one physical location, each at its share of the site's capacity"],
+  census_cell: ["Census cell", "tracked entities in one sector, size class and region, and the representative entity standing for the rest"],
+  sector: ["Sector", "every entity in the sector, tracked and representative"],
+  region: ["Region", "every entity in one Census region"],
+  custom: ["Custom", "entities entered by hand"],
+};
 
 M2.header = (meta, page) => {
   const nav = M2.PAGES.map(([h, l]) => `<a href="${h}" class="${h === page ? "on" : ""}">${l}</a>`).join("");
@@ -197,21 +208,46 @@ M2.EXPLAIN = {
   shipments: "Product delivered to customers in the month. It can differ from output when goods go into or come out of stock.",
   backlog: "Orders customers have placed but not yet received, at the end of the month. A growing order book means demand is outrunning deliveries.",
   new_orders: "Orders received in the month, minus orders cancelled.",
-  price: "Average selling price per unit, weighted by how much each operation shipped.",
+  price: "Average selling price per unit, weighted by how much each entity shipped.",
   unit_cost: "Average cost of producing one unit, weighted the same way as price. Price minus unit cost is the margin.",
   lead_time: "Months a customer ordering today is quoted to wait for delivery. Lead time lengthens when the order book is long relative to output.",
   backlog_overdue: "Orders in the order book already past their promised delivery date.",
   phantom_backlog: "Orders customers place beyond what they need (for example ordering from two mills when lead times are long) and later cancel. They inflate the order book without being real demand.",
-  input_inventory: "Raw materials on hand at the end of the month (for steel: scrap, iron ore, pig iron), in input units.",
+  input_inventory: "Raw materials on hand at the end of the month (for steel: scrap and iron ore; for chemicals: feedstocks), in input units.",
   finished_stock: "Finished goods produced but not yet shipped, at the end of the month.",
-  lost_demand: "Customers turned away because there was no room. A seat that flies empty cannot be sold later, so unmet demand is lost rather than queued.",
-  load_factor: "Share of the capacity flown that was sold: passenger-miles divided by seat-miles.",
+  lost_demand: "Demand turned away because there was no room or no stock. Unmet demand is lost rather than queued.",
+  load_factor: "Share of the capacity offered that was sold.",
   capacity_in_use: "Capacity that is leased and in service at the end of the month.",
   capacity_announced: "New capacity announced in the month (press releases, planning filings). Announced projects may still be dropped.",
   capacity_under_construction: "Capacity being built at the end of the month, not yet in service.",
 };
 M2.EXPLAIN_TEMPLATE = {
-  perishable_service: {
+  make_to_stock: {
+    backlog: "Orders placed but not yet shipped, at the end of the month. Short in make-to-stock industries, which ship most orders from finished inventory.",
+    finished_stock: "Finished goods held ready to ship, at the end of the month. Make-to-stock producers aim to hold a target number of months of output.",
+    lead_time: "Months a customer ordering today waits for delivery: short when goods ship from inventory.",
+  },
+  distribution: {
+    capacity: "The most the sector could sell in a month with its stores or warehouses and staff, in 2017 dollars of goods.",
+    output: "Goods bought from suppliers and put on the shelves in the month, in 2017 dollars.",
+    utilization: "Goods bought in divided by capacity: how hard the stores or warehouses are working.",
+    shipments: "Goods sold to customers in the month, in 2017 dollars.",
+    backlog: "Customer orders not yet filled (online and special orders), at the end of the month.",
+    new_orders: "Customer orders in the month, net of cancellations: demand.",
+    price: "Average selling price per 2017 dollar of goods: a price index, near 1 at the start.",
+    unit_cost: "Average cost of goods per 2017 dollar sold, weighted as price. Price minus unit cost is the gross margin.",
+    finished_stock: "Merchandise inventory on hand at the end of the month, in 2017 dollars. Retailers and wholesalers aim to hold a target number of months of sales.",
+    lost_demand: "Sales lost because the goods were out of stock.",
+    load_factor: "Goods sold divided by goods bought in: above 1 when inventory is running down.",
+  },
+  pipeline_producer: {
+    capacity_announced: "New capacity announced in the month (permits, project announcements). Announced projects may still be dropped.",
+    capacity_under_construction: "Capacity being built at the end of the month, not yet producing.",
+  },
+};
+/* Sector wording where the meaning is the sector's own (units, industry terms). */
+M2.EXPLAIN_SECTOR = {
+  naics_481: {
     capacity: "Seat-miles the airlines' fleets could fly in a month.",
     output: "Seat-miles actually flown in the month (available seat-miles): one seat flown one mile is one seat-mile.",
     utilization: "Seat-miles flown divided by the seat-miles the fleet could fly: how much of the fleet is in the air.",
@@ -221,8 +257,9 @@ M2.EXPLAIN_TEMPLATE = {
     price: "Average fare per passenger-mile (the airline 'yield').",
     unit_cost: "Average cost of flying one seat-mile, weighted as the fare.",
     lead_time: "Months between buying a ticket and the flight, on average.",
+    lost_demand: "Passengers turned away because flights were full. A seat that flies empty cannot be sold later, so unmet demand is lost rather than queued.",
   },
-  contracted_capacity: {
+  naics_518_dc: {
     capacity: "Total IT power the data centers have built, in megawatts (MW). It is a stock, not a monthly flow.",
     output: "Capacity leased to tenants and in service, in MW.",
     utilization: "Leased capacity divided by built capacity (occupancy).",
@@ -233,8 +270,76 @@ M2.EXPLAIN_TEMPLATE = {
     unit_cost: "Average monthly cost of running one MW, weighted as rent.",
     lead_time: "Months between signing a lease and the tenant moving in: the pre-leasing horizon plus any wait for free capacity.",
   },
+  naics_211: {
+    capacity: "Oil and gas the producing wells can deliver in a month, in barrels of oil equivalent (boe).",
+    output: "Oil and gas produced in the month, in boe.",
+    shipments: "Oil and gas sold in the month, in boe.",
+    backlog: "Volumes contracted but not yet delivered, at the end of the month.",
+    finished_stock: "Oil and gas held in storage at the end of the month.",
+    input_inventory: "Drilling and completion supplies on hand (pipe, sand), in units of the boe they serve.",
+    capacity_announced: "Capacity of new wells permitted in the month (drilling permits). Permitted wells may still be dropped.",
+    capacity_under_construction: "Capacity of wells being drilled and completed at the end of the month.",
+    price: "Average realized price per boe.",
+    unit_cost: "Average cost of producing one boe, weighted as price.",
+    lead_time: "Months between contracting a volume and its delivery.",
+  },
+  naics_3344: {
+    capacity: "Wafers the fabs can start in a month (300-mm equivalents).",
+    output: "Wafers started in the month.",
+    shipments: "Chips shipped in the month, in wafers' worth.",
+    capacity_announced: "Capacity of new fabs or fab expansions announced in the month.",
+    capacity_under_construction: "Capacity of fabs being built at the end of the month: a fab takes about two years.",
+    lead_time: "Months between ordering chips and delivery (chip lead time).",
+    phantom_backlog: "Double orders customers place when lead times stretch, and cancel when supply returns: the classic chip-shortage pattern.",
+    price: "Average selling price per wafer's worth of chips.",
+  },
+  naics_3361: {
+    capacity: "Vehicles the assembly plants could build in a month.",
+    output: "Vehicles built in the month.",
+    shipments: "Vehicles delivered to dealers and fleets in the month.",
+    backlog: "Dealer and fleet orders not yet delivered, at the end of the month.",
+    finished_stock: "Vehicles built but not yet delivered, at the end of the month.",
+    price: "Average transaction price per vehicle.",
+  },
+  naics_2361: {
+    capacity: "Homes the builders could complete in a month with their crews and lots.",
+    output: "Homes completed in the month.",
+    shipments: "Homes delivered (closed) to buyers in the month.",
+    backlog: "Homes sold but not yet delivered, at the end of the month: the builders' backlog.",
+    new_orders: "Homes sold in the month, net of cancellations (net new orders).",
+    finished_stock: "Completed homes not yet sold or delivered (spec homes), at the end of the month.",
+    price: "Average selling price per home.",
+    lead_time: "Months between signing a contract and moving in.",
+  },
+  naics_622: {
+    capacity: "Patient-days the hospitals' beds could provide in a month.",
+    output: "Patient-days of staffed beds made available in the month.",
+    utilization: "Staffed beds divided by all beds: how much of the hospital is open.",
+    shipments: "Patient-days of care provided in the month.",
+    backlog: "Scheduled admissions not yet admitted, in patient-days, at the end of the month.",
+    new_orders: "Admissions scheduled or arriving in the month, in patient-days.",
+    load_factor: "Bed occupancy: patient-days provided divided by staffed patient-days available.",
+    lost_demand: "Patients turned away or diverted because staffed beds were full.",
+    price: "Average revenue per patient-day.",
+    unit_cost: "Average cost of a staffed patient-day, weighted as price.",
+    lead_time: "Months between scheduling a stay and admission.",
+  },
+  naics_721: {
+    capacity: "Room-nights the hotels could offer in a month.",
+    output: "Room-nights offered in the month (rooms open for sale).",
+    utilization: "Rooms open divided by all rooms.",
+    shipments: "Room-nights sold in the month.",
+    backlog: "Room-nights booked for future stays, at the end of the month.",
+    new_orders: "Room-nights booked in the month, net of cancellations.",
+    load_factor: "Occupancy: room-nights sold divided by room-nights offered.",
+    lost_demand: "Guests turned away because the hotels were full.",
+    price: "Average daily rate: revenue per room-night sold.",
+    unit_cost: "Average cost of offering a room-night, weighted as price.",
+    lead_time: "Months between booking and the stay.",
+  },
 };
-M2.explain = (v, template) => (M2.EXPLAIN_TEMPLATE[template] || {})[v] || M2.EXPLAIN[v] || "";
+M2.explain = (v, template, sector) =>
+  (M2.EXPLAIN_SECTOR[sector] || {})[v] || (M2.EXPLAIN_TEMPLATE[template] || {})[v] || M2.EXPLAIN[v] || "";
 // An "i" button; its text shows on hover, or on tap (click toggles). The card is the positioning box.
 M2.info = (text) => text ? `<span class="infowrap"><button type="button" class="info" aria-label="What is this?">i</button><span class="infotip" role="tooltip">${M2.esc(text)}</span></span>` : "";
 document.addEventListener("click", (ev) => {
@@ -270,15 +375,15 @@ M2.PARAM = {
    capacity unit; flows sum over each observation's period), plain definition, the model
    quantity it informs, and its real-world source. */
 M2.OBS = {
-  revenue: ["Revenue", "Revenue (USD per period)", "Company revenue over the period, from filings.", "Price × shipments over the company's operations (price × capacity in use for data centers)", "SEC EDGAR 10-Q and 10-K, segment notes"],
+  revenue: ["Revenue", "Revenue (USD per period)", "Company revenue over the period, from filings.", "Price × shipments over the company's entities (price × capacity in use for data centers)", "SEC EDGAR 10-Q and 10-K, segment notes"],
   production: ["Production", "Production ({u} per period)", "Volume produced over the period.", "Output", "Trade associations, EIA, company reports"],
   stated_capacity: ["Stated capacity", "Stated capacity ({cap})", "Capacity as the company or an industry report states it.", "Capacity", "Trade press, industry reports, EIA-860"],
-  export_volume: ["Exports", "Exports ({u} per period)", "Volume exported over the period.", "Shipments × the operation's export share", "Customs and trade data"],
-  emissions: ["Emissions", "log emissions", "Greenhouse-gas emissions reported for the year, on a log scale.", "Output, through the operation's emissions level and slope", "EPA GHGRP (annual)"],
+  export_volume: ["Exports", "Exports ({u} per period)", "Volume exported over the period.", "Shipments × the entity's export share", "Customs and trade data"],
+  emissions: ["Emissions", "log emissions", "Greenhouse-gas emissions reported for the year, on a log scale.", "Output, through the entity's emissions level and slope", "EPA GHGRP (annual)"],
   satellite_binary: ["Satellite activity flag", "Probability of activity seen (%)", "Whether a satellite image shows the site active (for example a plume or heat).", "Utilization, through a fixed curve per sensor", "Sentinel-2 and Landsat, per-site pipeline"],
   satellite_index: ["Satellite activity index", "Activity index", "Activity index measured from satellite data (heat, emissions).", "Utilization, through a fixed line per sensor", "VIIRS thermal, Sentinel-5P"],
   price: ["Price", "Price (USD/{u})", "Transaction price per unit.", "Price (unit cost + markup)", "Trade press, company releases (airline yield)"],
-  list_price: ["List price", "List price (USD/{u})", "Published list price per unit.", "Price plus the operation's list-price gap", "Price surveys, mill price sheets"],
+  list_price: ["List price", "List price (USD/{u})", "Published list price per unit.", "Price plus the entity's list-price gap", "Price surveys, mill price sheets"],
   raw_inventory: ["Input inventory", "Input inventory (input units)", "Raw materials on hand at the end of the period.", "Input inventory", "Balance-sheet notes"],
   finished_inventory: ["Finished inventory", "Finished inventory ({u})", "Finished goods on hand at the end of the period.", "Finished inventory", "Balance-sheet notes"],
   backlog: ["Order book", "Order book (USD)", "Dollar value of orders not yet delivered (remaining performance obligations).", "Order book × price", "SEC EDGAR 10-Q remaining performance obligations"],
@@ -293,6 +398,6 @@ M2.OBS = {
   vacancy: ["Vacancy", "Vacancy (%)", "Share of capacity not leased.", "1 − utilization", "Broker surveys"],
   capacity_announced: ["Capacity announced", "Capacity announced ({u} per period)", "New capacity announced over the period.", "Announcements, the start of the construction pipeline (L19)", "Press releases, planning and interconnection filings"],
   under_construction: ["Capacity under construction", "Capacity under construction ({u})", "Capacity being built at the end of the period.", "Capacity under construction", "Filings, construction spending, satellite"],
-  employment: ["Employment", "Employment (workers)", "Workers employed by a group of establishments (Census County Business Patterns).", "Labor per unit × output, hence the scale of representative operations (L29)", "Census County Business Patterns"],
-  census_shipments: ["Census shipments", "Census shipments (USD per period)", "Value shipped by a group of establishments (Economic Census, every 5 years).", "Price × shipments of a representative operation", "Economic Census"],
+  employment: ["Employment", "Employment (workers)", "Workers employed by a group of establishments (Census County Business Patterns).", "Labor per unit × output, hence the scale of representative entities (L29)", "Census County Business Patterns"],
+  census_shipments: ["Census shipments", "Census shipments (USD per period)", "Value shipped by a group of establishments (Economic Census, every 5 years).", "Price × shipments of a representative entity", "Economic Census"],
 };

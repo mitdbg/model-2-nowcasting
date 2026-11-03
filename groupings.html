@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Groupings · Model 2 (dev)</title>
+<link rel="stylesheet" href="assets/site.css?v=84bcc5f-1793742321">
+</head>
+<body>
+<main>
+  <div class="tabs" id="kindtabs" role="tablist" aria-label="Grouping kind"></div>
+  <div class="layout">
+    <aside class="side">
+      <input type="search" id="q" placeholder="Filter groupings…">
+      <div id="list"></div>
+    </aside>
+    <div>
+      <h1 id="title">Groupings</h1>
+      <p class="sub" id="sub"></p>
+      <p class="sub">Groupings contain entities. Entities are the economic objects whose hidden states the model
+      tracks; groupings are what many observations are about: a company's filing covers the entities it consolidates,
+      a satellite reading covers the entities at a site, and a Census count covers a cell of sector, size class and
+      region. The model predicts an observation about a grouping from the grouping's members on the observation's
+      date, each at its weight. Membership changes over time, for example when a company sells a plant.</p>
+      <ul class="plain sub" id="kinds"></ul>
+
+      <h2>Members</h2>
+      <div class="tablewrap"><table id="members"></table></div>
+
+      <h2>Observations about this grouping</h2>
+      <div class="tablewrap"><table id="obs"></table></div>
+    </div>
+  </div>
+</main>
+<script src="assets/site.js?v=84bcc5f-1793742321"></script>
+<script>
+(async () => {
+  try {
+    const [meta, gs] = await Promise.all([M2.load("meta.json"), M2.load("groupings.json")]);
+    M2.header(meta, "groupings.html");
+    const KINDS = M2.GROUPING_KINDS;
+    document.getElementById("kinds").innerHTML = Object.entries(KINDS).map(([k, [label, rule]]) =>
+      `<li><b>${label}</b>: ${rule}</li>`).join("");
+    const id = M2.param("g") || (gs.find((g) => g.kind === "company" && g.n_obs) || gs[0]).id;
+    const cur = gs.find((g) => g.id === id) || gs[0];
+    let sel = M2.param("k") || cur.kind;
+    const link = (gid) => `?g=${encodeURIComponent(gid)}&k=${sel}`;
+    const renderTabs = () => {
+      document.getElementById("kindtabs").innerHTML = Object.entries(KINDS).filter(([k]) => gs.some((g) => g.kind === k)).map(([k, [l]]) =>
+        `<button type="button" role="tab" aria-selected="${k === sel}" class="${k === sel ? "on" : ""}" data-k="${k}">${M2.esc(l)}</button>`).join("");
+    };
+    const renderList = () => {
+      const q = document.getElementById("q").value.toLowerCase();
+      const xs = gs.filter((g) => g.kind === sel && (g.name + g.id).toLowerCase().includes(q))
+        .sort((a, b) => b.n_obs - a.n_obs || a.name.localeCompare(b.name));
+      document.getElementById("list").innerHTML = xs.map((g) =>
+        `<a href="${link(g.id)}" class="${g.id === cur.id ? "on" : ""}">${M2.esc(g.name)} <span class="muted">${g.n_obs}</span></a>`).join("");
+    };
+    document.getElementById("kindtabs").addEventListener("click", (ev) => {
+      const b = ev.target.closest("button[data-k]");
+      if (!b) return;
+      sel = b.dataset.k;
+      history.replaceState(null, "", link(cur.id));
+      renderTabs(); renderList();
+    });
+    document.getElementById("q").addEventListener("input", renderList);
+    renderTabs(); renderList();
+
+    document.getElementById("title").textContent = cur.name;
+    document.getElementById("sub").innerHTML = `${KINDS[cur.kind][0]} · ${cur.members.length} entities · ${cur.n_obs} observations
+      · <span class="mono">${M2.esc(cur.id)}</span>`;
+    document.getElementById("members").innerHTML = `<tr><th>entity</th><th>kind</th><th class="n">${M2.esc(cur.weight_meaning)}</th><th>member from</th><th>member to</th></tr>` +
+      cur.members.map((m) => `<tr><td><a href="entity.html?e=${encodeURIComponent(m.id)}">${M2.esc(m.name)}</a></td><td>${m.kind}</td>
+        <td class="n">${m.weight}</td><td>${m.first}</td><td>${m.last}</td></tr>`).join("");
+    const ot = Object.entries(cur.obs_types).sort((a, b) => b[1] - a[1]);
+    document.getElementById("obs").innerHTML = ot.length ? `<tr><th>type</th><th class="n">observations</th></tr>` +
+      ot.map(([t, n]) => `<tr><td>${M2.esc((M2.OBS[t] || [t])[0])} <span class="mono muted">${t}</span></td><td class="n">${n}</td></tr>`).join("")
+      : `<tr><td class="muted">No observation in this run names this grouping; its members are observed one by one or through other groupings.</td></tr>`;
+  } catch (e) { M2.fail(e); }
+})();
+</script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 # Model 2 development site
 
-A local, unpublished site for watching Model 2: sector totals, each operation's hidden states
+A local, unpublished site for watching Model 2: sector totals, each entity's hidden states
 against its observations, the evidence inventory, and backtest accuracy. Static pages that read
 JSON from `site/data/` (not tracked: it is rebuilt from a workspace).
 

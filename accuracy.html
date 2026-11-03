@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Accuracy · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=54fc240-1793553124">
+<link rel="stylesheet" href="assets/site.css?v=84bcc5f-1793742321">
 </head>
 <body>
 <main>
@@ -12,8 +12,11 @@
   then and re-estimating each time, and scores every sector total against the truth. The backtest runs use unwidened
   bands. <span id="src" class="mono"></span></p>
   <ul class="plain sub">
-    <li>Error: absolute log error of the member median (absolute difference for utilization and load factor; none where
-      the truth or the median is zero).</li>
+    <li>Error of the member median, in one of three units: for most quantities, the absolute log error, shown as a
+      percentage; for utilization and load factor, the absolute difference in percentage points; for overdue orders,
+      phantom orders and lost demand, which are often near zero, the absolute difference in months of the sector's
+      output ("mo"). None where the truth or the median is zero.</li>
+    <li>Mean error by horizon averages these over all sectors and quantities.</li>
     <li>Coverage: share of months with the truth inside the 90% band.</li>
   </ul>
 
@@ -28,19 +31,21 @@
   <div id="bands"></div>
 
   <h2>Parameter recovery</h2>
-  <p class="sub">Each row compares fitted with true parameters of the tracked operations in this run's fit, in prior sds.</p>
+  <p class="sub">Each row compares fitted with true parameters of the tracked entities in this run's fit, in prior sds.</p>
   <ul class="plain sub">
     <li>Bias: mean of fit minus truth.</li>
     <li>RMSE: root mean square of fit minus truth.</li>
-    <li>Correlation: correlation of fit and truth across operations, which shows whether the fit recovers differences between operations.</li>
+    <li>Correlation: correlation of fit and truth across entities, which shows whether the fit recovers differences between entities.</li>
   </ul>
   <div class="tablewrap"><table id="recovery"></table></div>
 </main>
-<script src="assets/site.js?v=54fc240-1793553124"></script>
+<script src="assets/site.js?v=84bcc5f-1793742321"></script>
 <script>
 const H = ["smoothed_last12", "nowcast", "h+3", "h+6", "h+12"];
 const HL = { smoothed_last12: "history (last 12 months)", nowcast: "nowcast", "h+3": "forecast, 3 months ahead", "h+6": "forecast, 6 months ahead", "h+12": "forecast, 12 months ahead" };
 const covc = (c) => (c >= 0.8 && c <= 0.97 ? "good" : c >= 0.6 ? "warn" : "bad");
+// scored in months of output (scripts/backtest.py IN_MONTHS_OF_OUTPUT)
+const IN_MONTHS = new Set(["backlog_overdue", "phantom_backlog", "lost_demand"]);
 (async () => {
   try {
     const [meta, a] = await Promise.all([M2.load("meta.json"), M2.load("accuracy.json")]);
@@ -50,14 +55,14 @@ const covc = (c) => (c >= 0.8 && c <= 0.97 ? "good" : c >= 0.6 ? "warn" : "bad")
     if (!a.overall) { document.getElementById("overall").outerHTML = `<p class="muted">No backtest_scores.csv in the backtest workspace.</p>`; }
     else {
       document.getElementById("overall").innerHTML = `<tr><th>horizon</th><th class="n">mean error</th><th class="n">coverage</th></tr>` +
-        a.overall.map((r) => `<tr><td>${HL[r.horizon]}</td><td class="n">${M2.pct(r.err)}</td><td class="n ${covc(r.cov)}">${M2.pct(r.cov, 0)}</td></tr>`).join("");
+        a.overall.map((r) => `<tr><td>${HL[r.horizon]}</td><td class="n">${r.err.toFixed(3)}</td><td class="n ${covc(r.cov)}">${M2.pct(r.cov, 0)}</td></tr>`).join("");
       const rows = {};
       a.scores.forEach((r) => { (rows[`${r.sector}|${r.variable}`] ||= {})[r.horizon] = r; });
       document.getElementById("detail").innerHTML = `<tr><th>sector</th><th>quantity</th>${H.map((h) => `<th class="n">${HL[h]}</th>`).join("")}</tr>` +
         Object.entries(rows).map(([k, v]) => {
           const [s, vr] = k.split("|");
           return `<tr><td><a href="sector.html?s=${s}">${short[s] || s}</a></td><td>${M2.SHORT_VAR[vr] || vr}</td>` + H.map((h) => v[h]
-            ? `<td class="n">${M2.isShare(vr) ? (100 * v[h].err).toFixed(1) + " pt" : M2.pct(v[h].err)} / <span class="${covc(v[h].cov)}">${M2.pct(v[h].cov, 0)}</span></td>` : "<td></td>").join("") + "</tr>";
+            ? `<td class="n">${M2.isShare(vr) ? (100 * v[h].err).toFixed(1) + " pt" : IN_MONTHS.has(vr) ? v[h].err.toFixed(2) + " mo" : M2.pct(v[h].err)} / <span class="${covc(v[h].cov)}">${M2.pct(v[h].cov, 0)}</span></td>` : "<td></td>").join("") + "</tr>";
         }).join("");
     }
     const b = a.bands;

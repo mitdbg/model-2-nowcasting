@@ -2,26 +2,33 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Operations · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=54fc240-1793553124">
+<title>Entities · Model 2 (dev)</title>
+<link rel="stylesheet" href="assets/site.css?v=84bcc5f-1793742321">
 </head>
 <body>
 <main>
   <div class="tabs" id="sectabs" role="tablist" aria-label="Sector"></div>
   <div class="layout">
     <aside class="side">
-      <input type="search" id="q" placeholder="Filter operations…">
+      <input type="search" id="q" placeholder="Filter entities…">
       <div id="list"></div>
     </aside>
     <div>
-      <h1 id="title">Operation</h1>
+      <h1 id="title">Entity</h1>
       <p class="sub" id="sub"></p>
 
+      <h2>Groupings</h2>
+      <p class="sub">Groupings are the companies, segments, sites and Census cells that contain this entity. An
+      observation about a grouping covers all its entities at once, each at its weight, so the model predicts it from
+      their combined states.</p>
+      <p class="sub" id="ownobs"></p>
+      <div class="tablewrap"><table id="groupings"></table></div>
+
       <h2>Hidden states</h2>
-      <p class="sub">Hidden states are the quantities Model 2 estimates for this operation each month: capacity, output,
+      <p class="sub">Hidden states are the quantities Model 2 estimates for this entity each month: capacity, output,
       order book, price and the rest. The model never sees their true values. Observations measure them only
       indirectly or imperfectly: with noise, weeks or months late, for some months only, and often summed over all of a
-      company's operations. Some states, such as finished inventory, have no observation at all, and the model's
+      company's entities. Some states, such as finished inventory, have no observation at all, and the model's
       dynamics alone carry them. The ensemble filter combines the dynamics with whatever observations exist into an
       estimate with a 90% band.</p>
       <p class="sub">Each chart shows the median and unwidened 90% band of that estimate, with the truth (dashed), which
@@ -38,13 +45,13 @@
       truth lines above test it against what it cannot.</p>
       <p class="sub">Each chart compares one type of observation with the model's prediction of it. Dots: observed values.
       Line: predicted value. Band: prediction plus the observation's own noise, which should hold about 90% of the dots;
-      red dots fall outside it. Company-level observations cover several operations, so the model predicts their sum
-      over the company's operations.</p>
+      red dots fall outside it. An observation about a grouping covers several entities, so the model predicts it
+      from their combined states.</p>
       <div id="leg2"></div>
       <div class="grid" id="obs"></div>
 
       <h2>Fitted parameters</h2>
-      <p class="sub">Each row shows one free parameter of this operation. Bar: the prior's 90% interval (grey), the fit's
+      <p class="sub">Each row shows one free parameter of this entity. Bar: the prior's 90% interval (grey), the fit's
       90% interval (outlined), the fitted value and the truth (orange tick). Sd ratio: the fit's sd over the prior's; near
       1, the data taught little. Offsets such as õ and α count from window constants (D̄, x̄, log K₀) that the fit sets
       from its own window, so fit and truth can differ by convention as well as by error.</p>
@@ -52,7 +59,7 @@
     </div>
   </div>
 </main>
-<script src="assets/site.js?v=54fc240-1793553124"></script>
+<script src="assets/site.js?v=84bcc5f-1793742321"></script>
 <script>
 const toT = (tr, v) => (tr === "log" ? Math.log(v) : tr === "logit" ? Math.log(v / (1 - v)) : v);
 (async () => {
@@ -61,7 +68,7 @@ const toT = (tr, v) => (tr === "log" ? Math.log(v) : tr === "logit" ? Math.log(v
     M2.header(meta, "entity.html");
     const id = M2.param("e") || ents.find((x) => x.kind === "tracked").id;
     const short = Object.fromEntries(meta.sectors.map((s) => [s.code, s.short]));
-    // sector tabs: "s" in the URL, else this operation's sector; "all" lists every sector
+    // sector tabs: "s" in the URL, else this entity's sector; "all" lists every sector
     const own = ents.find((x) => x.id === id)?.sector;
     let sel = M2.param("s") || own || "all";
     const link = (eid) => `?e=${encodeURIComponent(eid)}&s=${sel}`;
@@ -73,7 +80,7 @@ const toT = (tr, v) => (tr === "log" ? Math.log(v) : tr === "logit" ? Math.log(v
       const b = ev.target.closest("button[data-s]");
       if (!b) return;
       sel = b.dataset.s;
-      if (sel !== "all" && sel !== own) {      // show an operation of the chosen sector
+      if (sel !== "all" && sel !== own) {      // show an entity of the chosen sector
         const first = ents.find((x) => x.sector === sel && x.kind === "tracked") || ents.find((x) => x.sector === sel);
         if (first) { location.search = link(first.id); return; }
       }
@@ -106,6 +113,15 @@ const toT = (tr, v) => (tr === "log" ? Math.log(v) : tr === "logit" ? Math.log(v
       · ${d.size}, ${d.region}${d.n_establishments > 1 ? ` · stands for ${d.n_establishments} establishments` : ""}
       · ${d.n_obs} observations · <span class="mono">${M2.esc(d.id)}</span>`;
 
+    const gt = document.getElementById("groupings");
+    document.getElementById("ownobs").textContent = `Observations about this entity alone: ${d.n_obs_own ?? 0}.`;
+    const gk = M2.GROUPING_KINDS, gorder = Object.keys(gk);
+    const gr = (d.groupings || []).slice().sort((a, b) => gorder.indexOf(a.kind) - gorder.indexOf(b.kind));
+    gt.innerHTML = gr.length ? `<tr><th>grouping</th><th>kind</th><th class="n">weight</th><th>weight means</th><th>member from</th><th>member to</th><th class="n">observations about it</th></tr>` +
+      gr.map((g) => `<tr><td><a href="groupings.html?g=${encodeURIComponent(g.id)}">${M2.esc(g.name)}</a></td><td>${(gk[g.kind] || [g.kind])[0]}</td>
+        <td class="n">${g.weight}</td><td class="muted">${g.weight_meaning}</td><td>${g.first}</td><td>${g.last}</td><td class="n">${g.n_obs}</td></tr>`).join("")
+      : `<tr><td class="muted">No grouping contains this entity.</td></tr>`;
+
     const order = ["capacity", "output", "utilization", "shipments", "backlog", "lead_time", "price", "unit_cost",
                    "capacity_announced", "capacity_under_construction"];
     const states = document.getElementById("states");
@@ -113,7 +129,7 @@ const toT = (tr, v) => (tr === "log" ? Math.log(v) : tr === "logit" ? Math.log(v
       const s = d.states[v];
       const el = document.createElement("div");
       el.className = "card";
-      el.innerHTML = `<div class="head"><h3>${M2.SHORT_VAR[v] || v}${M2.info(M2.explain(v, sec.template) + " This operation alone.")}</h3></div><div class="ch"></div>`;
+      el.innerHTML = `<div class="head"><h3>${M2.SHORT_VAR[v] || v}${M2.info(M2.explain(v, sec.template, d.sector) + " This entity alone.")}</h3></div><div class="ch"></div>`;
       states.appendChild(el);
       M2.chart(el.querySelector(".ch"), { bands: [{ ...s, label: v }], truth: s.truth ? { month: s.month, value: s.truth } : null,
                                           status: s, unit: M2.isShare(v) ? "share" : "", height: 180, yLabel: stateLabel(v) });
@@ -122,7 +138,7 @@ const toT = (tr, v) => (tr === "log" ? Math.log(v) : tr === "logit" ? Math.log(v
 
     const obs = document.getElementById("obs");
     const types = Object.keys(d.observations);
-    if (!types.length) obs.innerHTML = `<p class="muted">No observation covers this operation.</p>`;
+    if (!types.length) obs.innerHTML = `<p class="muted">No observation covers this entity.</p>`;
     for (const ot of types) {
       const o = d.observations[ot], nat = (y) => M2.natural(o.noise, y);
       const bern = o.noise === "bernoulli";
@@ -132,12 +148,14 @@ const toT = (tr, v) => (tr === "log" ? Math.log(v) : tr === "logit" ? Math.log(v
         const out = !bern && (o.y[i] < o.obs_q05[i] || o.y[i] > o.obs_q95[i]);
         if (!bern) { n++; if (!out) inside++; }
         return { month: m, y: nat(o.y[i]), out,
-                 label: `observed ${M2.fmt(nat(o.y[i]))} · ${M2.esc(o.source[i])}${o.reporter[i] ? ", " + M2.esc(o.reporter[i]) : ""}${o.scope_size[i] > 1 ? ` (scope: ${o.scope_size[i]} operations)` : ""}${o.published[i] ? `, published ${o.published[i]}` : ""}` };
+                 label: `observed ${M2.fmt(nat(o.y[i]))} · ${M2.esc(o.source[i])}${o.subject[i] ? ", about " + M2.esc(o.subject[i]) : ""}${o.scope_size[i] > 1 ? ` (${o.scope_size[i]} entities)` : ""}${o.published[i] ? `, published ${o.published[i]}` : ""}` };
       });
       const el = document.createElement("div");
       el.className = "card";
       const cov = n ? `<span class="${inside / n >= 0.8 ? "good" : "bad"}">In band: ${M2.pct(inside / n, 0)} of ${n} observations.</span>` : "In band: not scored (yes/no observations).";
-      const scope = Math.max(...o.scope_size) > 1 ? ` Scope: up to ${Math.max(...o.scope_size)} operations.` : "";
+      const subj = [...new Set(o.subject)].filter((x) => x);
+      const scope = (Math.max(...o.scope_size) > 1 ? ` Covers up to ${Math.max(...o.scope_size)} entities.` : "") +
+        (subj.length ? ` About: ${subj.map(M2.esc).join("; ")}.` : "");
       const ob = M2.OBS[ot] || [ot, ot, "", "", ""];
       el.innerHTML = `<div class="head"><h3>${ob[0]}${M2.info(`${ob[2]} Informs: ${ob[3]}. Formula: ${o.description}.`)}</h3><span class="chip">${ot} · ${o.noise}</span></div>
         <p class="desc">${cov}${scope}</p><div class="ch"></div>`;
@@ -150,7 +168,7 @@ const toT = (tr, v) => (tr === "log" ? Math.log(v) : tr === "logit" ? Math.log(v
       ["var(--accent)", "predicted"], ["var(--band)", "90% band: prediction plus noise"]]);
 
     const tab = document.getElementById("params");
-    if (!d.params.length) { tab.outerHTML = `<p class="muted">No free parameters: this operation takes its sector's or group's values.</p>`; return; }
+    if (!d.params.length) { tab.outerHTML = `<p class="muted">No free parameters: this entity takes its sector's or group's values.</p>`; return; }
     const hasTruth = d.params.some((p) => p.truth != null);
     tab.innerHTML = `<tr><th>parameter</th><th>definition</th><th class="n">prior</th><th class="n">fit [90%]</th>${hasTruth ? `<th class="n">truth</th>` : ""}<th class="n">sd ratio</th><th></th></tr>` +
       d.params.map((p) => {
