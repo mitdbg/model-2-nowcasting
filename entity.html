@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Entities · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=84bcc5f-1793742321">
+<link rel="stylesheet" href="assets/site.css?v=109d69b-1793770326">
 </head>
 <body>
 <main>
@@ -55,11 +55,15 @@
       90% interval (outlined), the fitted value and the truth (orange tick). Sd ratio: the fit's sd over the prior's; near
       1, the data taught little. Offsets such as õ and α count from window constants (D̄, x̄, log K₀) that the fit sets
       from its own window, so fit and truth can differ by convention as well as by error.</p>
+      <p class="sub">A parameter is a number in the model, not something a firm reports. The truth exists only
+      because the synthetic world is generated from the model's own equations: the simulation draws each entity's
+      parameters, then runs the dynamics with them. Recovering them shows that the fitting works when the model is
+      right; it does not show that the model is right. On real data there is no truth column.</p>
       <div class="tablewrap"><table id="params"></table></div>
     </div>
   </div>
 </main>
-<script src="assets/site.js?v=84bcc5f-1793742321"></script>
+<script src="assets/site.js?v=109d69b-1793770326"></script>
 <script>
 const toT = (tr, v) => (tr === "log" ? Math.log(v) : tr === "logit" ? Math.log(v / (1 - v)) : v);
 (async () => {
@@ -114,9 +118,12 @@ const toT = (tr, v) => (tr === "log" ? Math.log(v) : tr === "logit" ? Math.log(v
       · ${d.n_obs} observations · <span class="mono">${M2.esc(d.id)}</span>`;
 
     const gt = document.getElementById("groupings");
-    document.getElementById("ownobs").textContent = `Observations about this entity alone: ${d.n_obs_own ?? 0}.`;
+    // a site holding only this entity is not shown as a grouping: its observations are about this entity
+    const soloSites = (d.groupings || []).filter((g) => g.kind === "site" && g.n_members === 1);
+    document.getElementById("ownobs").textContent = `Observations about this entity alone: ${(d.n_obs_own ?? 0) +
+      soloSites.reduce((a, g) => a + g.n_obs, 0)}` + (soloSites.length ? ` (${soloSites.map((g) => `${g.n_obs} of them name its site, ${g.name}, which holds no other entity`).join("; ")}).` : ".");
     const gk = M2.GROUPING_KINDS, gorder = Object.keys(gk);
-    const gr = (d.groupings || []).slice().sort((a, b) => gorder.indexOf(a.kind) - gorder.indexOf(b.kind));
+    const gr = (d.groupings || []).filter((g) => !soloSites.includes(g)).sort((a, b) => gorder.indexOf(a.kind) - gorder.indexOf(b.kind));
     gt.innerHTML = gr.length ? `<tr><th>grouping</th><th>kind</th><th class="n">weight</th><th>weight means</th><th>member from</th><th>member to</th><th class="n">observations about it</th></tr>` +
       gr.map((g) => `<tr><td><a href="groupings.html?g=${encodeURIComponent(g.id)}">${M2.esc(g.name)}</a></td><td>${(gk[g.kind] || [g.kind])[0]}</td>
         <td class="n">${g.weight}</td><td class="muted">${g.weight_meaning}</td><td>${g.first}</td><td>${g.last}</td><td class="n">${g.n_obs}</td></tr>`).join("")

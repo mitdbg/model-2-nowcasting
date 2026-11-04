@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Groupings · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=84bcc5f-1793742321">
+<link rel="stylesheet" href="assets/site.css?v=109d69b-1793770326">
 </head>
 <body>
 <main>
@@ -31,17 +31,22 @@
     </div>
   </div>
 </main>
-<script src="assets/site.js?v=84bcc5f-1793742321"></script>
+<script src="assets/site.js?v=109d69b-1793770326"></script>
 <script>
 (async () => {
   try {
-    const [meta, gs] = await Promise.all([M2.load("meta.json"), M2.load("groupings.json")]);
+    let [meta, gs] = await Promise.all([M2.load("meta.json"), M2.load("groupings.json")]);
     M2.header(meta, "groupings.html");
     const KINDS = M2.GROUPING_KINDS;
     document.getElementById("kinds").innerHTML = Object.entries(KINDS).map(([k, [label, rule]]) =>
       `<li><b>${label}</b>: ${rule}</li>`).join("");
-    const id = M2.param("g") || (gs.find((g) => g.kind === "company" && g.n_obs) || gs[0]).id;
-    const cur = gs.find((g) => g.id === id) || gs[0];
+    // sites holding a single entity are shown on that entity's page, not as groupings
+    const solo = gs.filter((g) => g.kind === "site" && new Set(g.members.map((m) => m.id)).size === 1);
+    const all = gs;
+    gs = gs.filter((g) => !solo.includes(g));
+    const k0 = M2.param("k");
+    const id = M2.param("g") || (gs.find((g) => g.kind === (k0 || "company") && (g.n_obs || k0)) || gs[0]).id;
+    const cur = all.find((g) => g.id === id) || gs[0];
     let sel = M2.param("k") || cur.kind;
     const link = (gid) => `?g=${encodeURIComponent(gid)}&k=${sel}`;
     const renderTabs = () => {
@@ -53,7 +58,8 @@
       const xs = gs.filter((g) => g.kind === sel && (g.name + g.id).toLowerCase().includes(q))
         .sort((a, b) => b.n_obs - a.n_obs || a.name.localeCompare(b.name));
       document.getElementById("list").innerHTML = xs.map((g) =>
-        `<a href="${link(g.id)}" class="${g.id === cur.id ? "on" : ""}">${M2.esc(g.name)} <span class="muted">${g.n_obs}</span></a>`).join("");
+        `<a href="${link(g.id)}" class="${g.id === cur.id ? "on" : ""}">${M2.esc(g.name)} <span class="muted">${g.n_obs}</span></a>`).join("") +
+        (sel === "site" && solo.length ? `<p class="muted">${solo.length} other sites hold a single entity each; their observations are listed on that entity's page.</p>` : "");
     };
     document.getElementById("kindtabs").addEventListener("click", (ev) => {
       const b = ev.target.closest("button[data-k]");

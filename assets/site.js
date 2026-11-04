@@ -20,7 +20,7 @@ M2.PAGES = [["index.html", "Overview"], ["sector.html", "Sectors"], ["entity.htm
 M2.GROUPING_KINDS = {
   company: ["Company", "entities the company controls through its ownership chain, each at its consolidation share"],
   segment: ["Segment", "entities a company assigns to a business segment in its filings"],
-  site: ["Site", "entities at one physical location, each at its share of the site's capacity"],
+  site: ["Site", "entities at one physical location, each at the share of its own capacity located there (1 for an entity wholly at the site)"],
   census_cell: ["Census cell", "tracked entities in one sector, size class and region, and the representative entity standing for the rest"],
   sector: ["Sector", "every entity in the sector, tracked and representative"],
   region: ["Region", "every entity in one Census region"],
