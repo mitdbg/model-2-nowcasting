@@ -3,9 +3,14 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Entities · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=5a6c4b6-1794414681">
+<link rel="stylesheet" href="assets/site.css?v=badf937-1794415028">
 <style>
-  .every .side { max-height: calc(100vh - 330px); min-height: 260px; }
+  .every .side { max-height: calc(100vh - 330px); min-height: 360px; }
+  .filters { display: grid; grid-template-columns: auto 1fr; gap: 4px 6px; margin: 8px 0 4px; font-size: 12px; color: var(--muted); }
+  .filters label { display: contents; }
+  .filters select { font-size: 12px; padding: 2px 4px; min-width: 0; }
+  .fcount { font-size: 12px; color: var(--muted); margin: 2px 0 6px; display: flex; justify-content: space-between; }
+  .linkbtn { font: inherit; border: none; background: none; color: var(--accent); cursor: pointer; padding: 0; }
   .every #detail { max-height: calc(100vh - 330px); min-height: 260px; overflow: auto; }
   #bysector td, #bysector th, #kinds td, #kinds th { padding-top: 3px; padding-bottom: 3px; }
   @media (max-width: 760px) { .every .side, .every #detail { max-height: none; } }
@@ -35,14 +40,23 @@
   <section data-v="every" hidden>
   <div class="layout every">
     <aside class="side">
-      <input type="search" id="q" placeholder="Filter entities…" aria-label="Filter entities">
+      <input type="search" id="q" placeholder="Name contains…" aria-label="Name contains">
+      <div class="filters" id="filters">
+        <label>Sector <select data-f="sector"></select></label>
+        <label>Kind <select data-f="kind"></select></label>
+        <label>Size <select data-f="size"></select></label>
+        <label>Region <select data-f="region"></select></label>
+        <label>Grouping <select data-f="grouping"></select></label>
+        <label>Observation <select data-f="obs"></select></label>
+      </div>
+      <div class="fcount"><span id="count"></span> <button type="button" id="clear" class="linkbtn">Clear</button></div>
       <div id="list"></div>
     </aside>
     <div id="detail"></div>
   </div>
   </section>
 </main>
-<script src="assets/site.js?v=5a6c4b6-1794414681"></script>
+<script src="assets/site.js?v=badf937-1794415028"></script>
 <script>
 (async () => {
   try {
@@ -79,10 +93,43 @@
     gs.forEach((g) => g.members.forEach((m) => (member[m.id] ||= []).push({ g, m })));
     const KIND = (k) => M2.GROUPING_KINDS[k]?.[0] || k;
     let sel = M2.param("e") || tracked[0].id;
-    const renderList = () => {
+    // filters: every choice narrows the list; the grouping choices follow the chosen sector
+    const F = { sector: "", kind: "", size: "", region: "", grouping: "", obs: "" };
+    Object.keys(F).forEach((k) => { F[k] = M2.param(k) || ""; });   // filters can come in the address
+    const sel_ = (f) => document.querySelector(`#filters select[data-f="${f}"]`);
+    const opts = (f, pairs) => {
+      const cur = F[f];
+      sel_(f).innerHTML = `<option value="">all</option>` + pairs;
+      sel_(f).value = cur;
+      if (sel_(f).value !== cur) F[f] = "";
+    };
+    const uniq = (k) => [...new Set(ents.map((e) => e[k]).filter(Boolean))];
+    const ORDER = { small: 0, medium: 1, large: 2 };
+    const gById = Object.fromEntries(gs.map((g) => [g.id, g]));
+    const fillOptions = () => {
+      opts("sector", meta.sectors.map((s) => `<option value="${s.code}">${M2.esc(s.short)}</option>`).join(""));
+      opts("kind", ["tracked", "representative"].map((k) => `<option>${k}</option>`).join(""));
+      opts("size", uniq("size").sort((a, b) => (ORDER[a] ?? 9) - (ORDER[b] ?? 9)).map((k) => `<option>${k}</option>`).join(""));
+      opts("region", uniq("region").sort().map((k) => `<option>${k}</option>`).join(""));
+      opts("grouping", ["company", "segment", "site", "census_cell"].map((k) => {
+        const xs = gs.filter((g) => g.kind === k && (!F.sector || (g.sector || []).includes(F.sector))).sort((a, b) => a.name.localeCompare(b.name));
+        return xs.length ? `<optgroup label="${KIND(k)}">${xs.map((g) => `<option value="${M2.esc(g.id)}">${M2.esc(g.name)}</option>`).join("")}</optgroup>` : "";
+      }).join(""));
+      const ot = [...new Set(ents.flatMap((e) => e.obs_types || []))].map((t) => [t, M2.OBS[t]?.[0] || t]).sort((a, b) => a[1].localeCompare(b[1]));
+      opts("obs", ot.map(([t, l]) => `<option value="${t}">${M2.esc(l)}</option>`).join(""));
+    };
+    const keep = (e) => {
       const q = document.getElementById("q").value.toLowerCase();
+      return (e.name + e.id).toLowerCase().includes(q) && (!F.sector || e.sector === F.sector) && (!F.kind || e.kind === F.kind)
+        && (!F.size || e.size === F.size) && (!F.region || e.region === F.region)
+        && (!F.grouping || (gById[F.grouping]?.members || []).some((m) => m.id === e.id))
+        && (!F.obs || (e.obs_types || []).includes(F.obs));
+    };
+    const renderList = () => {
+      const shown = ents.filter(keep);
+      document.getElementById("count").textContent = `${shown.length} of ${ents.length} entities`;
       document.getElementById("list").innerHTML = meta.sectors.map((s) => {
-        const xs = ents.filter((e) => e.sector === s.code && (e.name + e.id).toLowerCase().includes(q))
+        const xs = shown.filter((e) => e.sector === s.code)
           .sort((a, b) => (a.kind === b.kind ? a.name.localeCompare(b.name) : a.kind === "tracked" ? -1 : 1));
         return xs.length ? `<div class="grp">${M2.esc(s.short)}</div>` + xs.map((e) =>
           `<a href="?v=every&e=${encodeURIComponent(e.id)}" data-e="${M2.esc(e.id)}" class="${e.id === sel ? "on" : ""}">${M2.esc(e.name)}</a>`).join("") : "";
@@ -109,7 +156,11 @@
     };
     const VIEWS = ["sector", "groupings", "every"];
     let view = VIEWS.includes(M2.param("v")) ? M2.param("v") : M2.param("e") ? "every" : "sector";
-    const url = () => history.replaceState(null, "", `?v=${view}${view === "every" ? `&e=${encodeURIComponent(sel)}` : ""}`);
+    const url = () => {
+      const p = new URLSearchParams({ v: view });
+      if (view === "every") { p.set("e", sel); Object.entries(F).forEach(([k, v]) => v && p.set(k, v)); }
+      history.replaceState(null, "", `?${p}`);
+    };
     const showView = () => {
       document.querySelectorAll("#views button").forEach((b) => {
         b.classList.toggle("on", b.dataset.v === view); b.setAttribute("aria-selected", b.dataset.v === view); });
@@ -122,6 +173,19 @@
     });
     showView();
     document.getElementById("q").addEventListener("input", renderList);
+    document.getElementById("filters").addEventListener("change", (ev) => {
+      const f = ev.target.dataset.f;
+      if (!f) return;
+      F[f] = ev.target.value;
+      if (f === "sector") fillOptions();
+      renderList(); url();
+    });
+    document.getElementById("clear").addEventListener("click", () => {
+      Object.keys(F).forEach((k) => { F[k] = ""; });
+      document.getElementById("q").value = "";
+      fillOptions(); renderList(); url();
+    });
+    fillOptions();
     document.getElementById("list").addEventListener("click", (ev) => {
       const a = ev.target.closest("a[data-e]");
       if (!a) return;
