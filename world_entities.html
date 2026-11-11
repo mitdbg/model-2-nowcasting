@@ -3,31 +3,46 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Entities · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=52a9bc9-1794414458">
+<link rel="stylesheet" href="assets/site.css?v=5a6c4b6-1794414681">
+<style>
+  .every .side { max-height: calc(100vh - 330px); min-height: 260px; }
+  .every #detail { max-height: calc(100vh - 330px); min-height: 260px; overflow: auto; }
+  #bysector td, #bysector th, #kinds td, #kinds th { padding-top: 3px; padding-bottom: 3px; }
+  @media (max-width: 760px) { .every .side, .every #detail { max-height: none; } }
+</style>
 </head>
 <body>
 <main>
   <h1>Entities</h1>
   <p class="sub" id="intro"></p>
 
-  <h2>By sector</h2>
-  <div class="tablewrap"><table id="bysector"></table></div>
+  <div class="tabs" id="views" role="tablist" aria-label="View">
+    <button type="button" role="tab" data-v="sector">By sector</button>
+    <button type="button" role="tab" data-v="groupings">Groupings</button>
+    <button type="button" role="tab" data-v="every">Every entity</button>
+  </div>
 
-  <h2>Groupings</h2>
+  <section data-v="sector">
+  <div class="tablewrap"><table id="bysector"></table></div>
+  </section>
+
+  <section data-v="groupings" hidden>
   <p class="sub">Observations are about an entity or a grouping of entities. The model predicts an observation about
   a grouping from the grouping's members on the observation's date, each at its weight.</p>
   <div class="tablewrap"><table id="kinds"></table></div>
+  </section>
 
-  <h2>Every entity</h2>
-  <div class="layout">
+  <section data-v="every" hidden>
+  <div class="layout every">
     <aside class="side">
       <input type="search" id="q" placeholder="Filter entities…" aria-label="Filter entities">
       <div id="list"></div>
     </aside>
     <div id="detail"></div>
   </div>
+  </section>
 </main>
-<script src="assets/site.js?v=52a9bc9-1794414458"></script>
+<script src="assets/site.js?v=5a6c4b6-1794414681"></script>
 <script>
 (async () => {
   try {
@@ -70,7 +85,7 @@
         const xs = ents.filter((e) => e.sector === s.code && (e.name + e.id).toLowerCase().includes(q))
           .sort((a, b) => (a.kind === b.kind ? a.name.localeCompare(b.name) : a.kind === "tracked" ? -1 : 1));
         return xs.length ? `<div class="grp">${M2.esc(s.short)}</div>` + xs.map((e) =>
-          `<a href="?e=${encodeURIComponent(e.id)}" data-e="${M2.esc(e.id)}" class="${e.id === sel ? "on" : ""}">${M2.esc(e.name)}</a>`).join("") : "";
+          `<a href="?v=every&e=${encodeURIComponent(e.id)}" data-e="${M2.esc(e.id)}" class="${e.id === sel ? "on" : ""}">${M2.esc(e.name)}</a>`).join("") : "";
       }).join("");
     };
     const renderDetail = () => {
@@ -92,13 +107,27 @@
             <td class="n">${m.weight != null ? (+m.weight).toFixed(2) : ""}</td><td>${m.first || ""}</td><td>${m.last || ""}</td></tr>`).join("")
             || `<tr><td colspan="5" class="muted">none</td></tr>`}</table></div>`;
     };
+    const VIEWS = ["sector", "groupings", "every"];
+    let view = VIEWS.includes(M2.param("v")) ? M2.param("v") : M2.param("e") ? "every" : "sector";
+    const url = () => history.replaceState(null, "", `?v=${view}${view === "every" ? `&e=${encodeURIComponent(sel)}` : ""}`);
+    const showView = () => {
+      document.querySelectorAll("#views button").forEach((b) => {
+        b.classList.toggle("on", b.dataset.v === view); b.setAttribute("aria-selected", b.dataset.v === view); });
+      document.querySelectorAll("main section[data-v]").forEach((x) => { x.hidden = x.dataset.v !== view; });
+    };
+    document.getElementById("views").addEventListener("click", (ev) => {
+      const b = ev.target.closest("button[data-v]");
+      if (!b) return;
+      view = b.dataset.v; showView(); url();
+    });
+    showView();
     document.getElementById("q").addEventListener("input", renderList);
     document.getElementById("list").addEventListener("click", (ev) => {
       const a = ev.target.closest("a[data-e]");
       if (!a) return;
       ev.preventDefault();
       sel = a.dataset.e;
-      history.replaceState(null, "", `?e=${encodeURIComponent(sel)}`);
+      url();
       renderList(); renderDetail();
     });
     renderList(); renderDetail();
