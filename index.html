@@ -3,116 +3,28 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Overview · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=3b4c7c1-1794413007">
+<link rel="stylesheet" href="assets/site.css?v=2556fa6-1794413501">
 </head>
 <body>
 <main>
-  <h1>Firms behind the sector totals</h1>
-  <p class="sub">Model 2 estimates monthly quantities for the entities in a sector: capacity, output, order books,
-  inventories and prices. It covers one sector for each of Model 1's 13 industries, plus data centers: steel mills, oil
-  and gas fields, auto plants, homebuilders, retail chains, chip fabs, chemical plants, food plants, hospitals, hotels,
-  machinery plants, wholesalers, airline networks and data-center campuses. It learns from scattered observations:
-  company filings, emissions, satellite readings, permits and traffic statistics. Model 2 sums the entities to sector
-  totals and checks the totals against Model 1's sector nowcasts.</p>
-  <p class="sub">Entities come in two kinds. <b>Tracked entities</b> are specific sites with observations of their
-  own, and the model follows each one separately. <b>Representative entities</b> stand in for all the other
-  establishments, which have no observations of their own: one per sector, size class and region, scaled to the
-  establishment count in Census County Business Patterns. For example, steel has <span id="ex-tracked">14</span> tracked mills. One of them,
-  <a href="entity.html?e=op_acme_gary">Acme Gary Works</a>, has <span id="ex-obs">358</span> observations: revenue and
-  order book from its company's filings, emissions, satellite images, stated capacity, list prices and lead times. The
-  representative entity <a href="entity.html?e=rep__naics_3311_2__medium__midwest">Steel: medium, midwest</a> stands
-  for <span id="ex-est">10</span> medium-sized midwestern establishments together and has <span id="ex-rep-obs">7</span>
-  observations: Census employment and Census shipments for the whole group. The steel total is the
-  <span id="ex-tracked2">14</span> tracked mills plus <span id="ex-reps">11</span> representative entities.</p>
-  <p class="sub"><b>Everything on this site is simulated.</b> A synthetic world runs Model 2's own equations with
-  known true parameters to produce a monthly history for every entity, and then generates observations from that
-  history, with noise and realistic publication delays. The entities and companies are invented (Acme, CloudFort,
-  Vertex): their sectors, sizes, regions, data sources and reporting schedules imitate real ones, but no figure comes
-  from a real firm. Model 1's input is synthetic too. Model 2 sees only the observations, and the site compares its
-  estimates with the hidden truth (orange). A good match shows that the estimation recovers what the data contain; it
-  does not show that the equations describe real firms. That test needs real data: the first real series
-  (data-center order books from REIT filings) is downloaded but not yet used.</p>
-  <div id="runinfo" class="muted"></div>
-
-  <h2>This month by sector</h2>
-  <div class="tiles" id="tiles"></div>
-  <div id="leg"></div>
-
-  <h2>Pages</h2>
-  <ul class="plain">
-    <li><a href="sector.html">Sectors</a>: sector totals over time with their 90% bands and truth, the split into
-      tracked and representative entities, and the check against Model 1.</li>
-    <li><a href="entity.html">Entities</a>: hidden states of each entity, its observations against the model's
-      predictions, and its fitted parameters against prior and truth.</li>
-    <li><a href="evidence.html">Evidence</a>: observation types with their sources, frequency, delay and fit, and
-      the quantities no observation covers yet.</li>
-    <li><a href="accuracy.html">Accuracy</a>: backtest errors and band coverage by horizon, the band widening, and
-      parameter recovery.</li>
-  </ul>
-
-  <h2>Known problems</h2>
-  <ul class="plain">
-    <li>All sectors: 90% bands miss the truth too often. Unwidened, they hold it 66% of the time across all sector
-      quantities (52% for capacity, output, utilization, order book and shipments). Sector totals use widened bands
-      (PLAN decision 17); entity charts use unwidened bands.</li>
-    <li>Steel: the order book runs about 8% high at the nowcast.</li>
-    <li>Steel: finished inventory runs 4–5 times the truth (in band 1% of months). No observation covers it, so the
-      prior sets it.</li>
-    <li>Steel and data centers: lead time runs about 12% low (data centers: in band 0% of months). Lead-time
-      observations carry a per-source bias that can absorb the error.</li>
-    <li>Data centers: normal occupancy fits low (fitted 0.74, true 0.86). No observation covers it directly.</li>
-    <li>Data centers: site order books run well above the truth, although company order-book observations fit. The
-      model splits each company's order book across its sites wrongly.</li>
-  </ul>
+  <h1>A fine-grained model of the economy</h1>
+  <p class="sub">Model 2 estimates what is happening right now inside thousands of businesses — how much each can
+  make, how much it is making, what it charges, what it holds in stock and how far behind it is on orders — from
+  scattered, late and noisy public information. Official statistics about industries arrive weeks or months late and
+  say little about individual firms. Bits of information about firms arrive all the time, though: a quarterly
+  financial report, an announced new plant, a satellite image of a parking lot, a price list, a pollution report
+  that hints at how hard a plant is running. Each bit is partial and imprecise. Model 2 aims to combine them into one
+  consistent picture, month by month, with an honest statement of how unsure it is.</p>
+  <p class="sub">The first intellectual challenge of this project is to build a model of the economy that is as
+  expressive as possible given our observations and accuracy constraints, but not more so. The second intellectual
+  challenge is to build a 'model-builder' metaprocess that is proactively marshalling new sources of evidence and
+  revising what economic model might be possible.</p>
 </main>
-<script src="assets/site.js?v=3b4c7c1-1794413007"></script>
+<script src="assets/site.js?v=2556fa6-1794413501"></script>
 <script>
 (async () => {
   try {
-    const meta = await M2.load("meta.json");
-    M2.header(meta, "index.html");
-    try {   // the intro's example, from this run's data
-      const ents = await M2.load("entities.json"), st = ents.filter((x) => x.sector === "naics_3311_2");
-      const by = Object.fromEntries(ents.map((x) => [x.id, x]));
-      const set = (id, v) => { if (v != null) document.getElementById(id).textContent = v; };
-      set("ex-tracked", st.filter((x) => x.kind === "tracked").length);
-      set("ex-tracked2", st.filter((x) => x.kind === "tracked").length);
-      set("ex-reps", st.filter((x) => x.kind === "representative").length);
-      set("ex-obs", by.op_acme_gary?.n_obs);
-      set("ex-rep-obs", by["rep__naics_3311_2__medium__midwest"]?.n_obs);
-      set("ex-est", by["rep__naics_3311_2__medium__midwest"]?.n_establishments);
-    } catch (e) { /* keep the written numbers */ }
-    const g = meta.time_grid, o = meta.observations;
-    document.getElementById("runinfo").innerHTML =
-      `Run: <span class="mono">${M2.esc(meta.run)}</span>, as of ${meta.as_of}. History: ${g.history_start} to ${g.last_observed}; forecast to ${g.forecast_end}.
-       Observations: ${o.attached.toLocaleString()} attached, ${o.unmatched} unmatched. Fit: ${M2.esc(meta.param_version)}, ${meta.fit_rounds} estimation rounds.
-       Band widening: ${Object.entries(meta.band_inflation || {}).map(([k, v]) => `${v}× ${M2.STATUS[k] || k}`).join(", ")}.`;
-    const asOf = meta.as_of.slice(0, 7);
-    const tiles = document.getElementById("tiles");
-    for (const s of meta.sectors) {
-      const d = await M2.load(`sectors/${s.code}.json`);
-      const rows = ["capacity", "output", "utilization", "backlog", "shipments"].filter((v) => d.series[v]).map((v) => {
-        const t = d.series[v].total, i = t.month.indexOf(asOf);
-        if (i < 0) return "";
-        const tr = t.truth ? t.truth[i] : null;
-        const unit = M2.isShare(v) ? "share" : "";
-        const inside = tr != null && tr >= t.q05[i] && tr <= t.q95[i];
-        const err = tr == null ? "" : M2.isShare(v) ? `${((t.q50[i] - tr) * 100).toFixed(1)} pt` : M2.pct(Math.log(t.q50[i] / tr));
-        return `<span>${M2.SHORT_VAR[v]}</span><span class="v">${M2.fmt(t.q50[i], unit)} <span class="muted">[${M2.fmt(t.q05[i], unit)}–${M2.fmt(t.q95[i], unit)}]</span></span>
-                <span class="v ${tr == null ? "" : inside ? "good" : "bad"}" title="truth ${M2.fmt(tr, unit)}">${err}</span>`;
-      }).join("");
-      const el = document.createElement("div");
-      el.className = "card";
-      el.innerHTML = `<div class="head"><h3><a href="sector.html?s=${s.code}">${M2.esc(s.short)}</a></h3><span class="chip">${s.template} · ${s.unit}</span></div>
-        <p class="desc">${M2.esc(s.label)}. Nowcast for ${asOf}. Last column: error of the median against the truth (green: truth inside the 90% band).</p>
-        <div class="kv">${rows}</div><div class="ch" style="margin-top:8px"></div>`;
-      tiles.appendChild(el);
-      const t = d.series.output.total, ou = d.variables.find((x) => x.variable === "output");
-      M2.chart(el.querySelector(".ch"), { bands: [{ ...t, label: "output" }], truth: t.truth ? { month: t.month, value: t.truth } : null,
-                                          status: t, unit: "", height: 150, yLabel: `Output (${ou ? ou.unit : s.unit})` });
-    }
-    document.getElementById("leg").innerHTML = M2.legend([["var(--accent)", "median"], ["var(--band)", "90% band"], ["var(--truth)", "truth", true],
-      ["var(--nowcast)", "nowcast"], ["var(--forecast)", "forecast"]]);
+    M2.header(await M2.load("meta.json"), "index.html");
   } catch (e) { M2.fail(e); }
 })();
 </script>
