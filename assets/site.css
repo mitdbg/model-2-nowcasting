@@ -69,6 +69,10 @@ svg.chart .gridline { stroke: var(--grid); }
 .tabs { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 12px; }
 .tabs button { font: inherit; font-size: 13px; padding: 3px 10px; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); color: var(--fg); cursor: pointer; }
 .tabs button.on { background: var(--accent); border-color: var(--accent); color: var(--panel); }
+.tabs a { font-size: 13px; padding: 3px 12px; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); color: var(--fg); }
+.tabs a:hover { text-decoration: none; border-color: var(--accent); }
+.tabs a.on { background: var(--accent); border-color: var(--accent); color: var(--panel); }
+.subtabs { margin: 0 0 16px; }
 .bar { position: relative; height: 16px; min-width: 160px; }
 .bar .pr { position: absolute; top: 5px; height: 6px; background: var(--grid); border-radius: 3px; }
 .bar .ft { position: absolute; top: 3px; height: 10px; background: var(--band); border: 1px solid var(--accent); border-radius: 3px; }
