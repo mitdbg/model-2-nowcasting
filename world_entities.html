@@ -3,9 +3,12 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Entities · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=331d157-1794415241">
+<link rel="stylesheet" href="assets/site.css?v=4a35157-1794415413">
 <style>
-  .every .side { max-height: calc(100vh - 330px); min-height: 360px; }
+  .every .side { height: calc(100vh - 330px); min-height: 420px; max-height: none; overflow: hidden;
+    display: flex; flex-direction: column; }
+  .every .side > * { flex: none; }
+  .every #list { flex: 1 1 0; min-height: 0; overflow-y: auto; border-top: 1px solid var(--line); padding-top: 4px; }
   .filters { display: grid; grid-template-columns: auto 1fr; gap: 4px 6px; margin: 8px 0 4px; font-size: 12px; color: var(--muted); }
   .filters label { display: contents; }
   .filters select { font-size: 12px; padding: 2px 4px; min-width: 0; }
@@ -23,7 +26,7 @@
   .vchip.static:hover { border-color: var(--line); }
   .every #detail { max-height: calc(100vh - 330px); min-height: 260px; overflow: auto; }
   #bysector td, #bysector th, #kinds td, #kinds th { padding-top: 3px; padding-bottom: 3px; }
-  @media (max-width: 760px) { .every .side, .every #detail { max-height: none; } }
+  @media (max-width: 760px) { .every #detail { max-height: none; } .every .side { height: 480px; } }
 </style>
 </head>
 <body>
@@ -66,7 +69,7 @@
   </div>
   </section>
 </main>
-<script src="assets/site.js?v=331d157-1794415241"></script>
+<script src="assets/site.js?v=4a35157-1794415413"></script>
 <script>
 (async () => {
   try {
@@ -102,7 +105,7 @@
     const member = {};
     gs.forEach((g) => g.members.forEach((m) => (member[m.id] ||= []).push({ g, m })));
     const KIND = (k) => M2.GROUPING_KINDS[k]?.[0] || k;
-    let sel = M2.param("e") || tracked[0].id;
+    let sel = ents.some((x) => x.id === M2.param("e")) ? M2.param("e") : tracked[0].id;
     // filters: every choice narrows the list; the grouping choices follow the chosen sector
     const F = { sector: "", kind: "", size: "", region: "", grouping: "", obs: "" };
     Object.keys(F).forEach((k) => { F[k] = M2.param(k) || ""; });   // filters can come in the address
