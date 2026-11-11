@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Current World · Model 2 (dev)</title>
+<link rel="stylesheet" href="assets/site.css?v=9aaa2f4-1794415721">
+<style>
+  .wkv { display: grid; grid-template-columns: 200px 1fr; gap: 6px 16px; max-width: 900px; font-size: 14px; }
+  .wkv .k { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; padding-top: 2px; }
+  .wid { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 15px; font-weight: 600; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Overview</h1>
+  <p class="sub" id="intro"></p>
+  <h2>This world</h2>
+  <div class="wkv" id="who"></div>
+  <h2>What it contains</h2>
+  <div class="wkv" id="what"></div>
+</main>
+<script src="assets/site.js?v=9aaa2f4-1794415721"></script>
+<script>
+(async () => {
+  try {
+    const [meta, w] = await Promise.all([M2.load("meta.json"), M2.load("world.json")]);
+    M2.header(meta, "world_overview.html");
+    const st = w.stats || {}, n = (v) => (v ?? 0).toLocaleString();
+    const synthetic = w.kind === "synthetic";
+    document.getElementById("intro").innerHTML = synthetic
+      ? `This world is <b>synthetic</b>. A simulation generated it from known parameters, using Model 2's own equations.
+         Every entity, company, observation and sector series in it is invented, although the sectors, sizes, regions,
+         data sources and reporting schedules imitate real ones. Because the simulation knows the true value of every
+         hidden quantity, runs on this world can be scored exactly. It exists to test the model, not to describe the
+         real economy.`
+      : `This world is <b>real</b>. Its entities, companies and observations come from public sources, and its sector
+         input comes from official statistics. No one knows the true value of the hidden quantities, so runs can be
+         scored only against what is published later.`;
+    const row = (k, v) => v == null || v === "" ? "" : `<span class="k">${k}</span><span>${v}</span>`;
+    const when = w.created_utc ? `${w.created_utc.slice(0, 10)} at ${w.created_utc.slice(11, 16)} UTC` : null;
+    document.getElementById("who").innerHTML = [
+      row("World", `<span class="wid">${M2.esc(w.id || "unnamed")}</span>`),
+      row("Kind", synthetic ? "synthetic (simulated, with a known truth)" : "real (no known truth)"),
+      row("Generator version", w.generator && M2.esc(w.generator)),
+      row("Random seed", w.seed != null ? `${w.seed} <span class="muted">(another seed draws another world under the same rules)</span>` : null),
+      row("Model variant", w.misspecification ? M2.esc(w.misspecification) : synthetic ? "the model's own equations" : null),
+      row("Created", when),
+      row("Code version", w.code_commit && `<span class="mono">${M2.esc(w.code_commit.slice(0, 7))}</span>`),
+      row("Run dates prepared", (w.as_of || []).join(", ")),
+    ].join("");
+    document.getElementById("what").innerHTML = [
+      row("Sectors", n(st.sectors)),
+      row("Entities", `${n(st.entities)}: ${n(st.tracked)} tracked and ${n(st.representative)} representative, covering
+        ${n(st.establishments)} establishments in all — <a href="world_entities.html">see them</a>`),
+      row("Companies and sites", `${n(st.companies)} companies, ${n(st.sites)} sites, ${n(st.ownership_links)} ownership links between companies`),
+      row("Observations", `${n(st.observations)} of ${n(st.observation_kinds)} kinds from ${n(st.sources)} sources, published
+        ${(st.first_published || "").slice(0, 7)} to ${(st.last_published || "").slice(0, 7)} — <a href="world_observations.html">see the kinds</a>`),
+      row("Sector input bundle", `${n(st.bundles)} deliveries, for ${(st.bundle_dates || []).join(", ")} — <a href="world_bundle.html">see the latest</a>`),
+      row(synthetic ? "Simulated months" : "Months covered", st.truth_from ? `${st.truth_from} to ${st.truth_to}` : null),
+    ].join("");
+  } catch (e) { M2.fail(e); }
+})();
+</script>
+</body>
+</html>

@@ -13,12 +13,12 @@ M2.param = (k) => new URLSearchParams(location.search).get(k);
 
 M2.esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
-M2.PAGES = [["index.html", "Overview"], ["world_entities.html", "Current World"], ["sector.html", "Sectors"], ["entity.html", "Entities"],
+M2.PAGES = [["index.html", "Overview"], ["world_overview.html", "Current World"], ["sector.html", "Sectors"], ["entity.html", "Entities"],
             ["groupings.html", "Groupings"], ["evidence.html", "Evidence"], ["accuracy.html", "Accuracy"],
             ["https://claude.ai/artifact/GbJQDmoHyttq2W6xiSyJ5w", "Development Dashboard"]];
 // Pages shown as sub-tabs under a top-level tab, chosen near the top of the page.
 M2.SUBPAGES = {"index.html": [["index.html", "Introduction"], ["howitworks.html", "How It Works"], ["datamodel.html", "Data Model"]],
-  "world_entities.html": [["world_entities.html", "Entities"], ["world_observations.html", "Observations"], ["world_bundle.html", "Sector input bundle"]]};
+  "world_overview.html": [["world_overview.html", "Overview"], ["world_entities.html", "Entities"], ["world_observations.html", "Observations"], ["world_bundle.html", "Sector input bundle"]]};
 
 // Grouping kinds (src/firm_model/registry/groupings.py): label, and how members are found.
 M2.GROUPING_KINDS = {
@@ -42,7 +42,7 @@ M2.header = (meta, page) => {
   }
   document.body.insertAdjacentHTML("afterbegin", `
     <header class="top"><div class="in"><a class="brand" href="index.html">Model 2</a><nav>${nav}</nav>
-    <span class="run" title="${M2.esc(meta.workspace)}">as of ${meta.as_of} · ${M2.esc(meta.param_version)} · ${meta.n_members} members</span></div></header>
+    </div></header>
     ${meta.synthetic ? `<div class="banner"><div class="in"><b>Synthetic world.</b> A simulation generates every observation here from a known truth, shown in <span style="color:var(--truth)">orange</span>. Development site.</div></div>` : ""}`);
   const sub = subs?.find((p) => p[0] === page)?.[1];
   document.title = `${sub && page !== top ? sub : M2.PAGES.find((p) => p[0] === top)?.[1] ?? "Model 2"} · Model 2 (dev)`;
