@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>How It Works · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=bba8147-1794411586">
-<link rel="stylesheet" href="assets/datamodel.css?v=bba8147-1794411586">
+<link rel="stylesheet" href="assets/site.css?v=75489ec-1794412081">
+<link rel="stylesheet" href="assets/datamodel.css?v=75489ec-1794412081">
 <style>
   .hiw-fig { margin: 16px 0 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px; overflow-x: auto; }
   .hiw-fig svg { display: block; width: 100%; min-width: 760px; height: auto; }
@@ -88,6 +88,14 @@
       <text x="318" y="362" class="q">give every quantity a 90% band</text>
       <path class="edge" d="M476 168V190" marker-end="url(#hiw-arrow)"/>
       <path class="edge" d="M476 264V286" marker-end="url(#hiw-arrow)"/>
+      <a href="datamodel.html?t=run_settings">
+        <rect x="670" y="96" width="184" height="84" rx="6" fill="var(--dm-8)" fill-opacity="0.2" stroke="var(--dm-8)"/>
+        <text x="682" y="118" class="n">Configuration</text>
+        <text x="682" y="138" class="q">settings, priors and series</text>
+        <text x="682" y="154" class="q">mappings that people</text>
+        <text x="682" y="170" class="q">choose</text>
+      </a>
+      <path class="edge" d="M762 180V228H648" marker-end="url(#hiw-arrow)"/>
       <a href="datamodel.html?t=sector_aggregates">
         <rect x="670" y="246" width="184" height="130" rx="6" fill="var(--dm-7)" fill-opacity="0.2" stroke="var(--dm-7)"/>
         <text x="682" y="268" class="n">Run outputs</text>
@@ -141,7 +149,8 @@
   <p>A run is self-contained and uses only what was known at its date T:</p>
   <ol>
     <li><b>Gather</b> the registry as recorded by T, the observations published by T, and the input bundle for T.</li>
-    <li><b>Fit the parameters</b> from the history up to T, once a quarter for each sector. Later runs in the same
+    <li><b>Fit the parameters</b> from the history up to T, once a quarter for each sector, starting from the
+    priors and settings in the configuration. Later runs in the same
     quarter reuse those parameters.</li>
     <li><b>Filter and forecast</b> with the parameters fixed: re-estimate the months before T (history), estimate month T
     (nowcast), and project 12 months ahead (forecast). Forecasts follow the sector drivers alone, since no
@@ -164,7 +173,7 @@
   it had run then, so its errors show how the model would have done in real time. The scores cover the last 12 months
   of history, the nowcast, and forecasts 3, 6 and 12 months ahead.</p>
 </main>
-<script src="assets/site.js?v=bba8147-1794411586"></script>
+<script src="assets/site.js?v=75489ec-1794412081"></script>
 <script>
 (async () => {
   try {

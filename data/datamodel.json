@@ -49,44 +49,58 @@
   {
    "id": "registry",
    "name": "Entity registry",
+   "color": 1,
    "description": "What exists and who owns what, on any date. Facts are never overwritten: a change adds a new version and closes the old one.",
    "note": "Every table here also has six history columns: valid_from and valid_to (when the fact was true; valid_to excluded), recorded_at and superseded_at (when it was learned and replaced), source and decided_by."
   },
   {
    "id": "obs",
    "name": "Observations",
+   "color": 2,
    "description": "Every published reading, one row per value, plus the catalog of reading types and the census counts.",
    "note": ""
   },
   {
    "id": "bundle",
    "name": "Sector input bundle",
+   "color": 3,
    "description": "Each sector's drivers and statistics as ensemble draws, delivered by an outside source once per run date and never changed afterwards.",
    "note": "Each delivery carries a manifest listing its tables with their schema versions, row counts and checksums."
   },
   {
    "id": "config",
-   "name": "Configuration and fits",
-   "description": "The settings that steer the model, and the parameters estimated for each sector and quarter.",
+   "name": "Configuration",
+   "color": 8,
+   "description": "The settings people choose to steer the model: run and estimation settings, observation noise and calibrations, sector settings, priors and series mappings.",
    "note": ""
+  },
+  {
+   "id": "fitting",
+   "name": "Parameter fitting",
+   "color": 4,
+   "description": "The parameters estimated for each sector and quarter, with a record of each fit.",
+   "note": "Estimated once a quarter for each sector; every run in that quarter reuses them."
   },
   {
    "id": "truth",
    "name": "Synthetic truth",
+   "color": 5,
    "description": "The true values behind a synthetic world: hidden states, parameters and drivers. Present only in synthetic worlds; the model never sees them.",
+   "note": ""
+  },
+  {
+   "id": "runs",
+   "name": "Run outputs",
+   "color": 7,
+   "description": "What each run produces for its run date. Tables marked published are delivered to users; the rest are kept for diagnosis.",
    "note": ""
   },
   {
    "id": "scores",
    "name": "Scores",
+   "color": 6,
    "description": "How close each run came: errors and band coverage for every scored value, a record of each backtest, and one summary per backtest.",
    "note": "In a synthetic world the scores compare runs with the synthetic truth; scoring a real world against later publications is not built yet."
-  },
-  {
-   "id": "runs",
-   "name": "Run outputs",
-   "description": "What each run produces for its run date. Tables marked published are delivered to users; the rest are kept for diagnosis.",
-   "note": ""
   }
  ],
  "tables": [
@@ -1232,7 +1246,7 @@
   {
    "id": "fit_runs",
    "name": "fit_runs",
-   "family": "config",
+   "family": "fitting",
    "location": "state/fits/fit_<YYYY>q<Q>__<sector>.json",
    "key": "(quarter, sector)",
    "description": "One estimation of one sector for one quarter: its date, the input delivery used, normalising constants, how the fit converged.",
@@ -1281,7 +1295,7 @@
   {
    "id": "sector_params",
    "name": "sector_params",
-   "family": "config",
+   "family": "fitting",
    "location": "state/fits/…npz",
    "key": "(quarter, sector, parameter)",
    "description": "Sector-shared parameters ψ̂ (27) and covariance; sector means μ_s, spread Σ_s, pooling strengths κ.",
@@ -1321,7 +1335,7 @@
   {
    "id": "entity_params",
    "name": "entity_params",
-   "family": "config",
+   "family": "fitting",
    "location": "state/fits/…npz",
    "key": "(quarter, entity, parameter)",
    "description": "θ̂ (23 per entity, on transformed scales) and its Laplace covariance V.",
@@ -1362,7 +1376,7 @@
   {
    "id": "group_params",
    "name": "group_params",
-   "family": "config",
+   "family": "fitting",
    "location": "state/fits/…npz",
    "key": "(quarter, group, parameter)",
    "description": "Group means μ_g.",
@@ -1398,7 +1412,7 @@
   {
    "id": "representative_scale",
    "name": "representative_scale",
-   "family": "config",
+   "family": "fitting",
    "location": "state/fits/…npz",
    "key": "(quarter, entity)",
    "description": "Variance of the starting level; the 2×2 covariance of scale and labor per unit.",
@@ -1625,124 +1639,6 @@
      "name": "constants",
      "type": "",
      "description": "centre demand and capacity"
-    }
-   ]
-  },
-  {
-   "id": "backtest_scores",
-   "name": "backtest_scores",
-   "family": "scores",
-   "location": "backtest_scores.csv",
-   "key": "(as_of, sector, variable, horizon, month)",
-   "description": "One row per scored value.",
-   "constraints": "",
-   "unclear": "Backtest records are kept in two places, linked only by the run's name as text.",
-   "columns": [
-    {
-     "name": "as_of",
-     "type": "date",
-     "description": "the run date scored",
-     "references": "run_meta",
-     "key": true
-    },
-    {
-     "name": "sector, variable",
-     "type": "",
-     "description": "",
-     "references": "sector_aggregates",
-     "key": true
-    },
-    {
-     "name": "horizon",
-     "type": "code",
-     "description": "smoothed_last12, nowcast, h+3, h+6, h+12",
-     "key": true
-    },
-    {
-     "name": "month",
-     "type": "month",
-     "description": "",
-     "key": true
-    },
-    {
-     "name": "abs_err",
-     "type": "float",
-     "description": "|log(median / truth)|, or absolute for fractions"
-    },
-    {
-     "name": "covered",
-     "type": "bool",
-     "description": "truth inside the published 90% band"
-    }
-   ]
-  },
-  {
-   "id": "backtest_source",
-   "name": "backtest_source",
-   "family": "scores",
-   "location": "source.json",
-   "key": "(one per backtest)",
-   "description": "Which model version ran, when it started, which run dates, which estimation settings.",
-   "constraints": "",
-   "unclear": "",
-   "columns": [
-    {
-     "name": "model version",
-     "type": "",
-     "description": ""
-    },
-    {
-     "name": "launch time",
-     "type": "timestamp",
-     "description": ""
-    },
-    {
-     "name": "run dates",
-     "type": "",
-     "description": ""
-    },
-    {
-     "name": "estimation settings",
-     "type": "",
-     "description": ""
-    }
-   ]
-  },
-  {
-   "id": "accuracy_checkpoints",
-   "name": "accuracy_checkpoints",
-   "family": "scores",
-   "location": "progress/accuracy.jsonl (code repository)",
-   "key": "(one per scored backtest)",
-   "description": "One summary per scored backtest: time, label, model version, run, mean error, coverage, error by sector.",
-   "constraints": "",
-   "unclear": "Backtest records are kept in two places, linked only by the run's name as text.",
-   "columns": [
-    {
-     "name": "time, label, model version",
-     "type": "",
-     "description": ""
-    },
-    {
-     "name": "run",
-     "type": "",
-     "description": "the run's name",
-     "references": "run_meta"
-    },
-    {
-     "name": "sectors, cells",
-     "type": "int",
-     "description": ""
-    },
-    {
-     "name": "mean error, coverage",
-     "type": "float",
-     "description": ""
-    },
-    {
-     "name": "error by sector",
-     "type": "",
-     "description": ""
     }
    ]
   },
@@ -2332,6 +2228,124 @@
      "type": "",
      "description": "",
      "references": "fit_runs"
+    }
+   ]
+  },
+  {
+   "id": "backtest_scores",
+   "name": "backtest_scores",
+   "family": "scores",
+   "location": "backtest_scores.csv",
+   "key": "(as_of, sector, variable, horizon, month)",
+   "description": "One row per scored value.",
+   "constraints": "",
+   "unclear": "Backtest records are kept in two places, linked only by the run's name as text.",
+   "columns": [
+    {
+     "name": "as_of",
+     "type": "date",
+     "description": "the run date scored",
+     "references": "run_meta",
+     "key": true
+    },
+    {
+     "name": "sector, variable",
+     "type": "",
+     "description": "",
+     "references": "sector_aggregates",
+     "key": true
+    },
+    {
+     "name": "horizon",
+     "type": "code",
+     "description": "smoothed_last12, nowcast, h+3, h+6, h+12",
+     "key": true
+    },
+    {
+     "name": "month",
+     "type": "month",
+     "description": "",
+     "key": true
+    },
+    {
+     "name": "abs_err",
+     "type": "float",
+     "description": "|log(median / truth)|, or absolute for fractions"
+    },
+    {
+     "name": "covered",
+     "type": "bool",
+     "description": "truth inside the published 90% band"
+    }
+   ]
+  },
+  {
+   "id": "backtest_source",
+   "name": "backtest_source",
+   "family": "scores",
+   "location": "source.json",
+   "key": "(one per backtest)",
+   "description": "Which model version ran, when it started, which run dates, which estimation settings.",
+   "constraints": "",
+   "unclear": "",
+   "columns": [
+    {
+     "name": "model version",
+     "type": "",
+     "description": ""
+    },
+    {
+     "name": "launch time",
+     "type": "timestamp",
+     "description": ""
+    },
+    {
+     "name": "run dates",
+     "type": "",
+     "description": ""
+    },
+    {
+     "name": "estimation settings",
+     "type": "",
+     "description": ""
+    }
+   ]
+  },
+  {
+   "id": "accuracy_checkpoints",
+   "name": "accuracy_checkpoints",
+   "family": "scores",
+   "location": "progress/accuracy.jsonl (code repository)",
+   "key": "(one per scored backtest)",
+   "description": "One summary per scored backtest: time, label, model version, run, mean error, coverage, error by sector.",
+   "constraints": "",
+   "unclear": "Backtest records are kept in two places, linked only by the run's name as text.",
+   "columns": [
+    {
+     "name": "time, label, model version",
+     "type": "",
+     "description": ""
+    },
+    {
+     "name": "run",
+     "type": "",
+     "description": "the run's name",
+     "references": "run_meta"
+    },
+    {
+     "name": "sectors, cells",
+     "type": "int",
+     "description": ""
+    },
+    {
+     "name": "mean error, coverage",
+     "type": "float",
+     "description": ""
+    },
+    {
+     "name": "error by sector",
+     "type": "",
+     "description": ""
     }
    ]
   }

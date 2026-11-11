@@ -61,7 +61,7 @@ const DataModel = (() => {
   };
 
   function render(root, model, opts = {}) {
-    const famIdx = new Map(model.families.map((f, i) => [f.id, i % 8 + 1]));
+    const famIdx = new Map(model.families.map((f, i) => [f.id, f.color >= 1 && f.color <= 8 ? f.color : i % 8 + 1]));
     const hue = (fid) => `var(--dm-${famIdx.get(fid)})`;
     const tables = new Map(model.tables.map((t) => [t.id, t]));
     const levels = new Map((model.enforcement_levels || []).map((l) => [l.id, l]));
