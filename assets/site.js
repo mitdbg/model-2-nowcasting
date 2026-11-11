@@ -13,7 +13,7 @@ M2.param = (k) => new URLSearchParams(location.search).get(k);
 
 M2.esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
-M2.PAGES = [["index.html", "Overview"], ["sector.html", "Sectors"], ["entity.html", "Entities"],
+M2.PAGES = [["index.html", "Overview"], ["howitworks.html", "How It Works"], ["sector.html", "Sectors"], ["entity.html", "Entities"],
             ["groupings.html", "Groupings"], ["evidence.html", "Evidence"], ["accuracy.html", "Accuracy"],
             ["datamodel.html", "Data Model"]];
 

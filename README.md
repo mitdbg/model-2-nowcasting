@@ -17,7 +17,7 @@ A Modal backtest pulled with `python scripts/modal_app.py pull RUN_ID WS` serves
 backtest (its runs export entity detail). Build with the model code that ran it, e.g.
 `PYTHONPATH=../model-2-compute/src python scripts/build_site_data.py WS`, so the observation types match.
 
-Then open http://127.0.0.1:8765/. Pages: `index.html` (overview), `sector.html?s=CODE`,
+Then open http://127.0.0.1:8765/. Pages: `index.html` (overview), `howitworks.html` (the three stages, a static page), `sector.html?s=CODE`,
 `entity.html?e=ID`, `evidence.html`, `accuracy.html`, `datamodel.html?t=TABLE` (the data model,
 drawn from `docs/datamodel.json` by `assets/datamodel.js`; edit that file and rebuild to change it). Not part of the Model 1 (KEYNES) site.
 

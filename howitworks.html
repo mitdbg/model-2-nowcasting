@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How It Works · Model 2 (dev)</title>
+<link rel="stylesheet" href="assets/site.css?v=0d9fa2e-1794410543">
+<link rel="stylesheet" href="assets/datamodel.css?v=0d9fa2e-1794410543">
+<style>
+  .hiw-fig { margin: 16px 0 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px; overflow-x: auto; }
+  .hiw-fig svg { display: block; width: 100%; min-width: 760px; height: auto; }
+  .hiw-fig text { fill: var(--fg); font-size: 11.5px; }
+  .hiw-fig .t { font-size: 14px; font-weight: 600; }
+  .hiw-fig .n { font-size: 13px; font-weight: 600; }
+  .hiw-fig .q { fill: var(--muted); }
+  .hiw-fig .frame { fill: none; stroke: var(--line); stroke-width: 1.25; }
+  .hiw-fig .edge { fill: none; stroke: var(--muted); stroke-width: 1.25; }
+  .hiw-fig a:hover rect { fill-opacity: 0.32; }
+  .hiw ol, .hiw ul { max-width: 90ch; padding-left: 22px; }
+  .hiw li { margin: 0 0 4px; }
+</style>
+</head>
+<body>
+<main class="hiw">
+  <h1>How It Works</h1>
+  <p class="sub">Model 2 works in three stages. First, choose a world: the entities, observations and sector
+  data the model can see. Second, run the model at a date T, using only what was known at T: estimate the
+  parameters, re-estimate the history, estimate month T and forecast the next 12 months. Third, score the
+  results: against the true values in a synthetic world, or against what is published later in the real
+  world. A backtest repeats the second and third stages at a series of past dates.</p>
+
+  <figure class="hiw-fig dm">
+    <svg viewBox="0 0 1140 484" role="img" aria-label="Choose a world, run at each date T using only what was known then, then score the outputs">
+      <defs><marker id="hiw-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--muted)"/></marker></defs>
+
+      <!-- backtest loop over stage 2 -->
+      <text x="570" y="16" text-anchor="middle" class="q">Backtest: repeat at a series of past dates, each run seeing only what was known then</text>
+      <path class="edge" d="M800 56V30H340V54" marker-end="url(#hiw-arrow)"/>
+
+      <!-- 1 · world -->
+      <rect class="frame" x="16" y="56" width="260" height="380" rx="10"/>
+      <text x="32" y="82" class="t">1 · Choose a world</text>
+      <a href="datamodel.html?t=entities">
+        <rect x="32" y="96" width="228" height="52" rx="6" fill="var(--dm-1)" fill-opacity="0.2" stroke="var(--dm-1)"/>
+        <text x="44" y="118" class="n">Entity registry</text>
+        <text x="44" y="136" class="q">what exists and who owns what, dated</text>
+      </a>
+      <a href="datamodel.html?t=observations">
+        <rect x="32" y="160" width="228" height="52" rx="6" fill="var(--dm-2)" fill-opacity="0.2" stroke="var(--dm-2)"/>
+        <text x="44" y="182" class="n">Observations</text>
+        <text x="44" y="200" class="q">published readings, each dated</text>
+      </a>
+      <a href="datamodel.html?t=drivers">
+        <rect x="32" y="224" width="228" height="68" rx="6" fill="var(--dm-3)" fill-opacity="0.2" stroke="var(--dm-3)"/>
+        <text x="44" y="246" class="n">Sector input bundle</text>
+        <text x="44" y="264" class="q">drivers and statistics as draws,</text>
+        <text x="44" y="280" class="q">one delivery per run date</text>
+      </a>
+      <a href="datamodel.html?t=truth_entity_states">
+        <rect x="32" y="340" width="228" height="68" rx="6" fill="var(--dm-5)" fill-opacity="0.12" stroke="var(--dm-5)" stroke-dasharray="5 3"/>
+        <text x="44" y="362" class="n">Truth</text>
+        <text x="44" y="380" class="q">true states and parameters;</text>
+        <text x="44" y="396" class="q">synthetic worlds only</text>
+      </a>
+
+      <!-- 2 · run at T -->
+      <rect class="frame" x="300" y="56" width="540" height="380" rx="10"/>
+      <text x="316" y="82" class="t">2 · Run at each date T</text>
+      <rect x="324" y="96" width="492" height="56" rx="6" fill="var(--accent)" fill-opacity="0.08" stroke="var(--accent)"/>
+      <text x="336" y="118" class="n">Gather what was known at T</text>
+      <text x="336" y="138" class="q">registry as recorded by T · observations published by T · bundle for T</text>
+      <a href="datamodel.html?t=fit_runs">
+        <rect x="324" y="184" width="492" height="56" rx="6" fill="var(--dm-4)" fill-opacity="0.2" stroke="var(--dm-4)"/>
+        <text x="336" y="206" class="n">Estimate parameters</text>
+        <text x="336" y="226" class="q">from history up to T, once a quarter per sector; later runs in the quarter reuse them</text>
+      </a>
+      <rect x="324" y="272" width="492" height="72" rx="6" fill="var(--accent)" fill-opacity="0.08" stroke="var(--accent)"/>
+      <text x="336" y="294" class="n">Filter and forecast</text>
+      <text x="336" y="314" class="q">re-estimate the history, estimate month T, forecast 12 months ahead;</text>
+      <text x="336" y="330" class="q">100 draws give every quantity a 90% band</text>
+      <path class="edge" d="M570 152V182" marker-end="url(#hiw-arrow)"/>
+      <path class="edge" d="M570 240V270" marker-end="url(#hiw-arrow)"/>
+      <text x="324" y="388" class="q">Parameters stay fixed within a run. The next run date sees the new</text>
+      <text x="324" y="404" class="q">observations and starts again; forecasts never use observations from after T.</text>
+
+      <!-- world → run -->
+      <path class="edge" d="M276 124H322" marker-end="url(#hiw-arrow)"/>
+
+      <!-- outputs and score -->
+      <a href="datamodel.html?t=sector_aggregates">
+        <rect x="864" y="96" width="260" height="116" rx="6" fill="var(--dm-6)" fill-opacity="0.2" stroke="var(--dm-6)"/>
+        <text x="876" y="120" class="n">Run outputs</text>
+        <text x="876" y="140" class="q">sector totals and entity states,</text>
+        <text x="876" y="156" class="q">every month</text>
+        <text x="876" y="176" class="q">history · nowcast · forecast,</text>
+        <text x="876" y="192" class="q">each with a 90% band</text>
+      </a>
+      <path class="edge" d="M816 308H842V154H862" marker-end="url(#hiw-arrow)"/>
+      <a href="datamodel.html?t=backtest_scores">
+        <rect x="864" y="260" width="260" height="124" rx="6" fill="var(--dm-5)" fill-opacity="0.2" stroke="var(--dm-5)"/>
+        <text x="876" y="284" class="t">3 · Score</text>
+        <text x="876" y="306" class="q">Synthetic world: against the</text>
+        <text x="876" y="322" class="q">true values</text>
+        <text x="876" y="346" class="q">Real world: against what is</text>
+        <text x="876" y="362" class="q">published later (not built yet)</text>
+      </a>
+      <path class="edge" d="M994 212V258" marker-end="url(#hiw-arrow)"/>
+
+      <!-- truth → score -->
+      <path class="edge" d="M146 408V456H994V386" marker-end="url(#hiw-arrow)" stroke-dasharray="5 3"/>
+      <text x="570" y="476" text-anchor="middle" class="q">the truth, for scoring only; the model never sees it</text>
+    </svg>
+  </figure>
+  <p class="sub">Click a box to see its tables in the <a href="datamodel.html">Data Model</a>.</p>
+
+  <h2>1 · Choose a world</h2>
+  <p>A world is everything the model can see:</p>
+  <ul>
+    <li><b>The entity registry</b> lists the entities, their sites, the companies that own or operate them, and the
+    groupings that observations are about. Every fact carries dates, so the set changes over time: an entity can be
+    planned, built, go idle or close, and a company can sell a plant. Each run uses the entities active on its date,
+    as the registry knew them then.</li>
+    <li><b>Observations</b> are published readings about an entity or a grouping, each with the date it became public.</li>
+    <li><b>The sector input bundle</b> arrives once per run date with each sector's drivers (demand, price, input
+    cost) and statistics, as ensemble draws.</li>
+  </ul>
+  <p>A <b>synthetic world</b> is generated from known parameters, so it comes with the true values of every hidden
+  state; the model never sees them. A <b>real world</b> is built from public sources and has no such truth. The
+  current synthetic world keeps the same entities throughout, with one change of ownership in 2019.</p>
+
+  <h2>2 · Run at each date T</h2>
+  <p>A run is self-contained and uses only what was known at its date T:</p>
+  <ol>
+    <li><b>Gather</b> the registry as recorded by T, the observations published by T, and the input bundle for T.</li>
+    <li><b>Estimate the parameters</b> from the history up to T, once a quarter for each sector. Later runs in the same
+    quarter reuse those parameters.</li>
+    <li><b>Filter and forecast</b> with the parameters fixed: re-estimate the months before T (history), estimate month T
+    (nowcast), and project 12 months ahead (forecast). Forecasts follow the sector drivers alone, since no
+    observations exist yet for those months. The ensemble of 100 draws gives every quantity a 90% band.</li>
+  </ol>
+  <p>The next run date sees the new observations and starts again, so the history, nowcast and forecast all move as
+  information arrives.</p>
+
+  <h2>3 · Score</h2>
+  <ul>
+    <li><b>In a synthetic world</b>, every output can be scored against the true values: sector totals, entity
+    states and the parameters themselves. The <a href="accuracy.html">Accuracy</a> tab shows these scores.</li>
+    <li><b>In the real world</b>, hidden states such as a plant's capacity or order book are never observed, so they
+    cannot be scored. Anything published later can be: a forecast of a sector statistic, a company filing or a
+    census count can be compared with the value once it appears. This scoring is not built yet.</li>
+  </ul>
+
+  <h2>Backtests</h2>
+  <p>A backtest repeats stages 2 and 3 at a series of past dates. Each run sees only what was known on its date, as if
+  it had run then, so its errors show how the model would have done in real time. The scores cover the last 12 months
+  of history, the nowcast, and forecasts 3, 6 and 12 months ahead.</p>
+</main>
+<script src="assets/site.js?v=0d9fa2e-1794410543"></script>
+<script>
+(async () => {
+  try {
+    M2.header(await M2.load("meta.json"), "howitworks.html");
+  } catch (e) {
+    document.querySelector("main").insertAdjacentHTML("afterbegin", `<p class="note">Could not load the site data: ${M2.esc(e.message)}</p>`);
+  }
+})();
+</script>
+</body>
+</html>
