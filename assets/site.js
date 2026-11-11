@@ -43,7 +43,7 @@ M2.header = (meta, page) => {
   document.body.insertAdjacentHTML("afterbegin", `
     <header class="top"><div class="in"><a class="brand" href="index.html">Model 2</a><nav>${nav}</nav>
     </div></header>
-    ${meta.synthetic ? `<div class="banner"><div class="in"><b>Synthetic world.</b> A simulation generates every observation here from a known truth, shown in <span style="color:var(--truth)">orange</span>. Development site.</div></div>` : ""}`);
+`);
   const sub = subs?.find((p) => p[0] === page)?.[1];
   document.title = `${sub && page !== top ? sub : M2.PAGES.find((p) => p[0] === top)?.[1] ?? "Model 2"} · Model 2 (dev)`;
 };
