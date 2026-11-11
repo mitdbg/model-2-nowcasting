@@ -14,7 +14,7 @@ M2.param = (k) => new URLSearchParams(location.search).get(k);
 M2.esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
 M2.PAGES = [["index.html", "Overview"], ["world_overview.html", "Current World"], ["sector.html", "Sectors"], ["entity.html", "Entities"],
-            ["groupings.html", "Groupings"], ["evidence.html", "Evidence"], ["accuracy.html", "Accuracy"],
+            ["groupings.html", "Groupings"], ["accuracy.html", "Accuracy"],
             ["https://claude.ai/artifact/GbJQDmoHyttq2W6xiSyJ5w", "Development Dashboard"]];
 // Pages shown as sub-tabs under a top-level tab, chosen near the top of the page.
 M2.SUBPAGES = {"index.html": [["index.html", "Introduction"], ["howitworks.html", "How It Works"], ["datamodel.html", "Data Model"]],
