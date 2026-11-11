@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Observations · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=e4c8199-1794416767">
+<link rel="stylesheet" href="assets/site.css?v=e8b1700-1794418327">
+<link rel="stylesheet" href="assets/datamodel.css?v=e8b1700-1794418327">
 <style>
   .spark { display: block; }
   .spark rect { fill: var(--accent); fill-opacity: 0.55; }
@@ -16,7 +17,17 @@
   .fcount { font-size: 12px; color: var(--muted); margin: 4px 0 0; display: flex; justify-content: space-between; gap: 6px; }
   .linkbtn { font: inherit; border: none; background: none; color: var(--accent); cursor: pointer; padding: 0; }
   .about { font-size: 12px; margin: 6px 0 0; padding: 4px 8px; border-radius: 6px; background: var(--band2); }
-  .tbl { height: calc(100vh - 300px); min-height: 440px; overflow: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); }
+  .mainc { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+  .plot { border: 1px solid var(--line); border-radius: 6px; background: var(--panel); padding: 6px 8px 4px; }
+  .plot svg { display: block; width: 100%; height: auto; }
+  .plot text { fill: var(--muted); font-size: 10px; }
+  .plot .grid { stroke: var(--grid); }
+  .plot .pt { cursor: pointer; }
+  .plot .pt:hover { stroke: var(--fg); stroke-width: 1.5; }
+  .plot .cap { font-size: 12px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 2px 12px; margin: 0 0 2px; }
+  .plot .cap i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 4px; vertical-align: -1px; }
+  .plot.mini { border: none; padding: 0; background: none; max-width: 760px; }
+  .tbl { height: calc(100vh - 560px); min-height: 300px; overflow: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); }
   .tbl table { font-size: 12.5px; }
   .tbl th { position: sticky; top: 0; background: var(--panel); z-index: 1; }
   .tbl tr.obs { cursor: pointer; }
@@ -53,7 +64,10 @@
       <div id="aboutent"></div>
       <div class="fcount"><span id="count"></span> <button type="button" id="clear" class="linkbtn">Clear</button></div>
     </aside>
-    <div class="tbl"><table id="rows"></table><div id="more"></div></div>
+    <div class="mainc dm">
+      <div class="plot" id="plot"></div>
+      <div class="tbl"><table id="rows"></table><div id="more"></div></div>
+    </div>
   </div>
   </section>
 
@@ -63,7 +77,7 @@
   kind of observation and which quantities no observation covers.</p>
   </section>
 </main>
-<script src="assets/site.js?v=e4c8199-1794416767"></script>
+<script src="assets/site.js?v=e8b1700-1794418327"></script>
 <script>
 (async () => {
   try {
@@ -144,7 +158,7 @@
       document.getElementById("count").textContent = `${shown.length.toLocaleString()} of ${N.toLocaleString()} observations`;
       document.getElementById("aboutent").innerHTML = F.entity ? `<div class="about">About <a href="world_entities.html?v=every&e=${encodeURIComponent(F.entity)}">${M2.esc(entName[F.entity] || F.entity)}</a>
         or a grouping it belongs to · <button type="button" class="linkbtn" id="dropent">remove</button></div>` : "";
-      drawRows();
+      drawRows(); drawPlot();
     };
     const subjLink = (s) => {
       if (!s || !s.id) return `<span class="muted">unresolved</span>`;
@@ -171,8 +185,75 @@
         ${row("Source", M2.esc(ob.sources[R.source[i]]))}
         ${row("Subject named by", `${ob.named_by[R.named[i]]}${R.ref[i] ? ` <span class="mono">${M2.esc(R.ref[i])}</span>` : ""}`)}
         ${R.sensor[i] ? row("Sensor", M2.esc(R.sensor[i])) : ""}
-      </div></td></tr>`;
+      </div>
+      <div class="plot mini">${(() => {
+        const same = []; for (let j = 0; j < N; j++) if (R.subject[j] === R.subject[i] && R.type[j] === R.type[i]) same.push(j);
+        return `<div class="cap"><span>Every ${M2.esc(label(t).toLowerCase())} reading about ${M2.esc(s?.name || "this subject")} (${same.length}); this one in orange</span></div>`
+          + series(same, { h: 150, hi: i, colors: 1, legend: false });
+      })()}</div></td></tr>`;
     };
+    // ---- charts: the values of the selected observations over time
+    const mIdx = (m) => +m.slice(0, 4) * 12 + (+m.slice(5, 7) - 1);
+    const COLORS = [1, 2, 3, 4, 5, 6, 7, 8].map((k) => `var(--dm-${k})`);
+    const series = (idx, o = {}) => {             // idx: observation indexes of one kind
+      const W = 900, H = o.h || 210, L = 58, Rm = 10, T = 8, B = 20;
+      const pts = idx.filter((i) => R.value[i] != null);
+      if (!pts.length) return `<p class="muted">No values to plot.</p>`;
+      const xs = pts.map((i) => mIdx(R.end[i])), vs = pts.map((i) => R.value[i]);
+      let x0 = Math.min(...xs), x1 = Math.max(...xs); if (x1 === x0) { x0 -= 6; x1 += 6; }
+      const pos = vs.every((v) => v > 0), lo0 = Math.min(...vs), hi0 = Math.max(...vs);
+      const log = pos && hi0 / lo0 > 100;
+      const f = log ? Math.log10 : (v) => v;
+      let lo = f(lo0), hi = f(hi0); const pad = (hi - lo) * 0.06 || Math.abs(hi) * 0.1 || 1; lo -= pad; hi += pad;
+      if (!log && lo0 >= 0 && lo < 0) lo = 0;      // no axis below zero for values that cannot be negative
+      const X = (m) => L + (m - x0) / (x1 - x0) * (W - L - Rm), Y = (v) => T + (1 - (f(v) - lo) / (hi - lo)) * (H - T - B);
+      const unit = unitOf[ob.types[R.type[pts[0]]]] === "share" ? "share" : "";
+      let g = "";
+      for (let k = 0; k <= 4; k++) {
+        const fv = lo + (hi - lo) * k / 4, v = log ? 10 ** fv : fv, y = T + (1 - k / 4) * (H - T - B);
+        g += `<line class="grid" x1="${L}" x2="${W - Rm}" y1="${y}" y2="${y}"/><text x="${L - 4}" y="${y + 3}" text-anchor="end">${M2.fmt(v, unit)}</text>`;
+      }
+      const ys0 = Math.floor(x0 / 12), ys1 = Math.floor(x1 / 12), every = Math.max(1, Math.ceil((ys1 - ys0) / 10));
+      for (let yy = ys0 + 1; yy <= ys1; yy++) if ((yy - ys0) % every === 0) g += `<text x="${X(yy * 12)}" y="${H - 5}" text-anchor="middle">${yy}</text>`;
+      // one line per subject: the most frequent subjects in colour, the rest grey
+      const bySub = new Map();
+      pts.forEach((i) => { const s = R.subject[i]; (bySub.get(s) || bySub.set(s, []).get(s)).push(i); });
+      const order = [...bySub.entries()].sort((a, b) => b[1].length - a[1].length);
+      const col = new Map(order.slice(0, o.colors ?? 8).map(([s], k) => [s, COLORS[k]]));
+      let lines = "", dots = "";
+      for (const [s, is] of [...order].reverse()) {
+        const c = col.get(s) || "var(--muted)", srt = [...is].sort((a, b) => mIdx(R.end[a]) - mIdx(R.end[b]));
+        if (srt.length > 1) lines += `<polyline fill="none" stroke="${c}" stroke-opacity="${col.has(s) ? 0.7 : 0.25}" stroke-width="1.2" points="${srt.map((i) => `${X(mIdx(R.end[i]))},${Y(R.value[i])}`).join(" ")}"/>`;
+        dots += srt.map((i) => `<circle class="pt" data-i="${i}" cx="${X(mIdx(R.end[i]))}" cy="${Y(R.value[i])}" r="${i === o.hi ? 5.5 : 2.6}"
+          fill="${i === o.hi ? "var(--truth)" : c}" fill-opacity="${col.has(s) || i === o.hi ? 0.9 : 0.4}"><title>${M2.esc(ob.subjects[s]?.name || "unresolved")} · ${period(i)}: ${fmtVal(i)}</title></circle>`).join("");
+      }
+      const cap = o.legend === false ? "" : `<div class="cap">${order.slice(0, o.colors ?? 8).map(([s], k) =>
+        `<span><i style="background:${COLORS[k]}"></i>${M2.esc(ob.subjects[s]?.name || "unresolved")}</span>`).join("")}${order.length > 8 ? `<span><i style="background:var(--muted)"></i>${order.length - 8} others</span>` : ""}${log ? `<span>log scale</span>` : ""}</div>`;
+      return `${cap}<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="values over time">${g}${lines}${dots}</svg>`;
+    };
+    const counts = (idx) => {                      // several kinds: readings per month
+      const W = 900, H = 150, L = 58, Rm = 10, T = 8, B = 20, c = new Map();
+      idx.forEach((i) => { const m = mIdx(R.published[i].slice(0, 7)); c.set(m, (c.get(m) || 0) + 1); });
+      if (!c.size) return "";
+      const ks = [...c.keys()], x0 = Math.min(...ks), x1 = Math.max(...ks) + 1, mx = Math.max(...c.values());
+      const X = (m) => L + (m - x0) / (x1 - x0) * (W - L - Rm), bw = Math.max(1, (W - L - Rm) / (x1 - x0) - 0.5);
+      let g = `<text x="${L - 4}" y="${T + 8}" text-anchor="end">${mx}</text><text x="${L - 4}" y="${H - B}" text-anchor="end">0</text>`;
+      for (let yy = Math.floor(x0 / 12) + 1; yy <= Math.floor(x1 / 12); yy += 2) g += `<text x="${X(yy * 12)}" y="${H - 5}" text-anchor="middle">${yy}</text>`;
+      g += [...c].map(([m, n]) => `<rect x="${X(m)}" width="${bw}" y="${T + (1 - n / mx) * (H - T - B)}" height="${n / mx * (H - T - B)}" fill="var(--accent)" fill-opacity="0.55"><title>${M2.idxMonth(m)}: ${n}</title></rect>`).join("");
+      return `<div class="cap"><span>${idx.length.toLocaleString()} readings by month published. Choose a <b>kind</b> to plot their values.</span></div><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="readings per month">${g}</svg>`;
+    };
+    const drawPlot = () => {
+      const kindsShown = new Set(shown.slice(0, 20000).map((i) => R.type[i]));
+      document.getElementById("plot").innerHTML = kindsShown.size === 1 ? series(shown.slice(0, 8000), { hi: openRow }) : counts(shown);
+    };
+    document.getElementById("plot").addEventListener("click", (e) => {
+      const c = e.target.closest(".pt");
+      if (!c) return;
+      const i = +c.dataset.i, k = shown.indexOf(i);
+      openRow = i; limit = Math.max(limit, k + 1); drawRows(); drawPlot();
+      document.querySelector("tr.obs.open")?.scrollIntoView({ block: "nearest" });
+    });
+
     const drawRows = () => {
       const xs = shown.slice(0, limit);
       document.getElementById("rows").innerHTML = `<tr><th>Published</th><th>Kind</th><th>About</th><th>Period</th><th class="n">Value</th><th>Source</th></tr>` +
@@ -192,7 +273,7 @@
       const tr = e.target.closest("tr.obs");
       if (!tr) return;
       openRow = +tr.dataset.i === openRow ? -1 : +tr.dataset.i;
-      drawRows();
+      drawRows(); drawPlot();
     });
     document.getElementById("more").addEventListener("click", (e) => { if (e.target.id === "morebtn") { limit += 300; drawRows(); } });
     document.getElementById("filters").addEventListener("change", (e) => { const f = e.target.dataset.f; if (f) { F[f] = e.target.value; apply(); url(); } });
@@ -215,7 +296,7 @@
     const want = M2.param("open");                       // ?open=<observation id> opens that observation
     if (want) {
       const i = R.id.indexOf(want), k = shown.indexOf(i);
-      if (k >= 0) { openRow = i; limit = Math.max(limit, k + 1); drawRows(); document.querySelector("tr.obs.open")?.scrollIntoView({ block: "nearest" }); }
+      if (k >= 0) { openRow = i; limit = Math.max(limit, k + 1); drawRows(); drawPlot(); document.querySelector("tr.obs.open")?.scrollIntoView({ block: "nearest" }); }
     }
   } catch (e) { M2.fail(e); }
 })();
