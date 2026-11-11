@@ -38,7 +38,7 @@ M2.header = (meta, page) => {
       + subs.map(([h, l]) => `<a href="${h}" class="${h === page ? "on" : ""}"${h === page ? ' aria-current="page"' : ""}>${l}</a>`).join("") + "</nav>");
   }
   document.body.insertAdjacentHTML("afterbegin", `
-    <header class="top"><div class="in"><span class="brand">Model 2 · firm states</span><nav>${nav}</nav>
+    <header class="top"><div class="in"><a class="brand" href="index.html">Model 2</a><nav>${nav}</nav>
     <span class="run" title="${M2.esc(meta.workspace)}">as of ${meta.as_of} · ${M2.esc(meta.param_version)} · ${meta.n_members} members</span></div></header>
     ${meta.synthetic ? `<div class="banner"><div class="in"><b>Synthetic world.</b> A simulation generates every observation here from a known truth, shown in <span style="color:var(--truth)">orange</span>. Development site.</div></div>` : ""}`);
   const sub = subs?.find((p) => p[0] === page)?.[1];

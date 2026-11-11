@@ -21,7 +21,7 @@ Then open http://127.0.0.1:8765/. Pages: under the Overview tab, as sub-tabs (`M
 `index.html` (introduction), `howitworks.html` (the three stages, a static page) and `datamodel.html` (below); `sector.html?s=CODE`,
 `entity.html?e=ID`, `evidence.html`, `accuracy.html`.
 `datamodel.html?t=TABLE` is the data model,
-drawn from `docs/datamodel.json` by `assets/datamodel.js`; edit that file and rebuild to change it). Not part of the Model 1 (KEYNES) site.
+drawn from `docs/datamodel.json` by `assets/datamodel.js`; edit that file and rebuild to change it. Not part of the Model 1 (KEYNES) site.
 
 `scripts/deploy_site.sh` pushes `site/` with its data to the private repository
 `mitdbg/model-2-nowcasting`, which serves it with GitHub Pages so it can be viewed from other
