@@ -14,7 +14,8 @@ M2.param = (k) => new URLSearchParams(location.search).get(k);
 M2.esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
 M2.PAGES = [["index.html", "Overview"], ["sector.html", "Sectors"], ["entity.html", "Entities"],
-            ["groupings.html", "Groupings"], ["evidence.html", "Evidence"], ["accuracy.html", "Accuracy"]];
+            ["groupings.html", "Groupings"], ["evidence.html", "Evidence"], ["accuracy.html", "Accuracy"],
+            ["https://claude.ai/artifact/GbJQDmoHyttq2W6xiSyJ5w", "Development Dashboard"]];
 // Pages shown as sub-tabs under a top-level tab, chosen near the top of the page.
 M2.SUBPAGES = {"index.html": [["index.html", "Introduction"], ["howitworks.html", "How It Works"], ["datamodel.html", "Data Model"]]};
 
@@ -31,7 +32,8 @@ M2.GROUPING_KINDS = {
 
 M2.header = (meta, page) => {
   const top = Object.keys(M2.SUBPAGES).find((t) => M2.SUBPAGES[t].some(([h]) => h === page)) || page;
-  const nav = M2.PAGES.map(([h, l]) => `<a href="${h}" class="${h === top ? "on" : ""}">${l}</a>`).join("");
+  // a tab that leaves the site (the development dashboard) opens in a new browser tab
+  const nav = M2.PAGES.map(([h, l]) => `<a href="${h}" class="${h === top ? "on" : ""}"${/^https?:/.test(h) ? ' target="_blank" rel="noopener"' : ""}>${l}</a>`).join("");
   const subs = M2.SUBPAGES[top];
   if (subs) {
     document.querySelector("main").insertAdjacentHTML("afterbegin", `<nav class="tabs subtabs" aria-label="${M2.esc(M2.PAGES.find((p) => p[0] === top)?.[1])}">`
