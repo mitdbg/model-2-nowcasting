@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Entities · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=c8142e4-1794419606">
+<link rel="stylesheet" href="assets/site.css?v=0a1bb15-1794420034">
 <style>
   .every .side { height: calc(100vh - 330px); min-height: 420px; max-height: none; overflow: hidden;
     display: flex; flex-direction: column; }
@@ -69,7 +69,7 @@
   </div>
   </section>
 </main>
-<script src="assets/site.js?v=c8142e4-1794419606"></script>
+<script src="assets/site.js?v=0a1bb15-1794420034"></script>
 <script>
 (async () => {
   try {
@@ -141,13 +141,18 @@
     const renderList = () => {
       const shown = ents.filter(keep);
       document.getElementById("count").textContent = `${shown.length} of ${ents.length} entities`;
-      document.getElementById("list").innerHTML = meta.sectors.map((s) => {
-        const xs = shown.filter((e) => e.sector === s.code)
-          .sort((a, b) => (a.kind === b.kind ? a.name.localeCompare(b.name) : a.kind === "tracked" ? -1 : 1));
-        return xs.length ? `<div class="grp">${M2.esc(s.short)}</div>` + xs.map((e) =>
-          `<a href="?v=every&e=${encodeURIComponent(e.id)}" data-e="${M2.esc(e.id)}" class="${e.id === sel ? "on" : ""}">${M2.esc(e.name)}</a>`).join("") : "";
-      }).join("");
+      // in display order: by sector, tracked before representative, then by name
+      const groups = meta.sectors.map((s) => [s, shown.filter((e) => e.sector === s.code)
+        .sort((a, b) => (a.kind === b.kind ? a.name.localeCompare(b.name) : a.kind === "tracked" ? -1 : 1))]);
+      const ordered = groups.flatMap(([, xs]) => xs);
+      // the selection always comes from the list as filtered: if the filters leave it out, take the first shown
+      const moved = ordered.length > 0 && !ordered.some((e) => e.id === sel);
+      if (moved) sel = ordered[0].id;
+      document.getElementById("list").innerHTML = groups.map(([s, xs]) => xs.length ? `<div class="grp">${M2.esc(s.short)}</div>` + xs.map((e) =>
+        `<a href="?v=every&e=${encodeURIComponent(e.id)}" data-e="${M2.esc(e.id)}" class="${e.id === sel ? "on" : ""}">${M2.esc(e.name)}</a>`).join("") : "").join("");
       document.querySelector("#list a.on")?.scrollIntoView({ block: "nearest" });
+      if (!ordered.length) document.getElementById("detail").innerHTML = `<p class="muted">No entity matches these filters.</p>`;
+      else if (moved) { renderDetail(); url(); }
     };
     // the selected entity, in the filters' order; every value applies that filter to the list
     const counts = {};
