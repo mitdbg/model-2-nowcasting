@@ -72,9 +72,15 @@
   },
   {
    "id": "truth",
-   "name": "Synthetic truth and scores",
-   "description": "The known true values of a synthetic world, and the backtest scores against them.",
+   "name": "Synthetic truth",
+   "description": "The true values behind a synthetic world: hidden states, parameters and drivers. Present only in synthetic worlds; the model never sees them.",
    "note": ""
+  },
+  {
+   "id": "scores",
+   "name": "Scores",
+   "description": "How close each run came: errors and band coverage for every scored value, a record of each backtest, and one summary per backtest.",
+   "note": "In a synthetic world the scores compare runs with the synthetic truth; scoring a real world against later publications is not built yet."
   },
   {
    "id": "runs",
@@ -1625,7 +1631,7 @@
   {
    "id": "backtest_scores",
    "name": "backtest_scores",
-   "family": "truth",
+   "family": "scores",
    "location": "backtest_scores.csv",
    "key": "(as_of, sector, variable, horizon, month)",
    "description": "One row per scored value.",
@@ -1673,7 +1679,7 @@
   {
    "id": "backtest_source",
    "name": "backtest_source",
-   "family": "truth",
+   "family": "scores",
    "location": "source.json",
    "key": "(one per backtest)",
    "description": "Which model version ran, when it started, which run dates, which estimation settings.",
@@ -1705,7 +1711,7 @@
   {
    "id": "accuracy_checkpoints",
    "name": "accuracy_checkpoints",
-   "family": "truth",
+   "family": "scores",
    "location": "progress/accuracy.jsonl (code repository)",
    "key": "(one per scored backtest)",
    "description": "One summary per scored backtest: time, label, model version, run, mean error, coverage, error by sector.",

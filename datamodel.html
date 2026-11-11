@@ -3,23 +3,23 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Data Model · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=ee6550e-1794411259">
-<link rel="stylesheet" href="assets/datamodel.css?v=ee6550e-1794411259">
+<link rel="stylesheet" href="assets/site.css?v=bba8147-1794411586">
+<link rel="stylesheet" href="assets/datamodel.css?v=bba8147-1794411586">
 </head>
 <body>
 <main>
   <h1>Data Model</h1>
-  <p class="sub">Model 2 works with six families of related tables. The entity registry records what exists
+  <p class="sub">Model 2 works with seven families of related tables. The entity registry records what exists
   and who owns what on any date. Observations are the published readings the model learns from, each about
   an entity or a grouping. The sector input bundle supplies each sector's drivers and statistics as ensemble
   draws. Settings and fitted parameters steer the model, and each run produces sector totals, entity states
-  and diagnostics for its run date. In a synthetic world, the true values and backtest scores sit beside
-  them. Click a table to see its columns, its key and how it joins to the others; the notes in amber say
-  where a rule is not checked or the meaning is unclear.</p>
+  and diagnostics for its run date. Synthetic truth holds the true values behind a synthetic world and exists
+  only there; scores record how close each run came. Click a table to see its columns, its key and how it
+  joins to the others; the notes in amber say where a rule is not checked or the meaning is unclear.</p>
   <div id="explorer"></div>
 </main>
-<script src="assets/site.js?v=ee6550e-1794411259"></script>
-<script src="assets/datamodel.js?v=ee6550e-1794411259"></script>
+<script src="assets/site.js?v=bba8147-1794411586"></script>
+<script src="assets/datamodel.js?v=bba8147-1794411586"></script>
 <script>
 (async () => {
   try {
