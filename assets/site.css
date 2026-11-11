@@ -27,7 +27,8 @@ header.top .brand:hover { text-decoration: none; }
 header.top nav { display: flex; flex-wrap: wrap; gap: 4px 16px; }
 header.top nav a { color: var(--muted); }
 header.top nav a.on { color: var(--fg); font-weight: 600; }
-header.top .run { margin-left: auto; color: var(--muted); font-size: 12px; font-family: "IBM Plex Mono", ui-monospace, monospace; }
+header.top .run { margin-left: auto; color: var(--muted); font-size: 12px; font-family: "IBM Plex Mono", "Courier New", Courier, ui-monospace, monospace; }
+header.top a.run:hover { color: var(--fg); text-decoration: none; }
 .banner { background: var(--nowcast); border-bottom: 1px solid var(--line); }
 .banner .in { max-width: 1280px; margin: 0 auto; padding: 6px max(16px, env(safe-area-inset-left)); font-size: 13px; }
 main { max-width: 1280px; margin: 0 auto; padding: 20px max(16px, env(safe-area-inset-left)) 60px; }

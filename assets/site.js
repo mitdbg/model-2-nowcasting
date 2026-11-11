@@ -42,8 +42,16 @@ M2.header = (meta, page) => {
   }
   document.body.insertAdjacentHTML("afterbegin", `
     <header class="top"><div class="in"><a class="brand" href="index.html">Model 2</a><nav>${nav}</nav>
-    </div></header>
+    <a class="run" id="worldtag" href="world_overview.html" hidden></a></div></header>
 `);
+  // which world the site shows, top right
+  M2.load("world.json").then((w) => {
+    const a = document.getElementById("worldtag");
+    if (!a || !w.id) return;
+    a.textContent = `World ${w.id} (${w.kind === "synthetic" ? "synthetic" : "real"})`;
+    a.title = "About this world";
+    a.hidden = false;
+  }).catch(() => {});
   const sub = subs?.find((p) => p[0] === page)?.[1];
   document.title = `${sub && page !== top ? sub : M2.PAGES.find((p) => p[0] === top)?.[1] ?? "Model 2"} · Model 2 (dev)`;
 };
