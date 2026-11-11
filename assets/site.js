@@ -14,7 +14,8 @@ M2.param = (k) => new URLSearchParams(location.search).get(k);
 M2.esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
 M2.PAGES = [["index.html", "Overview"], ["sector.html", "Sectors"], ["entity.html", "Entities"],
-            ["groupings.html", "Groupings"], ["evidence.html", "Evidence"], ["accuracy.html", "Accuracy"]];
+            ["groupings.html", "Groupings"], ["evidence.html", "Evidence"], ["accuracy.html", "Accuracy"],
+            ["datamodel.html", "Data Model"]];
 
 // Grouping kinds (src/firm_model/registry/groupings.py): label, and how members are found.
 M2.GROUPING_KINDS = {

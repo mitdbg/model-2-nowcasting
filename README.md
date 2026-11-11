@@ -18,7 +18,8 @@ backtest (its runs export entity detail). Build with the model code that ran it,
 `PYTHONPATH=../model-2-compute/src python scripts/build_site_data.py WS`, so the observation types match.
 
 Then open http://127.0.0.1:8765/. Pages: `index.html` (overview), `sector.html?s=CODE`,
-`entity.html?e=ID`, `evidence.html`, `accuracy.html`. Not part of the Model 1 (KEYNES) site.
+`entity.html?e=ID`, `evidence.html`, `accuracy.html`, `datamodel.html?t=TABLE` (the data model,
+drawn from `docs/datamodel.json` by `assets/datamodel.js`; edit that file and rebuild to change it). Not part of the Model 1 (KEYNES) site.
 
 `scripts/deploy_site.sh` pushes `site/` with its data to the private repository
 `mitdbg/model-2-nowcasting`, which serves it with GitHub Pages so it can be viewed from other
