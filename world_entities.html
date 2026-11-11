@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Entities · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=badf937-1794415028">
+<link rel="stylesheet" href="assets/site.css?v=331d157-1794415241">
 <style>
   .every .side { max-height: calc(100vh - 330px); min-height: 360px; }
   .filters { display: grid; grid-template-columns: auto 1fr; gap: 4px 6px; margin: 8px 0 4px; font-size: 12px; color: var(--muted); }
@@ -11,6 +11,16 @@
   .filters select { font-size: 12px; padding: 2px 4px; min-width: 0; }
   .fcount { font-size: 12px; color: var(--muted); margin: 2px 0 6px; display: flex; justify-content: space-between; }
   .linkbtn { font: inherit; border: none; background: none; color: var(--accent); cursor: pointer; padding: 0; }
+  .dkv { display: grid; grid-template-columns: 120px 1fr; gap: 8px 14px; align-items: baseline; max-width: 820px; }
+  .dk { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .dv { min-width: 0; }
+  .gk { display: grid; grid-template-columns: 90px 1fr; gap: 6px 10px; align-items: baseline; }
+  .chips { display: flex; flex-wrap: wrap; gap: 4px 6px; }
+  .vchip { font: inherit; font-size: 13px; padding: 1px 9px; border: 1px solid var(--line); border-radius: 12px;
+    background: var(--panel); color: var(--fg); cursor: pointer; }
+  .vchip:hover { border-color: var(--accent); }
+  .vchip.static { cursor: default; }
+  .vchip.static:hover { border-color: var(--line); }
   .every #detail { max-height: calc(100vh - 330px); min-height: 260px; overflow: auto; }
   #bysector td, #bysector th, #kinds td, #kinds th { padding-top: 3px; padding-bottom: 3px; }
   @media (max-width: 760px) { .every .side, .every #detail { max-height: none; } }
@@ -56,7 +66,7 @@
   </div>
   </section>
 </main>
-<script src="assets/site.js?v=badf937-1794415028"></script>
+<script src="assets/site.js?v=331d157-1794415241"></script>
 <script>
 (async () => {
   try {
@@ -134,26 +144,59 @@
         return xs.length ? `<div class="grp">${M2.esc(s.short)}</div>` + xs.map((e) =>
           `<a href="?v=every&e=${encodeURIComponent(e.id)}" data-e="${M2.esc(e.id)}" class="${e.id === sel ? "on" : ""}">${M2.esc(e.name)}</a>`).join("") : "";
       }).join("");
+      document.querySelector("#list a.on")?.scrollIntoView({ block: "nearest" });
     };
-    const renderDetail = () => {
-      const e = ents.find((x) => x.id === sel) || tracked[0], s = sec[e.sector] || {};
-      const ms = (member[e.id] || []).sort((a, b) => a.g.kind.localeCompare(b.g.kind) || a.g.name.localeCompare(b.g.name));
-      const types = (e.obs_types || []).map((t) => M2.OBS[t]?.[0] || t);
-      document.getElementById("detail").innerHTML = `
-        <h3 style="font-size:18px;margin:0 0 6px">${M2.esc(e.name)}</h3>
-        <p><span class="chip">${e.kind}</span> <span class="chip">${M2.esc(s.short)}</span> <span class="chip">${e.size}</span>
-          <span class="chip">${e.region}</span></p>
-        <div class="kv" style="grid-template-columns:auto 1fr;max-width:640px">
-          ${e.operator ? `<span class="muted">Run by</span><span>${M2.esc(e.operator)}</span>` : ""}
-          <span class="muted">Establishments</span><span>${(e.n_establishments || 1).toLocaleString()}${e.kind === "representative" ? " (all those in its census cell without a tracked entity)" : ""}</span>
-          <span class="muted">Observations</span><span>${(e.n_obs || 0).toLocaleString()} about it or a grouping it belongs to${types.length ? ": " + types.map(M2.esc).join(", ") : ""}</span>
-        </div>
-        <h3 style="margin:16px 0 4px">Groupings it belongs to</h3>
-        <div class="tablewrap"><table><tr><th>Kind</th><th>Grouping</th><th class="n">Weight</th><th>From</th><th>To</th></tr>
-          ${ms.map(({ g, m }) => `<tr><td>${KIND(g.kind)}</td><td><a href="groupings.html?g=${encodeURIComponent(g.id)}&k=${g.kind}">${M2.esc(g.name)}</a></td>
-            <td class="n">${m.weight != null ? (+m.weight).toFixed(2) : ""}</td><td>${m.first || ""}</td><td>${m.last || ""}</td></tr>`).join("")
-            || `<tr><td colspan="5" class="muted">none</td></tr>`}</table></div>`;
+    // the selected entity, in the filters' order; every value applies that filter to the list
+    const counts = {};
+    const filterTo = (k, v) => { Object.keys(F).forEach((x) => { F[x] = ""; }); document.getElementById("q").value = ""; F[k] = v; fillOptions(); renderList(); url(); };
+    const vbtn = (k, v, label, extra = "") => `<button type="button" class="vchip" data-k="${k}" data-v="${M2.esc(v)}"${extra}>${label}</button>`;
+    const renderDetail = async () => {
+      const e = ents.find((x) => x.id === sel) || tracked[0], s = sec[e.sector] || {}, id = e.id;
+      const ms = member[e.id] || [];
+      const byKind = ["company", "segment", "site", "census_cell", "sector", "region", "custom"].map((k) => [k, ms.filter((x) => x.g.kind === k)]).filter(([, xs]) => xs.length);
+      const company = gs.find((g) => g.kind === "company" && g.name === e.operator);
+      const kindNote = e.kind === "tracked" ? "a specific site or network with observations of its own"
+        : `stands for ${(e.n_establishments || 0).toLocaleString()} establishments in its sector, size class and region`;
+      const row = (k, v) => `<span class="dk">${k}</span><span class="dv">${v}</span>`;
+      const obsRow = () => {
+        const c = counts[id], types = e.obs_types || [];
+        const n = (t) => (c ? c[t] || 0 : null);
+        const xs = types.map((t) => [t, M2.OBS[t]?.[0] || t, n(t)]).sort((a, b) => (b[2] ?? 0) - (a[2] ?? 0) || a[1].localeCompare(b[1]));
+        return `<div class="muted" style="margin-bottom:4px">${(e.n_obs || 0).toLocaleString()} in total, ${types.length} kinds;
+          <a href="world_observations.html">about each kind</a></div>
+          <div class="chips">${xs.map(([t, l, k]) => vbtn("obs", t, `${M2.esc(l)}${k != null ? ` <span class="muted">${k}</span>` : ""}`)).join("") || '<span class="muted">none</span>'}</div>`;
+      };
+      const draw = () => {
+        if (id !== sel) return;
+        document.getElementById("detail").innerHTML = `
+          <h3 style="font-size:18px;margin:0 0 10px">${M2.esc(e.name)}</h3>
+          <div class="dkv">
+            ${row("Sector", `${vbtn("sector", e.sector, M2.esc(s.short))} <span class="muted">${M2.esc(s.label)}</span>`)}
+            ${row("Kind", `${vbtn("kind", e.kind, e.kind)} <span class="muted">${kindNote}</span>`)}
+            ${row("Size", vbtn("size", e.size, e.size))}
+            ${row("Region", vbtn("region", e.region, e.region))}
+            ${e.operator ? row("Run by", company ? vbtn("grouping", company.id, M2.esc(e.operator)) : M2.esc(e.operator)) : ""}
+            ${row("Establishments", (e.n_establishments || 1).toLocaleString())}
+            ${row("Groupings", `<div class="gk">${byKind.map(([k, xs]) => `<span class="muted">${KIND(k)}</span><div class="chips">${xs.map(({ g, m }) =>
+                ["company", "segment", "site", "census_cell"].includes(k)
+                  ? vbtn("grouping", g.id, `${M2.esc(g.name)}${m.weight != null && +m.weight !== 1 ? ` <span class="muted">× ${(+m.weight).toFixed(2)}</span>` : ""}`, ` title="${m.first || ""} to ${m.last || ""}"`)
+                  : `<span class="vchip static">${M2.esc(g.name)}</span>`).join("")}</div>`).join("")}</div>`)}
+            ${row("Observations", obsRow())}
+          </div>`;
+      };
+      draw();
+      if (!counts[id]) {
+        try {
+          const d = await M2.load(`entities/${encodeURIComponent(id)}.json`);
+          counts[id] = Object.fromEntries(Object.entries(d.observations || {}).map(([t, o]) => [t, (o.month || []).length]));
+        } catch (err) { counts[id] = {}; }
+        draw();
+      }
     };
+    document.getElementById("detail").addEventListener("click", (ev) => {
+      const b = ev.target.closest("button.vchip[data-k]");
+      if (b) filterTo(b.dataset.k, b.dataset.v);
+    });
     const VIEWS = ["sector", "groupings", "every"];
     let view = VIEWS.includes(M2.param("v")) ? M2.param("v") : M2.param("e") ? "every" : "sector";
     const url = () => {
