@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>How It Works · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=0d9fa2e-1794410543">
-<link rel="stylesheet" href="assets/datamodel.css?v=0d9fa2e-1794410543">
+<link rel="stylesheet" href="assets/site.css?v=ee6550e-1794411259">
+<link rel="stylesheet" href="assets/datamodel.css?v=ee6550e-1794411259">
 <style>
   .hiw-fig { margin: 16px 0 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px; overflow-x: auto; }
   .hiw-fig svg { display: block; width: 100%; min-width: 760px; height: auto; }
@@ -17,96 +17,106 @@
   .hiw-fig a:hover rect { fill-opacity: 0.32; }
   .hiw ol, .hiw ul { max-width: 90ch; padding-left: 22px; }
   .hiw li { margin: 0 0 4px; }
+  .hiw .sub p { margin: 0 0 4px; }
+  .hiw .sub ol { margin: 0; }
 </style>
 </head>
 <body>
 <main class="hiw">
   <h1>How It Works</h1>
-  <p class="sub">Model 2 works in three stages. First, choose a world: the entities, observations and sector
-  data the model can see. Second, run the model at a date T, using only what was known at T: estimate the
-  parameters, re-estimate the history, estimate month T and forecast the next 12 months. Third, score the
-  results: against the true values in a synthetic world, or against what is published later in the real
-  world. A backtest repeats the second and third stages at a series of past dates.</p>
-
+  <div class="sub">
+    <p>Model 2 works in three stages:</p>
+    <ol>
+      <li><b>Choose a world</b>, either a version of the real world or a wholly-synthetic one.</li>
+      <li><b>Run the world forward</b>, both running forecasts and fitting parameters to past data.</li>
+      <li><b>Score the results</b> as best it can. When the world is synthetic, more detailed scores are possible.</li>
+    </ol>
+  </div>
   <figure class="hiw-fig dm">
-    <svg viewBox="0 0 1140 484" role="img" aria-label="Choose a world, run at each date T using only what was known then, then score the outputs">
+    <svg viewBox="0 0 1140 484" role="img" aria-label="Choose a world, run the world forward at each date T using only what was known then, then score the results">
       <defs><marker id="hiw-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--muted)"/></marker></defs>
 
-      <!-- backtest loop over stage 2 -->
-      <text x="570" y="16" text-anchor="middle" class="q">Backtest: repeat at a series of past dates, each run seeing only what was known then</text>
-      <path class="edge" d="M800 56V30H340V54" marker-end="url(#hiw-arrow)"/>
+      <!-- backtest loop over stages 2 and 3 -->
+      <text x="700" y="16" text-anchor="middle" class="q">Backtest: repeat stages 2 and 3 at a series of past dates, each run seeing only what was known then</text>
+      <path class="edge" d="M1009 56V30H330V54" marker-end="url(#hiw-arrow)"/>
 
-      <!-- 1 · world -->
-      <rect class="frame" x="16" y="56" width="260" height="380" rx="10"/>
+      <!-- 1 · choose a world -->
+      <rect class="frame" x="16" y="56" width="250" height="380" rx="10"/>
       <text x="32" y="82" class="t">1 · Choose a world</text>
       <a href="datamodel.html?t=entities">
-        <rect x="32" y="96" width="228" height="52" rx="6" fill="var(--dm-1)" fill-opacity="0.2" stroke="var(--dm-1)"/>
+        <rect x="32" y="96" width="218" height="68" rx="6" fill="var(--dm-1)" fill-opacity="0.2" stroke="var(--dm-1)"/>
         <text x="44" y="118" class="n">Entity registry</text>
-        <text x="44" y="136" class="q">what exists and who owns what, dated</text>
+        <text x="44" y="136" class="q">what exists and who owns what,</text>
+        <text x="44" y="152" class="q">with dates</text>
       </a>
       <a href="datamodel.html?t=observations">
-        <rect x="32" y="160" width="228" height="52" rx="6" fill="var(--dm-2)" fill-opacity="0.2" stroke="var(--dm-2)"/>
-        <text x="44" y="182" class="n">Observations</text>
-        <text x="44" y="200" class="q">published readings, each dated</text>
+        <rect x="32" y="176" width="218" height="52" rx="6" fill="var(--dm-2)" fill-opacity="0.2" stroke="var(--dm-2)"/>
+        <text x="44" y="198" class="n">Observations</text>
+        <text x="44" y="216" class="q">published readings, each dated</text>
       </a>
       <a href="datamodel.html?t=drivers">
-        <rect x="32" y="224" width="228" height="68" rx="6" fill="var(--dm-3)" fill-opacity="0.2" stroke="var(--dm-3)"/>
-        <text x="44" y="246" class="n">Sector input bundle</text>
-        <text x="44" y="264" class="q">drivers and statistics as draws,</text>
-        <text x="44" y="280" class="q">one delivery per run date</text>
+        <rect x="32" y="240" width="218" height="68" rx="6" fill="var(--dm-3)" fill-opacity="0.2" stroke="var(--dm-3)"/>
+        <text x="44" y="262" class="n">Sector input bundle</text>
+        <text x="44" y="280" class="q">drivers and statistics as</text>
+        <text x="44" y="296" class="q">draws, one per run date</text>
       </a>
       <a href="datamodel.html?t=truth_entity_states">
-        <rect x="32" y="340" width="228" height="68" rx="6" fill="var(--dm-5)" fill-opacity="0.12" stroke="var(--dm-5)" stroke-dasharray="5 3"/>
-        <text x="44" y="362" class="n">Truth</text>
+        <rect x="32" y="340" width="218" height="68" rx="6" fill="var(--dm-5)" fill-opacity="0.12" stroke="var(--dm-5)" stroke-dasharray="5 3"/>
+        <text x="44" y="362" class="n">Synthetic truth</text>
         <text x="44" y="380" class="q">true states and parameters;</text>
         <text x="44" y="396" class="q">synthetic worlds only</text>
       </a>
+      <path class="edge" d="M266 132H304" marker-end="url(#hiw-arrow)"/>
 
-      <!-- 2 · run at T -->
-      <rect class="frame" x="300" y="56" width="540" height="380" rx="10"/>
-      <text x="316" y="82" class="t">2 · Run at each date T</text>
-      <rect x="324" y="96" width="492" height="56" rx="6" fill="var(--accent)" fill-opacity="0.08" stroke="var(--accent)"/>
-      <text x="336" y="118" class="n">Gather what was known at T</text>
-      <text x="336" y="138" class="q">registry as recorded by T · observations published by T · bundle for T</text>
+      <!-- 2 · run the world forward -->
+      <rect class="frame" x="290" y="56" width="580" height="380" rx="10"/>
+      <text x="306" y="82" class="t">2 · Run the world forward</text>
+      <rect x="306" y="96" width="340" height="72" rx="6" fill="var(--chip)" stroke="var(--muted)" stroke-opacity="0.6"/>
+      <text x="318" y="118" class="n">Gather what was known at T</text>
+      <text x="318" y="138" class="q">registry as recorded by T, observations</text>
+      <text x="318" y="154" class="q">published by T, the input bundle for T</text>
       <a href="datamodel.html?t=fit_runs">
-        <rect x="324" y="184" width="492" height="56" rx="6" fill="var(--dm-4)" fill-opacity="0.2" stroke="var(--dm-4)"/>
-        <text x="336" y="206" class="n">Estimate parameters</text>
-        <text x="336" y="226" class="q">from history up to T, once a quarter per sector; later runs in the quarter reuse them</text>
+        <rect x="306" y="192" width="340" height="72" rx="6" fill="var(--dm-4)" fill-opacity="0.2" stroke="var(--dm-4)"/>
+        <text x="318" y="214" class="n">Parameter fitting</text>
+        <text x="318" y="234" class="q">from the history up to T, once a quarter</text>
+        <text x="318" y="250" class="q">per sector; later runs in the quarter reuse it</text>
       </a>
-      <rect x="324" y="272" width="492" height="72" rx="6" fill="var(--accent)" fill-opacity="0.08" stroke="var(--accent)"/>
-      <text x="336" y="294" class="n">Filter and forecast</text>
-      <text x="336" y="314" class="q">re-estimate the history, estimate month T, forecast 12 months ahead;</text>
-      <text x="336" y="330" class="q">100 draws give every quantity a 90% band</text>
-      <path class="edge" d="M570 152V182" marker-end="url(#hiw-arrow)"/>
-      <path class="edge" d="M570 240V270" marker-end="url(#hiw-arrow)"/>
-      <text x="324" y="388" class="q">Parameters stay fixed within a run. The next run date sees the new</text>
-      <text x="324" y="404" class="q">observations and starts again; forecasts never use observations from after T.</text>
-
-      <!-- world → run -->
-      <path class="edge" d="M276 124H322" marker-end="url(#hiw-arrow)"/>
-
-      <!-- outputs and score -->
+      <rect x="306" y="288" width="340" height="88" rx="6" fill="var(--chip)" stroke="var(--muted)" stroke-opacity="0.6"/>
+      <text x="318" y="310" class="n">Filter and forecast</text>
+      <text x="318" y="330" class="q">re-estimate the history, estimate month T,</text>
+      <text x="318" y="346" class="q">forecast 12 months ahead; 100 draws</text>
+      <text x="318" y="362" class="q">give every quantity a 90% band</text>
+      <path class="edge" d="M476 168V190" marker-end="url(#hiw-arrow)"/>
+      <path class="edge" d="M476 264V286" marker-end="url(#hiw-arrow)"/>
       <a href="datamodel.html?t=sector_aggregates">
-        <rect x="864" y="96" width="260" height="116" rx="6" fill="var(--dm-6)" fill-opacity="0.2" stroke="var(--dm-6)"/>
-        <text x="876" y="120" class="n">Run outputs</text>
-        <text x="876" y="140" class="q">sector totals and entity states,</text>
-        <text x="876" y="156" class="q">every month</text>
-        <text x="876" y="176" class="q">history · nowcast · forecast,</text>
-        <text x="876" y="192" class="q">each with a 90% band</text>
+        <rect x="670" y="246" width="184" height="130" rx="6" fill="var(--dm-6)" fill-opacity="0.2" stroke="var(--dm-6)"/>
+        <text x="682" y="268" class="n">Run outputs</text>
+        <text x="682" y="288" class="q">sector totals and entity</text>
+        <text x="682" y="304" class="q">states, every month:</text>
+        <text x="682" y="320" class="q">history, nowcast and</text>
+        <text x="682" y="336" class="q">forecast, each with a</text>
+        <text x="682" y="352" class="q">90% band</text>
       </a>
-      <path class="edge" d="M816 308H842V154H862" marker-end="url(#hiw-arrow)"/>
-      <a href="datamodel.html?t=backtest_scores">
-        <rect x="864" y="260" width="260" height="124" rx="6" fill="var(--dm-5)" fill-opacity="0.2" stroke="var(--dm-5)"/>
-        <text x="876" y="284" class="t">3 · Score</text>
-        <text x="876" y="306" class="q">Synthetic world: against the</text>
-        <text x="876" y="322" class="q">true values</text>
-        <text x="876" y="346" class="q">Real world: against what is</text>
-        <text x="876" y="362" class="q">published later (not built yet)</text>
-      </a>
-      <path class="edge" d="M994 212V258" marker-end="url(#hiw-arrow)"/>
+      <path class="edge" d="M646 332H668" marker-end="url(#hiw-arrow)"/>
+      <text x="306" y="404" class="q">Parameters stay fixed within a run; forecasts never use observations from after T.</text>
+      <text x="306" y="420" class="q">The next run date sees the new observations and starts again.</text>
 
-      <!-- truth → score -->
-      <path class="edge" d="M146 408V456H994V386" marker-end="url(#hiw-arrow)" stroke-dasharray="5 3"/>
+      <!-- 3 · score the results -->
+      <rect class="frame" x="894" y="56" width="230" height="380" rx="10"/>
+      <text x="910" y="82" class="t">3 · Score the results</text>
+      <a href="datamodel.html?t=backtest_scores">
+        <rect x="910" y="96" width="198" height="140" rx="6" fill="var(--dm-5)" fill-opacity="0.2" stroke="var(--dm-5)"/>
+        <text x="922" y="118" class="n">Scores</text>
+        <text x="922" y="140" class="q">Synthetic world: against</text>
+        <text x="922" y="156" class="q">the true values</text>
+        <text x="922" y="180" class="q">Real world: against what</text>
+        <text x="922" y="196" class="q">is published later</text>
+        <text x="922" y="212" class="q">(not built yet)</text>
+      </a>
+      <path class="edge" d="M854 311H880V166H908" marker-end="url(#hiw-arrow)"/>
+
+      <!-- truth → scores -->
+      <path class="edge" d="M141 408V456H1009V238" marker-end="url(#hiw-arrow)" stroke-dasharray="5 3"/>
       <text x="570" y="476" text-anchor="middle" class="q">the truth, for scoring only; the model never sees it</text>
     </svg>
   </figure>
@@ -127,11 +137,11 @@
   state; the model never sees them. A <b>real world</b> is built from public sources and has no such truth. The
   current synthetic world keeps the same entities throughout, with one change of ownership in 2019.</p>
 
-  <h2>2 · Run at each date T</h2>
+  <h2>2 · Run the world forward</h2>
   <p>A run is self-contained and uses only what was known at its date T:</p>
   <ol>
     <li><b>Gather</b> the registry as recorded by T, the observations published by T, and the input bundle for T.</li>
-    <li><b>Estimate the parameters</b> from the history up to T, once a quarter for each sector. Later runs in the same
+    <li><b>Fit the parameters</b> from the history up to T, once a quarter for each sector. Later runs in the same
     quarter reuse those parameters.</li>
     <li><b>Filter and forecast</b> with the parameters fixed: re-estimate the months before T (history), estimate month T
     (nowcast), and project 12 months ahead (forecast). Forecasts follow the sector drivers alone, since no
@@ -140,7 +150,7 @@
   <p>The next run date sees the new observations and starts again, so the history, nowcast and forecast all move as
   information arrives.</p>
 
-  <h2>3 · Score</h2>
+  <h2>3 · Score the results</h2>
   <ul>
     <li><b>In a synthetic world</b>, every output can be scored against the true values: sector totals, entity
     states and the parameters themselves. The <a href="accuracy.html">Accuracy</a> tab shows these scores.</li>
@@ -154,7 +164,7 @@
   it had run then, so its errors show how the model would have done in real time. The scores cover the last 12 months
   of history, the nowcast, and forecasts 3, 6 and 12 months ahead.</p>
 </main>
-<script src="assets/site.js?v=0d9fa2e-1794410543"></script>
+<script src="assets/site.js?v=ee6550e-1794411259"></script>
 <script>
 (async () => {
   try {
