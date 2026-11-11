@@ -45,11 +45,26 @@
    "description": "Implied by the columns; the description does not list it as a join."
   }
  ],
+ "columns": [
+  {
+   "id": 1,
+   "name": "1 · Choose a world"
+  },
+  {
+   "id": 2,
+   "name": "2 · Run the world forward"
+  },
+  {
+   "id": 3,
+   "name": "3 · Score the results"
+  }
+ ],
  "families": [
   {
    "id": "registry",
    "name": "Entity registry",
    "color": 1,
+   "column": 1,
    "description": "What exists and who owns what, on any date. Facts are never overwritten: a change adds a new version and closes the old one.",
    "note": "Every table here also has six history columns: valid_from and valid_to (when the fact was true; valid_to excluded), recorded_at and superseded_at (when it was learned and replaced), source and decided_by."
   },
@@ -57,6 +72,7 @@
    "id": "obs",
    "name": "Observations",
    "color": 2,
+   "column": 1,
    "description": "Every published reading, one row per value, plus the catalog of reading types and the census counts.",
    "note": ""
   },
@@ -64,6 +80,7 @@
    "id": "bundle",
    "name": "Sector input bundle",
    "color": 3,
+   "column": 1,
    "description": "Each sector's drivers and statistics as ensemble draws, delivered by an outside source once per run date and never changed afterwards.",
    "note": "Each delivery carries a manifest listing its tables with their schema versions, row counts and checksums."
   },
@@ -71,6 +88,7 @@
    "id": "config",
    "name": "Configuration",
    "color": 8,
+   "column": 2,
    "description": "The settings people choose to steer the model: run and estimation settings, observation noise and calibrations, sector settings, priors and series mappings.",
    "note": ""
   },
@@ -78,6 +96,7 @@
    "id": "fitting",
    "name": "Parameter fitting",
    "color": 4,
+   "column": 2,
    "description": "The parameters estimated for each sector and quarter, with a record of each fit.",
    "note": "Estimated once a quarter for each sector; every run in that quarter reuses them."
   },
@@ -85,6 +104,7 @@
    "id": "truth",
    "name": "Synthetic truth",
    "color": 5,
+   "column": 1,
    "description": "The true values behind a synthetic world: hidden states, parameters and drivers. Present only in synthetic worlds; the model never sees them.",
    "note": ""
   },
@@ -92,6 +112,7 @@
    "id": "runs",
    "name": "Run outputs",
    "color": 7,
+   "column": 2,
    "description": "What each run produces for its run date. Tables marked published are delivered to users; the rest are kept for diagnosis.",
    "note": ""
   },
@@ -99,6 +120,7 @@
    "id": "scores",
    "name": "Scores",
    "color": 6,
+   "column": 3,
    "description": "How close each run came: errors and band coverage for every scored value, a record of each backtest, and one summary per backtest.",
    "note": "In a synthetic world the scores compare runs with the synthetic truth; scoring a real world against later publications is not built yet."
   }

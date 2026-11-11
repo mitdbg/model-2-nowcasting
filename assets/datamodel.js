@@ -14,6 +14,34 @@ const DataModel = (() => {
   };
   const BH = 28, GY = 10, HD = 34, PAD = 16, GAP = 16;
 
+  // When the file names columns and every family has one, families stack in their columns (each
+  // column outlined and titled, one or two tables across); otherwise see layout() below.
+  function columnLayout(model) {
+    const bw = 150, bh = 24, gy = 8, fh = 30, top = 44;
+    const regions = [], boxes = new Map(), frames = [];
+    let x = 16, H = 0;
+    for (const c of model.columns) {
+      const fams = model.families.filter((f) => f.column === c.id);
+      const count = (f) => model.tables.filter((t) => t.family === f.id).length;
+      const nc = fams.every((f) => count(f) <= 4) ? 1 : 2;
+      const w = 2 * PAD + nc * bw + (nc - 1) * GAP;
+      let y = top;
+      for (const f of fams) {
+        const h = fh + Math.max(1, Math.ceil(count(f) / nc)) * (bh + gy) + 4;
+        regions.push({ f, nc, h, y, x: x + PAD, w });
+        model.tables.filter((t) => t.family === f.id).forEach((t, i) => {
+          boxes.set(t.id, { x: x + 2 * PAD + (i % nc) * (bw + GAP), y: y + fh + Math.floor(i / nc) * (bh + gy), w: bw, h: bh });
+        });
+        y += h + GAP;
+      }
+      frames.push({ c, x, w: w + 2 * PAD });
+      H = Math.max(H, y);
+      x += w + 2 * PAD + 24;
+    }
+    frames.forEach((fr) => { fr.y = 8; fr.h = H - 8; });
+    return { W: x - 24 + 16, H: H + 16, regions, boxes, frames, fh };
+  }
+
   // Families sit side by side, `slots` to a row, in the file's order; a family with more than
   // 12 tables takes a whole row. Tables fill each family's grid in the file's order.
   function layout(model, slots) {
@@ -82,7 +110,7 @@ const DataModel = (() => {
         <span><svg width="30" height="16"><rect x="1" y="1" width="28" height="14" rx="4" fill="var(--dm-1)" fill-opacity="0.06" stroke="var(--dm-1)" stroke-opacity="0.5"/></svg>Shaded area: a family of related tables</span>
         <span><svg width="56" height="16"><path d="M2 3L12 8L2 13M2 8H54M48 3V13" stroke="currentColor" stroke-width="1.25" fill="none"/></svg>Line: a join. Each row at the forked end points to one row at the barred end.</span>
       </div>
-      <div class="dm-body"><aside class="dm-side"></aside><div class="dm-map"><svg role="img" aria-label="Tables grouped by family, with their joins"></svg></div></div>`;
+      <div class="dm-body"><div class="dm-map"><svg role="img" aria-label="Tables grouped by family, with their joins"></svg></div><aside class="dm-side"></aside></div>`;
     const svg = root.querySelector(".dm-map svg"), side = root.querySelector(".dm-side"), zsel = root.querySelector('[data-z="sel"]');
 
     const setView = (v) => { view = v; const c = v || { x: 0, y: 0, w: L.W, h: L.H }; svg.setAttribute("viewBox", `${c.x} ${c.y} ${c.w} ${c.h}`); };
@@ -106,17 +134,22 @@ const DataModel = (() => {
     };
 
     function draw() {
-      const slots = root.clientWidth >= 1000 ? 3 : 2;
+      const cols = model.columns?.length && model.families.every((f) => f.column);
+      const slots = cols ? "columns" : root.clientWidth >= 1000 ? 3 : 2;
       if (L && L.slots === slots) return;
-      L = { ...layout(model, slots), slots };
+      L = { ...(cols ? columnLayout(model) : layout(model, slots)), slots };
       svg.innerHTML = "";
       svg.style.aspectRatio = `${L.W} / ${L.H}`;
       setView(null);
       el("rect", { x: -L.W, y: -L.H, width: 3 * L.W, height: 3 * L.H, fill: "transparent", class: "dm-bg" }, svg);
+      for (const fr of L.frames || []) {
+        el("rect", { x: fr.x, y: fr.y, width: fr.w, height: fr.h, rx: 10, class: "dm-frame" }, svg);
+        el("text", { x: fr.x + PAD, y: fr.y + 24, class: "dm-ctitle" }, svg).textContent = fr.c.name;
+      }
       for (const g of L.regions) {
         const gr = el("g", { class: "dm-family", "data-f": g.f.id }, svg);
         el("rect", { x: g.x, y: g.y, width: g.w, height: g.h, rx: 10, fill: hue(g.f.id), "fill-opacity": 0.06, stroke: hue(g.f.id), "stroke-opacity": 0.5 }, gr);
-        const t = el("text", { x: g.x + PAD, y: g.y + 22, class: "dm-fname" }, gr);
+        const t = el("text", { x: g.x + PAD, y: g.y + (L.fh ? 20 : 22), class: "dm-fname" }, gr);
         t.textContent = g.f.name;
         el("title", {}, t).textContent = g.f.description || "";
       }

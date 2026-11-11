@@ -17,13 +17,15 @@
 .dm-tools label { font-size: 13px; color: var(--muted); display: flex; gap: 4px; align-items: center; }
 .dm-legend { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: 12px; color: var(--muted); margin: 0 0 10px; }
 .dm-legend span { display: flex; gap: 6px; align-items: center; }
-.dm-body { display: grid; grid-template-columns: 300px 1fr; gap: 16px; align-items: start; }
+.dm-body { display: grid; grid-template-columns: 1fr 300px; gap: 16px; align-items: start; }
 .dm-body > * { min-width: 0; }
 .dm-side { position: sticky; top: 56px; max-height: calc(100vh - 70px); overflow: auto; background: var(--panel);
   border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; font-size: 13px; }
 .dm-map svg { display: block; width: 100%; height: auto; max-height: calc(100vh - 80px); background: var(--panel);
   border: 1px solid var(--line); border-radius: 8px; touch-action: none; cursor: grab; user-select: none; }
 .dm-map svg.dragging { cursor: grabbing; }
+.dm-frame { fill: none; stroke: var(--line); stroke-width: 1.25; }
+.dm-ctitle { font-size: 14px; font-weight: 600; fill: var(--fg); }
 .dm-fname { font-size: 13px; font-weight: 600; fill: var(--fg); cursor: zoom-in; }
 .dm-table { cursor: pointer; }
 .dm-table rect { fill-opacity: 0.2; stroke-width: 1; }
