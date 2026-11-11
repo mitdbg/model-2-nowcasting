@@ -13,11 +13,12 @@ M2.param = (k) => new URLSearchParams(location.search).get(k);
 
 M2.esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
-M2.PAGES = [["index.html", "Overview"], ["sector.html", "Sectors"], ["entity.html", "Entities"],
+M2.PAGES = [["index.html", "Overview"], ["world_entities.html", "Current World"], ["sector.html", "Sectors"], ["entity.html", "Entities"],
             ["groupings.html", "Groupings"], ["evidence.html", "Evidence"], ["accuracy.html", "Accuracy"],
             ["https://claude.ai/artifact/GbJQDmoHyttq2W6xiSyJ5w", "Development Dashboard"]];
 // Pages shown as sub-tabs under a top-level tab, chosen near the top of the page.
-M2.SUBPAGES = {"index.html": [["index.html", "Introduction"], ["howitworks.html", "How It Works"], ["datamodel.html", "Data Model"]]};
+M2.SUBPAGES = {"index.html": [["index.html", "Introduction"], ["howitworks.html", "How It Works"], ["datamodel.html", "Data Model"]],
+  "world_entities.html": [["world_entities.html", "Entities"], ["world_observations.html", "Observations"], ["world_bundle.html", "Sector input bundle"]]};
 
 // Grouping kinds (src/firm_model/registry/groupings.py): label, and how members are found.
 M2.GROUPING_KINDS = {
@@ -411,4 +412,7 @@ M2.OBS = {
   under_construction: ["Capacity under construction", "Capacity under construction ({u})", "Capacity being built at the end of the period.", "Capacity under construction", "Filings, construction spending, satellite"],
   employment: ["Employment", "Employment (workers)", "Workers employed by a group of establishments (Census County Business Patterns).", "Labor per unit × output, hence the scale of representative entities (L29)", "Census County Business Patterns"],
   census_shipments: ["Census shipments", "Census shipments (USD per period)", "Value shipped by a group of establishments (Economic Census, every 5 years).", "Price × shipments of a representative entity", "Economic Census"],
+  inventory_real: ["Sector inventories", "Inventories (constant prices)", "Merchandise on hand at the end of the period for a whole sector, in constant prices.", "Finished inventory, summed over the sector", "Census Monthly Wholesale Trade Survey"],
+  inventory_at_cost: ["Sector inventories at cost", "Inventories at cost (USD)", "Merchandise on hand at the end of the period for a whole sector, valued at cost.", "Finished inventory × unit cost, summed over the sector", "Census Monthly Wholesale Trade Survey"],
+  market_vacancy: ["Market vacancy", "Market vacancy (share)", "Share of a market's capacity not in use over the period.", "1 − capacity in use / capacity, over the sector", "Broker market reports"],
 };

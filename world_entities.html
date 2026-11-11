@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Entities · Model 2 (dev)</title>
+<link rel="stylesheet" href="assets/site.css?v=52a9bc9-1794414458">
+</head>
+<body>
+<main>
+  <h1>Entities</h1>
+  <p class="sub" id="intro"></p>
+
+  <h2>By sector</h2>
+  <div class="tablewrap"><table id="bysector"></table></div>
+
+  <h2>Groupings</h2>
+  <p class="sub">Observations are about an entity or a grouping of entities. The model predicts an observation about
+  a grouping from the grouping's members on the observation's date, each at its weight.</p>
+  <div class="tablewrap"><table id="kinds"></table></div>
+
+  <h2>Every entity</h2>
+  <div class="layout">
+    <aside class="side">
+      <input type="search" id="q" placeholder="Filter entities…" aria-label="Filter entities">
+      <div id="list"></div>
+    </aside>
+    <div id="detail"></div>
+  </div>
+</main>
+<script src="assets/site.js?v=52a9bc9-1794414458"></script>
+<script>
+(async () => {
+  try {
+    const [meta, ents, gs] = await Promise.all([M2.load("meta.json"), M2.load("entities.json"), M2.load("groupings.json")]);
+    M2.header(meta, "world_entities.html");
+    const sec = Object.fromEntries(meta.sectors.map((s) => [s.code, s]));
+    const tracked = ents.filter((e) => e.kind === "tracked"), reps = ents.filter((e) => e.kind === "representative");
+    const est = reps.reduce((a, e) => a + (e.n_establishments || 0), 0);
+    const companies = new Set(tracked.map((e) => e.operator).filter(Boolean));
+    document.getElementById("intro").innerHTML = `The world has ${ents.length} entities in ${meta.sectors.length} sectors.
+      <b>${tracked.length} tracked entities</b> are specific sites or networks, run by ${companies.size} companies, each with
+      observations of its own. <b>${reps.length} representative entities</b> stand for the other ${est.toLocaleString()}
+      establishments, one for each sector, size class and region, sized by the Census establishment counts. This page
+      lists what the world contains; the <a href="entity.html">Entities</a> tab shows what the model estimates for each.`;
+
+    const UNIT = { usd_2017: "2017 dollars", boe: "barrel of oil equivalent", MW: "megawatt" };
+    const rows = meta.sectors.map((s) => {
+      const t = tracked.filter((e) => e.sector === s.code), r = reps.filter((e) => e.sector === s.code);
+      return `<tr><td>${M2.esc(s.short)}</td><td class="muted">${M2.esc(s.label)}</td><td class="n">${t.length}</td><td class="n">${r.length}</td>
+        <td class="n">${r.reduce((a, e) => a + (e.n_establishments || 0), 0).toLocaleString()}</td>
+        <td class="n">${new Set(t.map((e) => e.operator).filter(Boolean)).size}</td><td>${M2.esc(UNIT[s.unit] || s.unit.replace(/_/g, "-"))}</td></tr>`;
+    }).join("");
+    document.getElementById("bysector").innerHTML = `<tr><th>Sector</th><th></th><th class="n">Tracked</th><th class="n">Representative</th>
+      <th class="n">Establishments represented</th><th class="n">Companies</th><th>Unit of output</th></tr>${rows}`;
+
+    document.getElementById("kinds").innerHTML = `<tr><th>Kind</th><th class="n">Groupings</th><th>Members</th></tr>` +
+      Object.entries(M2.GROUPING_KINDS).map(([k, [label, rule]]) => {
+        const n = gs.filter((g) => g.kind === k).length;
+        return n ? `<tr><td>${label}</td><td class="n">${n}</td><td>${M2.esc(rule)}</td></tr>` : "";
+      }).join("");
+
+    // every grouping each entity belongs to
+    const member = {};
+    gs.forEach((g) => g.members.forEach((m) => (member[m.id] ||= []).push({ g, m })));
+    const KIND = (k) => M2.GROUPING_KINDS[k]?.[0] || k;
+    let sel = M2.param("e") || tracked[0].id;
+    const renderList = () => {
+      const q = document.getElementById("q").value.toLowerCase();
+      document.getElementById("list").innerHTML = meta.sectors.map((s) => {
+        const xs = ents.filter((e) => e.sector === s.code && (e.name + e.id).toLowerCase().includes(q))
+          .sort((a, b) => (a.kind === b.kind ? a.name.localeCompare(b.name) : a.kind === "tracked" ? -1 : 1));
+        return xs.length ? `<div class="grp">${M2.esc(s.short)}</div>` + xs.map((e) =>
+          `<a href="?e=${encodeURIComponent(e.id)}" data-e="${M2.esc(e.id)}" class="${e.id === sel ? "on" : ""}">${M2.esc(e.name)}</a>`).join("") : "";
+      }).join("");
+    };
+    const renderDetail = () => {
+      const e = ents.find((x) => x.id === sel) || tracked[0], s = sec[e.sector] || {};
+      const ms = (member[e.id] || []).sort((a, b) => a.g.kind.localeCompare(b.g.kind) || a.g.name.localeCompare(b.g.name));
+      const types = (e.obs_types || []).map((t) => M2.OBS[t]?.[0] || t);
+      document.getElementById("detail").innerHTML = `
+        <h3 style="font-size:18px;margin:0 0 6px">${M2.esc(e.name)}</h3>
+        <p><span class="chip">${e.kind}</span> <span class="chip">${M2.esc(s.short)}</span> <span class="chip">${e.size}</span>
+          <span class="chip">${e.region}</span></p>
+        <div class="kv" style="grid-template-columns:auto 1fr;max-width:640px">
+          ${e.operator ? `<span class="muted">Run by</span><span>${M2.esc(e.operator)}</span>` : ""}
+          <span class="muted">Establishments</span><span>${(e.n_establishments || 1).toLocaleString()}${e.kind === "representative" ? " (all those in its census cell without a tracked entity)" : ""}</span>
+          <span class="muted">Observations</span><span>${(e.n_obs || 0).toLocaleString()} about it or a grouping it belongs to${types.length ? ": " + types.map(M2.esc).join(", ") : ""}</span>
+        </div>
+        <h3 style="margin:16px 0 4px">Groupings it belongs to</h3>
+        <div class="tablewrap"><table><tr><th>Kind</th><th>Grouping</th><th class="n">Weight</th><th>From</th><th>To</th></tr>
+          ${ms.map(({ g, m }) => `<tr><td>${KIND(g.kind)}</td><td><a href="groupings.html?g=${encodeURIComponent(g.id)}&k=${g.kind}">${M2.esc(g.name)}</a></td>
+            <td class="n">${m.weight != null ? (+m.weight).toFixed(2) : ""}</td><td>${m.first || ""}</td><td>${m.last || ""}</td></tr>`).join("")
+            || `<tr><td colspan="5" class="muted">none</td></tr>`}</table></div>`;
+    };
+    document.getElementById("q").addEventListener("input", renderList);
+    document.getElementById("list").addEventListener("click", (ev) => {
+      const a = ev.target.closest("a[data-e]");
+      if (!a) return;
+      ev.preventDefault();
+      sel = a.dataset.e;
+      history.replaceState(null, "", `?e=${encodeURIComponent(sel)}`);
+      renderList(); renderDetail();
+    });
+    renderList(); renderDetail();
+  } catch (e) { M2.fail(e); }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sector input bundle · Model 2 (dev)</title>
+<link rel="stylesheet" href="assets/site.css?v=52a9bc9-1794414458">
+</head>
+<body>
+<main>
+  <h1>Sector input bundle</h1>
+  <p class="sub" id="intro"></p>
+  <div class="tabs" id="sectabs" role="tablist" aria-label="Sector"></div>
+  <p class="sub" id="secnote"></p>
+  <div class="grid" id="charts"></div>
+  <div id="leg"></div>
+</main>
+<script src="assets/site.js?v=52a9bc9-1794414458"></script>
+<script>
+(async () => {
+  try {
+    const [meta, b] = await Promise.all([M2.load("meta.json"), M2.load("bundle.json")]);
+    M2.header(meta, "world_bundle.html");
+    const g = b.time_grid || {};
+    document.getElementById("intro").innerHTML = `Each run date brings one delivery of sector data from an outside
+      source. This is the delivery for ${b.as_of}. For every sector it gives <b>drivers</b> (demand, price and input cost,
+      which push the sector's entities) and <b>sector statistics</b> (official series such as industrial production or
+      capacity utilization), month by month from ${g.history_start} to ${g.forecast_end}: observed or re-estimated history
+      to ${g.last_observed}, then a nowcast and forecasts. Every series comes as ${b.n_members} draws; the charts show their
+      median and 90% band.`;
+    const NAME = { demand: "Demand", price: "Price", input_cost: "Input cost", delivery_pressure: "Delivery pressure",
+                   energy_cost: "Energy cost", general_activity: "General activity", general_prices: "General prices" };
+    const UNIT = { log_index: "log index", log_usd_index: "log index (dollars)", log_ratio: "log ratio", percent: "percent", index: "index" };
+    const MEANS = { demand: "what buyers want from the sector", price: "the sector's price level", input_cost: "the cost of the sector's inputs",
+                    delivery_pressure: "how stretched suppliers' delivery times are", energy_cost: "the cost of energy, economy-wide",
+                    general_activity: "activity across the whole economy", general_prices: "prices across the whole economy" };
+    const tidy = (d) => d.replace(/\s*\(?synthetic\)?\s*/g, " ").trim();
+    const cap = (d) => d.charAt(0).toUpperCase() + d.slice(1);
+    const secs = b.sectors;
+    let sel = M2.param("s") || (secs.find((s) => s.code !== "all") || secs[0]).code;
+    const short = (s) => meta.sectors.find((m) => m.code === s.code)?.short || s.label;
+    const render = () => {
+      document.getElementById("sectabs").innerHTML = secs.map((s) =>
+        `<button type="button" role="tab" data-s="${s.code}" aria-selected="${s.code === sel}" class="${s.code === sel ? "on" : ""}">${M2.esc(short(s))}</button>`).join("");
+      const s = secs.find((x) => x.code === sel);
+      const xs = b.series.filter((x) => x.sector === sel).sort((a, c) => (a.kind === c.kind ? 0 : a.kind === "driver" ? -1 : 1));
+      document.getElementById("secnote").textContent = sel === "all"
+        ? "Drivers shared by every sector."
+        : `${s.label}: ${xs.filter((x) => x.kind === "driver").length} drivers and ${xs.filter((x) => x.kind !== "driver").length} sector statistics.`;
+      const box = document.getElementById("charts");
+      box.innerHTML = "";
+      for (const x of xs) {
+        const el = document.createElement("div");
+        el.className = "card";
+        const title = x.kind === "driver" ? (NAME[x.name] || x.name) : cap(tidy(x.description) || x.name);
+        const sub = x.kind === "driver" ? (MEANS[x.name] || "") : x.name;
+        el.innerHTML = `<div class="head"><h3>${M2.esc(title)}</h3><span class="chip">${x.kind === "driver" ? "driver" : "sector statistic"}</span></div>
+          <p class="desc">${M2.esc(sub)}${sub ? " · " : ""}${M2.esc(UNIT[x.unit] || x.unit)}</p><div class="ch"></div>`;
+        box.appendChild(el);
+        M2.chart(el.querySelector(".ch"), { bands: [{ month: x.month, q05: x.q05, q50: x.q50, q95: x.q95, label: title }],
+          status: { month: x.month, status: x.status.map((v) => (v === "observed" ? "smoothed" : v)) }, unit: "", height: 160 });
+      }
+    };
+    document.getElementById("leg").innerHTML = M2.legend([["var(--accent)", "median"], ["var(--band)", "90% band"],
+      ["var(--nowcast)", "nowcast"], ["var(--forecast)", "forecast"]]);
+    document.getElementById("sectabs").addEventListener("click", (e) => {
+      const t = e.target.closest("button[data-s]");
+      if (!t) return;
+      sel = t.dataset.s;
+      history.replaceState(null, "", `?s=${sel}`);
+      render();
+    });
+    render();
+  } catch (e) { M2.fail(e); }
+})();
+</script>
+</body>
+</html>

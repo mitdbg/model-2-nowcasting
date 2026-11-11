@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Observations · Model 2 (dev)</title>
+<link rel="stylesheet" href="assets/site.css?v=52a9bc9-1794414458">
+<style>
+  .spark { display: block; }
+  .spark rect { fill: var(--accent); fill-opacity: 0.55; }
+  td.what { min-width: 260px; max-width: 420px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Observations</h1>
+  <p class="sub" id="intro"></p>
+  <div class="tablewrap"><table id="types"></table></div>
+  <p class="sub" style="margin-top:12px">The <a href="evidence.html">Evidence</a> tab adds how well the model fits each
+  kind of observation and which quantities no observation covers.</p>
+</main>
+<script src="assets/site.js?v=52a9bc9-1794414458"></script>
+<script>
+(async () => {
+  try {
+    const [meta, ev] = await Promise.all([M2.load("meta.json"), M2.load("evidence.json")]);
+    M2.header(meta, "world_observations.html");
+    const types = ev.types.filter((t) => t.n > 0).sort((a, b) => b.n - a.n);
+    const total = types.reduce((a, t) => a + t.n, 0), years = ev.timeline.years;
+    document.getElementById("intro").innerHTML = `The world publishes ${total.toLocaleString()} observations of
+      ${types.length} kinds from ${years[0]} to ${years[years.length - 1]}. Each is one reading about an entity or a grouping
+      of entities: a company's filing, a site's emissions, a satellite image, a census count. Each arrives some time after
+      the period it covers, and a run sees only those published by its date.`;
+    const SUBJECT = { entity: "entity", company: "company", segment: "segment", site: "site", sector: "sector",
+                      census_cell: "census cell", region: "region", custom: "custom grouping" };
+    const spark = (row) => {
+      if (!row) return "";
+      const mx = Math.max(...row, 1), w = 4, h = 22;
+      return `<svg class="spark" width="${row.length * w}" height="${h}" role="img" aria-label="readings per year">${row.map((v, i) =>
+        `<rect x="${i * w}" y="${h - (v / mx) * h}" width="${w - 1}" height="${(v / mx) * h}"><title>${years[i]}: ${v}</title></rect>`).join("")}</svg>`;
+    };
+    const delay = (d) => { if (d == null) return ""; if (d < 45) return `${Math.round(d)} days`; const m = Math.round(d / 30.4); return m === 1 ? "1 month" : `${m} months`; };
+    document.getElementById("types").innerHTML = `<tr><th>Observation</th><th>What it is</th><th>About</th><th>Typical sources</th>
+      <th class="n">Readings</th><th class="n">Published after</th><th>Readings per year, ${years[0]}–${years[years.length - 1]}</th></tr>` +
+      types.map((t) => {
+        const o = M2.OBS[t.name];
+        return `<tr><td><b>${M2.esc(o ? o[0] : t.name.replace(/_/g, " "))}</b></td>
+          <td class="what">${M2.esc(o ? o[2] : t.definition)}</td>
+          <td>${t.subjects.map((s) => SUBJECT[s] || s).join(", ")}</td>
+          <td class="muted">${M2.esc(o ? o[4] : Object.keys(t.sources).join(", "))}</td>
+          <td class="n">${t.n.toLocaleString()}</td><td class="n">${delay(t.lag_median_days)}</td>
+          <td>${spark(ev.timeline.rows[t.name])}</td></tr>`;
+      }).join("");
+  } catch (e) { M2.fail(e); }
+})();
+</script>
+</body>
+</html>

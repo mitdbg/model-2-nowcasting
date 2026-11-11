@@ -18,7 +18,9 @@ backtest (its runs export entity detail). Build with the model code that ran it,
 `PYTHONPATH=../model-2-compute/src python scripts/build_site_data.py WS`, so the observation types match.
 
 Then open http://127.0.0.1:8765/. Pages: under the Overview tab, as sub-tabs (`M2.SUBPAGES` in site.js),
-`index.html` (introduction), `howitworks.html` (the three stages, a static page) and `datamodel.html` (below); `sector.html?s=CODE`,
+`index.html` (introduction), `howitworks.html` (the three stages, a static page) and `datamodel.html` (below); under Current World, `world_entities.html?e=ID`
+(what the world contains), `world_observations.html` (the kinds of observation) and `world_bundle.html?s=CODE`
+(the input bundle's drivers and sector statistics, from `data/bundle.json`); `sector.html?s=CODE`,
 `entity.html?e=ID`, `evidence.html`, `accuracy.html`.
 `datamodel.html?t=TABLE` is the data model,
 drawn from `docs/datamodel.json` by `assets/datamodel.js`; edit that file and rebuild to change it. Not part of the Model 1 (KEYNES) site.
