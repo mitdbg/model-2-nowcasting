@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Observations · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=49af08b-1794419119">
-<link rel="stylesheet" href="assets/datamodel.css?v=49af08b-1794419119">
+<link rel="stylesheet" href="assets/site.css?v=aa645dc-1794419362">
+<link rel="stylesheet" href="assets/datamodel.css?v=aa645dc-1794419362">
 <style>
   .spark { display: block; }
   .spark rect { fill: var(--accent); fill-opacity: 0.55; }
@@ -27,11 +27,13 @@
   .plot .cap { font-size: 12px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 2px 12px; margin: 0 0 2px; }
   .plot .cap i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 4px; vertical-align: -1px; }
   .plot.mini { border: none; padding: 0; background: none; max-width: 760px; }
-  .noplot .tbl { height: calc(100vh - 300px); min-height: 440px; }
-  .tbl { height: calc(100vh - 560px); min-height: 300px; overflow: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); }
+  .tbl { height: calc(100vh - 300px); min-height: 440px; overflow: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); }
   .tbl table { font-size: 12.5px; }
   .tbl th { position: sticky; top: 0; background: var(--panel); z-index: 1; }
   .tbl tr.obs { cursor: pointer; }
+  #types tr.kind { cursor: pointer; }
+  #types tr.kind.open td { background: var(--band); }
+  #types tr.kplot td { background: var(--band2); }
   .tbl tr.obs.open td { background: var(--band); }
   .tbl tr.det td { background: var(--band2); }
   .dkv { display: grid; grid-template-columns: 150px 1fr; gap: 4px 12px; padding: 6px 4px; }
@@ -66,19 +68,19 @@
       <div class="fcount"><span id="count"></span> <button type="button" id="clear" class="linkbtn">Clear</button></div>
     </aside>
     <div class="mainc dm">
-      <div class="plot" id="plot"></div>
       <div class="tbl"><table id="rows"></table><div id="more"></div></div>
     </div>
   </div>
   </section>
 
   <section data-v="kinds" hidden>
-  <div class="tablewrap"><table id="types"></table></div>
+  <p class="sub">Click a kind to see its readings over time.</p>
+  <div class="tablewrap dm"><table id="types"></table></div>
   <p class="sub" style="margin-top:12px">The <a href="evidence.html">Evidence</a> tab adds how well the model fits each
   kind of observation and which quantities no observation covers.</p>
   </section>
 </main>
-<script src="assets/site.js?v=49af08b-1794419119"></script>
+<script src="assets/site.js?v=aa645dc-1794419362"></script>
 <script>
 (async () => {
   try {
@@ -110,7 +112,7 @@
       <th class="n">Readings</th><th class="n">Published after</th><th>Readings per year, ${years[0]}–${years[years.length - 1]}</th></tr>` +
       kinds.map((t) => {
         const o = M2.OBS[t.name];
-        return `<tr><td><b><a href="?v=every&type=${t.name}">${M2.esc(label(t.name))}</a></b></td>
+        return `<tr class="kind" data-t="${t.name}"><td><b><a href="?v=every&type=${t.name}">${M2.esc(label(t.name))}</a></b></td>
           <td class="what">${M2.esc(o ? o[2] : t.definition)}</td>
           <td>${t.subjects.map((s) => SUBJECT[s] || s).join(", ")}</td>
           <td class="muted">${M2.esc(o ? o[4] : Object.keys(t.sources).join(", "))}</td>
@@ -159,7 +161,7 @@
       document.getElementById("count").textContent = `${shown.length.toLocaleString()} of ${N.toLocaleString()} observations`;
       document.getElementById("aboutent").innerHTML = F.entity ? `<div class="about">About <a href="world_entities.html?v=every&e=${encodeURIComponent(F.entity)}">${M2.esc(entName[F.entity] || F.entity)}</a>
         or a grouping it belongs to · <button type="button" class="linkbtn" id="dropent">remove</button></div>` : "";
-      drawRows(); drawPlot();
+      drawRows();
     };
     const subjLink = (s) => {
       if (!s || !s.id) return `<span class="muted">unresolved</span>`;
@@ -232,21 +234,6 @@
         `<span><i style="background:${COLORS[k]}"></i>${M2.esc(ob.subjects[s]?.name || "unresolved")}</span>`).join("")}${order.length > 8 ? `<span><i style="background:var(--muted)"></i>${order.length - 8} others</span>` : ""}${log ? `<span>log scale</span>` : ""}</div>`;
       return `${cap}<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="values over time">${g}${lines}${dots}</svg>`;
     };
-    const drawPlot = () => {
-      const kindsShown = new Set(shown.slice(0, 20000).map((i) => R.type[i]));
-      const one = kindsShown.size === 1, plot = document.getElementById("plot");   // values share an axis only within one kind
-      plot.hidden = !one;
-      plot.parentNode.classList.toggle("noplot", !one);
-      plot.innerHTML = one ? series(shown.slice(0, 8000), { hi: openRow }) : "";
-    };
-    document.getElementById("plot").addEventListener("click", (e) => {
-      const c = e.target.closest(".pt");
-      if (!c) return;
-      const i = +c.dataset.i, k = shown.indexOf(i);
-      openRow = i; limit = Math.max(limit, k + 1); drawRows(); drawPlot();
-      document.querySelector("tr.obs.open")?.scrollIntoView({ block: "nearest" });
-    });
-
     const drawRows = () => {
       const xs = shown.slice(0, limit);
       document.getElementById("rows").innerHTML = `<tr><th>Published</th><th>Kind</th><th>About</th><th>Period</th><th class="n">Value</th><th>Source</th></tr>` +
@@ -266,7 +253,7 @@
       const tr = e.target.closest("tr.obs");
       if (!tr) return;
       openRow = +tr.dataset.i === openRow ? -1 : +tr.dataset.i;
-      drawRows(); drawPlot();
+      drawRows();
     });
     document.getElementById("more").addEventListener("click", (e) => { if (e.target.id === "morebtn") { limit += 300; drawRows(); } });
     document.getElementById("filters").addEventListener("change", (e) => { const f = e.target.dataset.f; if (f) { F[f] = e.target.value; apply(); url(); } });
@@ -275,6 +262,29 @@
     document.getElementById("clear").addEventListener("click", () => {
       Object.keys(F).forEach((k) => { F[k] = ""; }); document.getElementById("q").value = "";
       document.querySelectorAll("#filters select").forEach((s) => { s.value = ""; }); apply(); url();
+    });
+
+    // Kinds view: a row opens into a chart of that kind's readings over time, every subject
+    let openKind = "";
+    const kindsTable = document.getElementById("types");
+    kindsTable.addEventListener("click", (e) => {
+      if (e.target.closest("a") || e.target.closest(".plot")) return;
+      const tr = e.target.closest("tr.kind");
+      if (!tr) return;
+      kindsTable.querySelectorAll("tr.kplot").forEach((r) => r.remove());
+      kindsTable.querySelectorAll("tr.kind.open").forEach((r) => r.classList.remove("open"));
+      if (openKind === tr.dataset.t) { openKind = ""; return; }
+      openKind = tr.dataset.t;
+      const ti = ob.types.indexOf(openKind), idx = [];
+      for (let j = 0; j < N; j++) if (R.type[j] === ti) idx.push(j);
+      tr.classList.add("open");
+      tr.insertAdjacentHTML("afterend", `<tr class="kplot"><td colspan="7"><div class="plot">${series(idx)}</div>
+        <div class="muted" style="font-size:12px;margin:4px 2px">${idx.length.toLocaleString()} readings ·
+        <a href="?v=every&type=${openKind}">browse them</a></div></td></tr>`);
+    });
+    kindsTable.addEventListener("click", (e) => {             // a dot opens that reading in the navigator
+      const c = e.target.closest(".pt");
+      if (c) location.href = `?v=every&type=${openKind}&open=${encodeURIComponent(R.id[+c.dataset.i])}`;
     });
 
     // ---- views
@@ -286,10 +296,11 @@
     document.getElementById("views").addEventListener("click", (e) => { const b = e.target.closest("button[data-v]"); if (b) { view = b.dataset.v; showView(); url(); } });
     showView();
     apply();
+    if (M2.param("kind")) kindsTable.querySelector(`tr.kind[data-t="${M2.param("kind")}"] td:nth-child(2)`)?.click();   // ?kind= opens one
     const want = M2.param("open");                       // ?open=<observation id> opens that observation
     if (want) {
       const i = R.id.indexOf(want), k = shown.indexOf(i);
-      if (k >= 0) { openRow = i; limit = Math.max(limit, k + 1); drawRows(); drawPlot(); document.querySelector("tr.obs.open")?.scrollIntoView({ block: "nearest" }); }
+      if (k >= 0) { openRow = i; limit = Math.max(limit, k + 1); drawRows(); document.querySelector("tr.obs.open")?.scrollIntoView({ block: "nearest" }); }
     }
   } catch (e) { M2.fail(e); }
 })();
