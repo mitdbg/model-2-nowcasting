@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Entities · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=e334f1d-1794416425">
+<link rel="stylesheet" href="assets/site.css?v=e4c8199-1794416767">
 <style>
   .every .side { height: calc(100vh - 330px); min-height: 420px; max-height: none; overflow: hidden;
     display: flex; flex-direction: column; }
@@ -69,7 +69,7 @@
   </div>
   </section>
 </main>
-<script src="assets/site.js?v=e334f1d-1794416425"></script>
+<script src="assets/site.js?v=e4c8199-1794416767"></script>
 <script>
 (async () => {
   try {
@@ -166,7 +166,8 @@
         const n = (t) => (c ? c[t] || 0 : null);
         const xs = types.map((t) => [t, M2.OBS[t]?.[0] || t, n(t)]).sort((a, b) => (b[2] ?? 0) - (a[2] ?? 0) || a[1].localeCompare(b[1]));
         return `<div class="muted" style="margin-bottom:4px">${(e.n_obs || 0).toLocaleString()} in total, ${types.length} kinds;
-          <a href="world_observations.html">about each kind</a></div>
+          <a href="world_observations.html?v=every&entity=${encodeURIComponent(id)}">browse them</a> ·
+          <a href="world_observations.html?v=kinds">about each kind</a></div>
           <div class="chips">${xs.map(([t, l, k]) => vbtn("obs", t, `${M2.esc(l)}${k != null ? ` <span class="muted">${k}</span>` : ""}`)).join("") || '<span class="muted">none</span>'}</div>`;
       };
       const draw = () => {
