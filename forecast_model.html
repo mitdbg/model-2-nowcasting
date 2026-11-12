@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Model Structure · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=3bf9f9d-1794495640">
+<link rel="stylesheet" href="assets/site.css?v=a119064-1794496079">
 <style>
   main > p, main > ul, main > ol { max-width: 78ch; }
   main > .eqcard, main > figure, main > .tablewrap { max-width: 1000px; }
@@ -40,7 +40,7 @@
   <p class="sub">Model 2 describes every entity by a handful of <b>hidden states</b>, such as its capacity, its order
   book and its unit cost, that change month by month. One set of equations moves them forward a month at a time.
   <b>Drivers</b> from the sector input bundle push them; <b>parameters</b> set how strongly, and how fast each state
-  returns to normal; random <b>shocks</b> stand for everything else. <b>Observation equations</b> say what each kind of
+  returns to normal; and random <b>shocks</b> each month stand for the events the equations don't describe, such as an outage, a strike or a surprise order. <b>Observation equations</b> say what each kind of
   observation would read, given the states. This page gives the equations as the current forecast runs them.</p>
   <p class="sub">Every equation is per entity, and <span class="sym">t</span> is the month. Sector quantities (the
   drivers, real demand <span class="sym">D</span>, sector capacity <span class="sym">K</span>) are the same for every
@@ -336,7 +336,7 @@
     band; the published sector bands are then widened by factors from backtests.</li>
   </ol>
 </main>
-<script src="assets/site.js?v=3bf9f9d-1794495640"></script>
+<script src="assets/site.js?v=a119064-1794496079"></script>
 <script>
 (async () => {
   try {
