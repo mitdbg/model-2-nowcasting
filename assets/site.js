@@ -20,7 +20,7 @@ M2.PAGES = [["index.html", "Overview"], ["world_overview.html", "Current World"]
 M2.SUBPAGES = {"index.html": [["index.html", "Introduction"], ["howitworks.html", "How It Works"], ["datamodel.html", "Data Model"], ["forecast_model.html", "Model Structure"]],
   "world_overview.html": [["world_overview.html", "Introduction"], ["world_entities.html", "Entities"], ["world_observations.html", "Observations"], ["world_bundle.html", "Sector input bundle"]],
   "forecast_overview.html": [["forecast_overview.html", "Introduction"], ["forecast_fit.html", "Fitted Parameters"], ["sector.html", "Forecasts"]],
-  "eval_revisions.html": [["eval_revisions.html", "Forecasts against later estimates"], ["evaluation.html", "Without Ground Truth"], ["accuracy.html", "With Ground Truth"]]};
+  "eval_revisions.html": [["eval_revisions.html", "Forecasts against later estimates"], ["eval_observations.html", "Observations against the model"], ["evaluation.html", "Without Ground Truth"], ["accuracy.html", "With Ground Truth"]]};
 // Pages reached through a sub-tab without being one: they light up that sub-tab.
 M2.SUBALIAS = {"entity.html": "sector.html", "groupings.html": "world_entities.html"};
 // The Forecasts sub-tab's search panel, on the left of sector.html and entity.html: facets narrow one list

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Without Ground Truth · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=f939f3f-1794511664">
+<link rel="stylesheet" href="assets/site.css?v=cdf23b5-1794511829">
 <style>
   main > p, main > ul { max-width: 80ch; }
   .tiles2 { display: flex; flex-wrap: wrap; gap: 10px; margin: 8px 0 4px; }
@@ -20,19 +20,9 @@
 <main>
   <h1>Without Ground Truth</h1>
   <p class="sub">Measures of quality that need no ground truth, so they work on a real world as well as a synthetic one.
-  They check how well the model fits the data it has used, which is a weaker test than
-  <a href="eval_revisions.html">forecasts against later estimates</a>, since a model always looks better on data it has seen.</p>
-
-  <h2>Observations against the model</h2>
-  <p>Each observation against the model's prediction of it, plus the observation's own noise. About 90% should fall
-  inside the 90% band, and the typical gap, in units of the band's spread (|z|), should be near 0.67. Lower is
-  not better here: the filter has already used these observations, so a very close fit can mean the model chases
-  noise. Yes/no observations (satellite activity) are not scored.</p>
-  <div class="tiles2" id="obstiles"></div>
-  <div class="two">
-    <div><h3>By kind of observation</h3><div class="tablewrap"><table id="obstype"></table></div></div>
-    <div><h3>By sector</h3><div class="tablewrap"><table id="obssec"></table></div></div>
-  </div>
+  Like <a href="eval_observations.html">observations against the model</a>, they check how well the model fits data
+  it has used, which is a weaker test than <a href="eval_revisions.html">forecasts against later estimates</a>, since a
+  model always looks better on data it has seen.</p>
 
   <h2>Sector totals against official statistics</h2>
   <p>Where the sector input bundle carries an official statistic that measures a sector total, the model's total
@@ -47,7 +37,7 @@
   alone carry them.</p>
   <div class="tablewrap"><table id="pin"></table></div>
 </main>
-<script src="assets/site.js?v=f939f3f-1794511664"></script>
+<script src="assets/site.js?v=cdf23b5-1794511829"></script>
 <script>
 (async () => {
   try {
@@ -60,15 +50,6 @@
     const pct = (v, d = 0) => v == null ? "–" : M2.pct(v, d);
     const tile = (v, l, cls = "") => `<div class="tile"><div class="v ${cls}">${v}</div><div class="l">${l}</div></div>`;
     const name = (v) => (M2.SHORT_VAR[v] || v).replace(/ \(.*\)$/, "");
-
-    const oa = q.obs_all;
-    document.getElementById("obstiles").innerHTML = tile(pct(oa.inside, 1), `inside the band (${oa.n.toLocaleString()} observations)`, cov(oa.inside, oa.n)) +
-      tile(oa.abs_z.toFixed(2), "median |z|: typical gap in band spreads");
-    const orow = (label, x) => `<tr><td>${label}</td><td class="n ${cov(x.inside, x.n)}">${pct(x.inside)}</td><td class="n">${x.abs_z?.toFixed(2) ?? "–"}</td><td class="n muted">${x.n.toLocaleString()}</td></tr>`;
-    const ohead = (k) => `<tr><th>${k}</th><th class="n">inside band</th><th class="n">median |z|</th><th class="n">observations</th></tr>`;
-    document.getElementById("obstype").innerHTML = ohead("kind") + [...q.obs_by_type].sort((a, b) => b.n - a.n)
-      .map((x) => orow(`<a href="world_observations.html?type=${encodeURIComponent(x.type)}">${M2.esc(M2.OBS[x.type]?.[0] || x.type)}</a>`, x)).join("");
-    document.getElementById("obssec").innerHTML = ohead("sector") + bySec(q.obs_by_sector).map((x) => orow(M2.esc(short[x.sector] || x.sector), x)).join("");
 
     document.getElementById("recon").innerHTML = `<tr><th>sector</th><th>official statistic</th><th class="n">months inside band</th><th class="n">median gap</th><th class="n">months</th></tr>` +
       bySec(q.recon).map((x) => `<tr><td><a href="sector.html?s=${x.sector}">${M2.esc(short[x.sector] || x.sector)}</a></td><td class="mono">${M2.esc(x.series)}</td>
