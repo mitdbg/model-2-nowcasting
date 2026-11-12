@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Model Configuration · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=91c7d6a-1794519495">
+<link rel="stylesheet" href="assets/site.css?v=d145836-1794519633">
 <style>
   main > p, main > ul { max-width: 80ch; }
   .wkv { display: grid; grid-template-columns: 230px 1fr; gap: 6px 16px; max-width: 980px; font-size: 14px; }
@@ -81,7 +81,7 @@
   representative entities that stand for untracked establishments.</p>
   <div class="cmp tablewrap"><table id="estab"></table></div>
 </main>
-<script src="assets/site.js?v=91c7d6a-1794519495"></script>
+<script src="assets/site.js?v=d145836-1794519633"></script>
 <script>
 (async () => {
   try {
@@ -131,13 +131,14 @@
       if (s.template === "contracted_capacity") x = `Not used here: a data center's utilization is set by how much is leased, not by how hard its sites run.`;
       else {
         const un = s.alpha != null ? expit(s.alpha) : null;
-        x = `The balance of demand against capacity at which this sector's firms run at their normal rate${un != null ? ` (about ${Math.round(100 * un)}% of capacity)` : ""}.`
-          + ` When demand runs further ahead of capacity, they run harder. (The number looks large only because it sets a demand index against capacity counted in ${s.unit === "usd_2017" ? "dollars" : u}.)`;
+        x = `The ratio of demand to capacity when the window began. At this ratio the sector's firms run at their normal rate${un != null ? `, about ${Math.round(100 * un)}% of capacity` : ""}; a higher ratio makes them run harder.`;
         if (have && s.beta != null && un != null) {
           const dx = dD - dK, du = expit(s.alpha + s.beta * dx) - un, pts = Math.round(1000 * du) / 10;
-          x += Math.abs(pts) < 0.5 ? ` In ${when} the balance is close to it, so utilization runs near normal on that account.`
-            : ` In ${when} demand against capacity is ${pct1(dx)} ${dx > 0 ? "above" : "below"} it, which on its own puts utilization about ${Math.abs(pts)} points ${pts > 0 ? "above" : "below"} normal.`;
+          const why = `demand ${ch(dD)}, capacity ${ch(dK)}`;
+          x += Math.abs(Math.exp(dx) - 1) < 0.02 ? ` By ${when} the ratio is about the same (${why}), so firms run near their normal rate on that account.`
+            : ` By ${when} the ratio is ${pct1(dx)} ${dx > 0 ? "higher" : "lower"} (${why}), so on that account firms run about ${Math.abs(pts) < 0.5 ? "the same" : `${Math.abs(pts)} points ${pts > 0 ? "above" : "below"}`} their normal rate.`;
         }
+        x += ` (The number itself only marks the starting point: it depends on the units and means nothing alone.)`;
       }
       // K₀: the yardstick for each firm's share of orders
       const K = `The sector's capacity when the window began: ${M2.fmt(s.K0)} ${u}${s.unit === "MW" ? "" : " a month"}. It is the yardstick for market share: a firm whose capacity`
@@ -150,7 +151,7 @@
     document.getElementById("fixed").innerHTML = `<tr><th>sector</th>
       <th>template</th>
       <th class="n"><span class="sym c-fix">D̄</span> <span class="muted">(index)</span>${M2.info("Normal demand (L6). The sector's demand, adjusted for prices, averaged over the first two years of the fit window and written as an index: 100 is the January 2010 level, so 108 means 8% more. The model treats this as normal: firms get orders equal to their normal output when demand is here, more when it is higher, fewer when lower.")}</th>
-      <th class="n"><span class="sym c-fix">x̄</span>${M2.info("Normal demand pressure (L3): demand set against capacity at the start of the window. Firms run at their normal rate when pressure is here and harder when it is higher. It is a reference point with no unit of its own (the demand index minus the log of capacity), so only changes from it mean anything.")}</th>
+      <th class="n"><span class="sym c-fix">x̄</span>${M2.info("Starting demand-to-capacity ratio (L3): how much demand there was for each unit of capacity when the window began. Each month the model compares the current ratio with this one. If demand has grown faster than capacity, the ratio is higher and firms run their plants harder than normal; if capacity has grown faster, they run below normal. The number itself is the log of the ratio of a demand index to capacity, so its size depends on the units and means nothing alone; only changes from it matter.")}</th>
       <th class="n"><span class="sym c-fix">K₀</span>${M2.info("The sector's capacity at the start of the window: the most all its firms together could produce in a month. It is the yardstick for market share: a firm's share of orders follows its capacity measured against it (L6).")}</th>
       <th class="n"><span class="sym c-fix">transit</span> <span class="muted">(days)</span>${M2.info("Shipping time (L13): added to every lead time a firm quotes, so it is part of how long a customer waits.")}</th></tr>` +
       secs.map((s) => { const e = explain(s);
