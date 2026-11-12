@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Model Structure · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=0475025-1794497711">
+<link rel="stylesheet" href="assets/site.css?v=24e2bf9-1794497844">
 <style>
   main > p, main > ul, main > ol { max-width: 78ch; }
   main > .eqcard, main > figure, main > .tablewrap { max-width: 1000px; }
@@ -135,10 +135,13 @@
     <tr><td class="sym">A, U</td><td>capacity announced, and under construction (pipeline templates)</td><td>units per month</td></tr>
     <tr><td class="sym">Occ</td><td>capacity in use under lease (occupancy template)</td><td>units</td></tr>
   </table></div>
-  <p>Quantities worked out from them each month: output <span class="sym">Q = u·e<sup>k</sup></span>; price
-  <span class="sym">p = c + m</span> (log); the order book <span class="sym">B = B<sup>sched</sup> + B<sup>late</sup></span>,
-  which is what filings call backlog; and the order-book position <span class="sym">ob = (B − G) / Q</span>, how many
-  months ahead the entity is booked, net of stock.</p>
+  <p>Some quantities derived from hidden state each month:</p>
+  <ul>
+    <li>output <span class="sym">Q = u·e<sup>k</sup></span></li>
+    <li>price <span class="sym">p = c + m</span> (log)</li>
+    <li>the order book <span class="sym">B = B<sup>sched</sup> + B<sup>late</sup></span>, which is what filings call backlog</li>
+    <li>the order-book position <span class="sym">ob = (B − G) / Q</span>, how many months ahead the entity is booked, net of stock</li>
+  </ul>
 
   <h2 id="drivers">Drivers</h2>
   <p>Each sector gets three drivers from the <a href="world_bundle.html">sector input bundle</a>, month by month, as many
@@ -359,7 +362,7 @@
     band; the published sector bands are then widened by factors from backtests.</li>
   </ol>
 </main>
-<script src="assets/site.js?v=0475025-1794497711"></script>
+<script src="assets/site.js?v=24e2bf9-1794497844"></script>
 <script>
 (async () => {
   try {
