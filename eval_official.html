@@ -3,46 +3,127 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Sector totals against official statistics · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=cb57f73-1794516520">
+<link rel="stylesheet" href="assets/site.css?v=61d3155-1794516824">
 <style>
-  main > p, main > ul { max-width: 80ch; }
-  .tiles2 { display: flex; flex-wrap: wrap; gap: 10px; margin: 8px 0 4px; }
-  .tile { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 14px; min-width: 190px; }
-  .tile .v { font-size: 22px; font-weight: 600; }
-  .tile .l { font-size: 12px; color: var(--muted); }
+  main > p { max-width: 80ch; }
+  .excard { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; max-width: 980px; }
+  .excard .ctl { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+  .excard .ctl select { width: auto; max-width: 420px; font-size: 13px; padding: 2px 6px; }
+  #exchart { max-width: 760px; }
+  .excard .say { font-size: 13.5px; margin: 6px 0 2px; max-width: 80ch; }
+  .qs { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px; margin: 14px 0; max-width: 980px; }
+  .qc { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; }
+  .qc h3 { margin: 0 0 6px; font-size: 15px; }
+  .qc .big { font-size: 26px; font-weight: 600; margin: 2px 0; }
+  .qc p { margin: 4px 0; font-size: 13.5px; }
+  .tb table { width: auto; font-size: 13px; }
+  .tb td, .tb th { padding: 3px 8px; white-space: nowrap; }
+  .tb th.qh { white-space: normal; max-width: 120px; line-height: 1.25; vertical-align: bottom; }
   td.n { font-variant-numeric: tabular-nums; }
-  .two { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 18px; }
-  .two > div { min-width: 0; }
-  h3 { margin: 10px 0 4px; font-size: 14px; }
+  .verdict { font-size: 11.5px; font-weight: 600; padding: 1px 8px; border-radius: 9px; white-space: nowrap; }
+  .verdict.ok { color: var(--good); background: color-mix(in srgb, var(--good) 12%, transparent); }
+  .verdict.tight { color: var(--warn); background: color-mix(in srgb, var(--warn) 14%, transparent); }
+  .verdict.off { color: var(--bad); background: color-mix(in srgb, var(--bad) 12%, transparent); }
 </style>
 </head>
 <body>
 <main>
   <h1>Sector totals against official statistics</h1>
-  <p>Where the sector input bundle carries an official statistic that measures a sector total, the model's total
-  (converted into the statistic's units) should agree with it within the band of their gap. The filter uses these
-  statistics too (L16), so a large or persistent gap means the model's entities cannot reproduce the official picture.</p>
-  <div class="tablewrap"><table id="recon"></table></div>
+  <p class="sub">Official statistics measure whole sectors: industrial production, capacity utilization, retail sales,
+  employment. The sector input bundle carries them, and where one measures the same thing as a sector total the model
+  adds up from its entities, the two can be compared month by month. The model's total is converted into the
+  statistic's units and given a range from how much its copies of the world disagree. A model whose entities add up to
+  the official picture keeps the statistic inside that range.</p>
+  <p class="sub">The model uses these statistics as it runs (L16): they pull its totals toward the official values. So
+  agreement is partly built in, and a persistent gap is a strong sign: even when pulled, the model's entities cannot
+  reproduce what the official numbers say.</p>
 
+  <div class="excard">
+    <div class="ctl" id="exctl"></div>
+    <div id="exchart"></div>
+    <div id="exleg"></div>
+    <p class="say" id="exsay"></p>
+  </div>
+
+  <div class="qs">
+    <div class="qc" id="q1"></div>
+    <div class="qc" id="q2"></div>
+  </div>
+
+  <h2>Statistic by statistic</h2>
+  <p>The same two questions for each official statistic. A statistic can be close to the model's total and still fall
+  outside its range when the range is very tight: then the model is more certain about that total than it should be.</p>
+  <div class="tb tablewrap"><table id="recon"></table></div>
 </main>
-<script src="assets/site.js?v=cb57f73-1794516520"></script>
+<script src="assets/site.js?v=61d3155-1794516824"></script>
 <script>
 (async () => {
   try {
-    const [meta, q] = await Promise.all([M2.load("meta.json"), M2.load("quality.json")]);
+    const [meta, q, b] = await Promise.all([M2.load("meta.json"), M2.load("quality.json"), M2.load("bundle.json")]);
     M2.header(meta, "eval_official.html");
     const short = Object.fromEntries(meta.sectors.map((s) => [s.code, s.short]));
-    const bySec = (xs) => [...xs].sort((a, b) => (short[a.sector] || a.sector).localeCompare(short[b.sector] || b.sector));
-    const cov = (c, n) => { if (c == null || !(n >= 8)) return ""; const se = Math.sqrt(0.09 / n);
-      return c >= 0.9 - 2 * se ? "good" : c >= 0.9 - 4 * se ? "warn" : "bad"; };
-    const pct = (v, d = 0) => v == null ? "–" : M2.pct(v, d);
-    const tile = (v, l, cls = "") => `<div class="tile"><div class="v ${cls}">${v}</div><div class="l">${l}</div></div>`;
-    const name = (v) => (M2.SHORT_VAR[v] || v).replace(/ \(.*\)$/, "");
+    const plain = Object.fromEntries(b.series.filter((x) => x.kind !== "driver").map((x) => {
+      const d = (x.description || x.name).replace(/\s*\(?synthetic\)?\s*/g, " ").trim();
+      return [x.name, d.charAt(0).toUpperCase() + d.slice(1)]; }));
+    const label = (code) => plain[code] || code;
+    const rows = [...q.recon].sort((a, c) => short[a.sector].localeCompare(short[c.sector]) || label(a.series).localeCompare(label(c.series)));
+    const of100 = (c) => Math.round(100 * c);
+    // judged against 90 of 100 allowing for chance, as on the other evaluation pages; a statistic that misses the
+    // range by less than 1% is close, so the miss is the range's fault, not the total's
+    const verdict = (x) => { const se = Math.sqrt(0.09 / x.n);
+      if (x.inside >= 0.9 - 2 * se) return `<span class="verdict ok" title="Inside the range about as often as a well-sized 90% range should be">agrees</span>`;
+      if (x.rel < 0.01) return `<span class="verdict tight" title="The gap is small (${M2.pct(x.rel, 1)}), but the model's range is tighter still: it is surer of this total than it should be">close, range too tight</span>`;
+      return `<span class="verdict off" title="The statistic falls outside the model's range in ${100 - of100(x.inside)} of every 100 months, and the gap is ${M2.pct(x.rel, 1)}">disagrees</span>`; };
 
-    document.getElementById("recon").innerHTML = `<tr><th>sector</th><th>official statistic</th><th class="n">months inside band</th><th class="n">median gap</th><th class="n">months</th></tr>` +
-      bySec(q.recon).map((x) => `<tr><td><a href="sector.html?s=${x.sector}">${M2.esc(short[x.sector] || x.sector)}</a></td><td class="mono">${M2.esc(x.series)}</td>
-        <td class="n ${cov(x.inside, x.n)}">${pct(x.inside)}</td><td class="n">${pct(x.rel, 1)}</td><td class="n muted">${x.n}</td></tr>`).join("");
+    // the example: one statistic over time
+    const ex = { k: M2.param("k") || "" };
+    const key = (x) => `${x.sector}|${x.series}`;
+    if (!rows.some((x) => key(x) === ex.k)) ex.k = key(rows.find((x) => x.series.startsWith("IPG3311")) || rows[0]);
+    const cache = {};
+    const draw = async () => {
+      const [code, series] = ex.k.split("|");
+      document.getElementById("exctl").innerHTML = `<label>Official statistic <select id="exsel">${rows.map((x) =>
+        `<option value="${key(x)}"${key(x) === ex.k ? " selected" : ""}>${M2.esc(short[x.sector])}: ${M2.esc(label(x.series))}</option>`).join("")}</select></label>`;
+      const d = (cache[code] ||= await M2.load(`sectors/${code}.json`)).reconciliation[series];
+      const x = rows.find((r) => key(r) === ex.k);
+      // log series are drawn as plain values (an index, a level), range and all
+      const f = String(x.unit).startsWith("log") ? Math.exp : (v) => v;
+      const lo = d.m2.map((v, i) => f(v - 1.645 * d.sd[i])), hi = d.m2.map((v, i) => f(v + 1.645 * d.sd[i]));
+      let inside = 0;
+      const pts = d.month.map((m, i) => { const y = f(d.m1[i]), out = y < lo[i] || y > hi[i]; if (!out) inside++;
+        return { month: m, y, out, label: `official: ${M2.fmt(y)}` }; });
+      M2.chart(document.getElementById("exchart"), { bands: [{ month: d.month, q50: d.m2.map(f), q05: lo, q95: hi, label: "model" }],
+        points: pts, height: 240, yLabel: label(series) });
+      document.getElementById("exleg").innerHTML = M2.legend([["var(--accent)", "the model's total, in the statistic's units"], ["var(--band)", "its range (90%)"],
+        ["var(--obs)", "the official value, inside the range"], ["var(--bad)", "outside it"]]);
+      document.getElementById("exsay").innerHTML = `${M2.esc(short[code])}, ${M2.esc(label(series).toLowerCase())} (<span class="mono">${M2.esc(series)}</span>):
+        the official value is inside the model's range in <b>${inside} of ${d.month.length}</b> months, and the typical gap is ${M2.pct(x.rel, 1)}. ${verdict(x)}`;
+      history.replaceState(null, "", `?k=${encodeURIComponent(ex.k)}`);
+    };
+    document.getElementById("exctl").addEventListener("change", (e) => { if (e.target.id === "exsel") { ex.k = e.target.value; draw(); } });
+    await draw();
 
+    // the two questions, over every statistic and month
+    const n = rows.reduce((a, x) => a + x.n, 0), inside = rows.reduce((a, x) => a + x.inside * x.n, 0) / n;
+    const agree = rows.filter((x) => verdict(x).includes("verdict ok")).length;
+    const gaps = rows.map((x) => x.rel).sort((a, c) => a - c), med = gaps[Math.floor((gaps.length - 1) / 2)];
+    document.getElementById("q1").innerHTML = `<h3>Does the model agree with the official numbers?</h3>
+      <div class="big">${of100(inside)} of every 100</div>
+      <p>months, the official value fell inside the model's range (${n.toLocaleString()} months over ${rows.length} statistics).</p>
+      <p class="muted">A well-sized 90% range would hold about 90. ${agree} of the ${rows.length} statistics agree; the others either fall just
+      outside a range that is too tight, or genuinely disagree (see the table).</p>`;
+    document.getElementById("q2").innerHTML = `<h3>How big is the gap?</h3>
+      <div class="big">about ${M2.pct(med, 1)}</div>
+      <p>typical gap between the model's total and the official value, for the typical statistic.</p>
+      <p class="muted">Gaps run from ${M2.pct(gaps[0], 1)} to ${M2.pct(gaps[gaps.length - 1], 1)}. A small gap with a poor score means the model's
+      range is too tight, not that its total is far off.</p>`;
+
+    // statistic by statistic
+    document.getElementById("recon").innerHTML = `<tr><th>sector</th><th>official statistic</th><th class="n qh">Does the model agree?</th>
+      <th class="n qh">How big is the gap?</th><th class="n">months</th><th></th></tr>` +
+      rows.map((x) => `<tr><td><a href="sector.html?s=${x.sector}">${M2.esc(short[x.sector])}</a></td>
+        <td><a href="?k=${encodeURIComponent(key(x))}" title="${M2.esc(x.series)}">${M2.esc(label(x.series))}</a></td>
+        <td class="n">${of100(x.inside)}<span class="muted">/100</span></td><td class="n">${M2.pct(x.rel, 1)}</td><td class="n muted">${x.n}</td><td>${verdict(x)}</td></tr>`).join("");
   } catch (e) { M2.fail(e); }
 })();
 </script>
