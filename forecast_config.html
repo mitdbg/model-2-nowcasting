@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Model Configuration · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=86f6013-1794517725">
+<link rel="stylesheet" href="assets/site.css?v=6afc0f9-1794517867">
 <style>
   main > p, main > ul { max-width: 80ch; }
   .wkv { display: grid; grid-template-columns: 230px 1fr; gap: 6px 16px; max-width: 980px; font-size: 14px; }
@@ -14,9 +14,8 @@
   .sym { font-style: italic; white-space: nowrap; }
   .c-fix { color: #92651a; }
   @media (prefers-color-scheme: dark) { .c-fix { color: #e0b866; } }
-  .cmp td.fnote { white-space: normal; min-width: 380px; max-width: 620px; font-size: 12.5px; color: var(--muted); line-height: 1.4; }
-  .cmp td.fnote div + div { margin-top: 3px; }
-  .cmp td.fnote b { color: var(--fg); font-weight: 600; white-space: nowrap; }
+  .cmp .infowrap { position: relative; }
+  .cmp .infotip { white-space: normal; width: 320px; left: auto; right: -6px; top: 22px; text-align: left; font-variant-numeric: normal; }
   .setby { font-size: 11px; color: var(--muted); }
   .setby.on { color: var(--accent); font-weight: 600; }
   .ctl { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; font-size: 13px; color: var(--muted); margin: 6px 0; }
@@ -34,7 +33,8 @@
 
   <h2>Fixed values in the equations</h2>
   <p>The symbols marked "Fixed, not learned" on Model Structure, sector by sector. Real demand <span class="sym">D</span>
-  and capacity <span class="sym">K</span> are on the log scale; K₀ is shown in the sector's own units per month.</p>
+  and capacity <span class="sym">K</span> are on the log scale; K₀ is shown in the sector's own units per month. Hover
+  over (or tap) the ⓘ beside a value for what it means.</p>
   <div class="cmp tablewrap"><table id="fixed"></table></div>
   <ul class="sub">
     <li><span class="sym c-fix">D̄</span>: average real sector demand over the fit window's first two years (L6). Orders move with demand
@@ -79,7 +79,7 @@
   representative entities that stand for untracked establishments.</p>
   <div class="cmp tablewrap"><table id="estab"></table></div>
 </main>
-<script src="assets/site.js?v=86f6013-1794517725"></script>
+<script src="assets/site.js?v=6afc0f9-1794517867"></script>
 <script>
 (async () => {
   try {
@@ -104,28 +104,32 @@
     const mon = (m) => m ? `${MON[+m.slice(5, 7) - 1]} ${m.slice(0, 4)}` : "";
     const plus = (m, k) => { const t = +m.slice(0, 4) * 12 + (+m.slice(5, 7) - 1) + k; return `${Math.floor(t / 12)}-${String(t % 12 + 1).padStart(2, "0")}`; };
     const pc = (v) => { const p = Math.round(1000 * (Math.exp(v) - 1)) / 10; return `${Math.abs(p)}% ${p >= 0 ? "above" : "below"}`; };
-    const note = (s) => {
+    // plain-text explanations of each fixed value, shown behind an (i) beside it
+    const explain = (s) => {
       const u = UNITS[s.unit] || unit(s.unit), w0 = start, w1 = start && plus(start, 23);
       const real = /usd/.test(String(s.demand_unit)) ? "real demand (dollar demand divided by the sector's price index)" : "real demand";
-      const lines = [];
-      lines.push(`<b>D̄ ${f(s.Dbar)}</b>: from ${mon(w0)} to ${mon(w1)}, ${real} averaged ${pc(s.Dbar)} its January 2010 level (the index is 0 then, and D̄ is its log).`);
-      lines.push(`<b>K₀ ${M2.fmt(s.K0)}</b>: in ${mon(w0)} the sector could produce ${M2.fmt(s.K0)} ${u} a month, adding up its tracked and representative entities`
-        + (s.K_now ? `; by ${mon(s.last)}, ${M2.fmt(s.K_now)} (${Math.round(100 * (s.K_now / s.K0 - 1)) >= 0 ? "+" : ""}${Math.round(100 * (s.K_now / s.K0 - 1))}%).` : "."));
-      let x = `<b>x̄ ${f(s.xbar)}</b>: D̄ minus the log of K₀ (${f(s.Dbar)} − ${f(Math.log(s.K0))}). The large size is only units: an index set against ${u}; what matters is how far demand pressure moves from it.`;
-      if (s.D_now != null && s.K_now != null && s.template !== "contracted_capacity") {
+      const kNow = s.K_now ? ` By ${mon(s.last)} it was ${M2.fmt(s.K_now)} (${Math.round(100 * (s.K_now / s.K0 - 1)) >= 0 ? "+" : ""}${Math.round(100 * (s.K_now / s.K0 - 1))}%).` : "";
+      let x = `D̄ minus the log of K₀ (${f(s.Dbar)} − ${f(Math.log(s.K0))}). The large size is only units: an index set against ${u}. What matters is how far demand pressure moves from it.`;
+      if (s.template === "contracted_capacity") x += " Here utilization is set by leasing, so it does not enter.";
+      else if (s.D_now != null && s.K_now != null) {
         const px = Math.round(100 * (Math.exp((s.D_now - s.Dbar) - Math.log(s.K_now / s.K0)) - 1));
-        x += Math.abs(px) < 2 ? ` By ${mon(s.last)} it is back about where it started.` : ` By ${mon(s.last)} it is ${Math.abs(px)}% ${px > 0 ? "above, pushing utilization up" : "below, holding utilization down"}.`;
-      } else if (s.template === "contracted_capacity") x += " Here utilization is set by leasing, so it does not enter.";
-      lines.push(x);
-      lines.push(`<b>transit ${f(s.transit)}</b>: ` + (s.transit ? `about ${Math.round(30 * s.transit)} days of shipping in every quoted lead time.`
-        : SERVICE.has(s.template) ? "nothing is shipped; the service is used where it is sold." : "the model counts no shipping time for this sector."));
-      return lines.map((l) => `<div>${l}</div>`).join("");
+        x += Math.abs(px) < 2 ? ` By ${mon(s.last)} pressure is back about where it started.` : ` By ${mon(s.last)} pressure is ${Math.abs(px)}% ${px > 0 ? "above it, pushing utilization up" : "below it, holding utilization down"}.`;
+      }
+      return {
+        D: `From ${mon(w0)} to ${mon(w1)}, ${real} averaged ${pc(s.Dbar)} its January 2010 level. The index is 0 in January 2010, and D̄ is the log of the average.`,
+        x,
+        K: `In ${mon(w0)} the sector could produce ${M2.fmt(s.K0)} ${u} a month, adding up its tracked and representative entities.${kNow}`,
+        t: s.transit ? `About ${Math.round(30 * s.transit)} days of shipping, part of every quoted lead time.`
+          : SERVICE.has(s.template) ? "Nothing is shipped: the service is used where it is sold." : "The model counts no shipping time for this sector.",
+      };
     };
     document.getElementById("fixed").innerHTML = `<tr><th>sector</th><th>template</th><th class="n"><span class="sym c-fix">D̄</span></th>
-      <th class="n"><span class="sym c-fix">x̄</span></th><th class="n"><span class="sym c-fix">K₀</span></th><th class="n"><span class="sym c-fix">transit</span> (months)</th><th>Notes</th></tr>` +
-      secs.map((s) => `<tr><td><a href="sector.html?s=${s.code}">${M2.esc(short[s.code])}</a></td><td class="muted">${s.template.replace(/_/g, " ")}</td>
-        <td class="n">${f(s.Dbar)}</td><td class="n">${f(s.xbar)}</td><td class="n">${M2.fmt(s.K0)} <span class="muted">${unit(s.unit)}</span></td>
-        <td class="n">${f(s.transit)}</td><td class="fnote">${note(s)}</td></tr>`).join("");
+      <th class="n"><span class="sym c-fix">x̄</span></th><th class="n"><span class="sym c-fix">K₀</span></th><th class="n"><span class="sym c-fix">transit</span> (months)</th></tr>` +
+      secs.map((s) => { const e = explain(s);
+        return `<tr><td><a href="sector.html?s=${s.code}">${M2.esc(short[s.code])}</a></td><td class="muted">${s.template.replace(/_/g, " ")}</td>
+        <td class="n">${f(s.Dbar)}${M2.info(e.D)}</td><td class="n">${f(s.xbar)}${M2.info(e.x)}</td>
+        <td class="n">${M2.fmt(s.K0)} <span class="muted">${unit(s.unit)}</span>${M2.info(e.K)}</td>
+        <td class="n">${f(s.transit)}${M2.info(e.t)}</td></tr>`; }).join("");
     const r = c.run, bi = r.band_inflation;
     document.getElementById("kc").textContent = r.lead_time_congestion === "on" ? "on (κ_C = 1)" : "off (κ_C = 0)";
     document.getElementById("runkv").innerHTML = [
