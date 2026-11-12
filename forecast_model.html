@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Model Structure · Model 2 (dev)</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital@0;1&display=swap">
-<link rel="stylesheet" href="assets/site.css?v=70ae61f-1794505133">
+<link rel="stylesheet" href="assets/site.css?v=3c54a15-1794508911">
 <style>
   main > p, main > ul, main > ol { max-width: 78ch; }
   main > .eqcard, main > figure, main > .tablewrap { max-width: 1000px; }
@@ -70,7 +70,6 @@
   .tick { color: var(--good); }
   .off { color: var(--muted); }
   td.sym, th.sym { white-space: nowrap; }
-  #fitted td.n { font-variant-numeric: tabular-nums; }
 </style>
 </head>
 <body>
@@ -97,7 +96,7 @@
   <nav class="toc" aria-label="On this page">
     <a href="#picture">One month at a glance</a><a href="#states">Hidden states</a><a href="#drivers">Drivers</a>
     <a href="#shocks">Shocks</a><a href="#templates">Templates</a><a href="#params">Parameters</a>
-    <a href="#fitted">Fitted values</a><a href="#obs">Observations</a><a href="#totals">Sector totals</a>
+    <a href="#obs">Observations</a><a href="#totals">Sector totals</a>
     <a href="#filter">How the forecast is made</a>
   </nav>
 
@@ -343,13 +342,6 @@
   </div>
   <div class="tablewrap"><table id="plist"></table></div>
 
-  <h2 id="fitted">Fitted values in this forecast</h2>
-  <p>The sector parameters of the <a href="forecast_overview.html">current fit</a>, beside the value the fit started from
-  (the prior's centre)<span id="truthnote"></span>. Entity parameters are on each entity's page in
-  <a href="entity.html">Forecasts, by entity</a>.</p>
-  <div class="tabs" id="sectabs" role="tablist" aria-label="Sector"></div>
-  <div class="tablewrap"><table id="fit"></table></div>
-
   <h2 id="obs">Observations</h2>
   <p>An observation names one subject: an entity, or a grouping such as a company, a site or a whole sector. Its
   predicted value is worked out from the states of the subject's entities, each at its weight (a company's
@@ -413,7 +405,7 @@
   </ol>
 </main>
 <div class="eqtip" id="eqtip" hidden></div>
-<script src="assets/site.js?v=70ae61f-1794505133"></script>
+<script src="assets/site.js?v=3c54a15-1794508911"></script>
 <script>
 // One month's chain of equations, drawn for a template's modules (src/firm_model/templates.py):
 // pipeline (capacity built through L19–L22), occ (output is capacity in use, L18), stock (finished stock),
@@ -529,34 +521,6 @@ document.getElementById("mainchain").innerHTML = chainSVG(TEMPLATES.make_to_orde
     ];
     document.getElementById("plist").innerHTML = `<tr><th>kind</th><th class="sym">symbol</th><th>meaning</th><th>equation</th><th>applies to</th></tr>` +
       P.map(([k, s, d, e, w]) => `<tr><td>${k}</td><td class="sym">${s}</td><td>${d}</td><td>${e}</td><td class="muted">${w || "all"}</td></tr>`).join("");
-    // fitted sector parameters, per sector
-    const synthetic = f.sectors.some((s) => s.params.some((p) => p.truth != null));
-    if (synthetic) document.getElementById("truthnote").innerHTML = `, and the truth that generated this synthetic world.
-      In this world every sector parameter's starting value equals its truth (the simulation set them at the
-      priors' centres), so the table shows how far the fit wandered from the truth, not how far it travelled to find it;
-      red marks a fitted value more than 5% from the truth`;
-    const short = Object.fromEntries(meta.sectors.map((s) => [s.code, s.short]));
-    let sel = M2.param("s") || f.sectors[0].code;
-    const fmt = (v) => v == null ? "–" : Math.abs(v) >= 100 ? v.toFixed(0) : Math.abs(v) >= 1 ? v.toFixed(3) : v.toPrecision(3);
-    const sym = (s) => M2.esc(s).replace(/\^(\w+)/g, "<sup>$1</sup>").replace(/_(\w+)/g, "<sub>$1</sub>");
-    const render = () => {
-      document.getElementById("sectabs").innerHTML = f.sectors.map((s) =>
-        `<button type="button" role="tab" data-s="${s.code}" aria-selected="${s.code === sel}" class="${s.code === sel ? "on" : ""}">${M2.esc(short[s.code] || s.code)}</button>`).join("");
-      const s = f.sectors.find((x) => x.code === sel) || f.sectors[0];
-      const off = (p) => p.truth != null && Math.abs(p.fit - p.truth) > 0.05 * Math.max(Math.abs(p.truth), 1e-3);
-      document.getElementById("fit").innerHTML = `<tr><th class="sym">symbol</th><th>meaning</th><th class="n">fitted</th><th class="n">started from</th>
-        ${synthetic ? '<th class="n">truth</th>' : ""}</tr>` + s.params.map((p) => `<tr><td class="sym">${sym(p.symbol)}</td>
-        <td>${M2.esc(p.description)}</td><td class="n${off(p) ? " bad" : ""}">${fmt(p.fit)}</td><td class="n muted">${fmt(p.prior)}</td>
-        ${synthetic ? `<td class="n">${fmt(p.truth)}</td>` : ""}</tr>`).join("");
-    };
-    document.getElementById("sectabs").addEventListener("click", (e) => {
-      const t = e.target.closest("button[data-s]");
-      if (!t) return;
-      sel = t.dataset.s;
-      history.replaceState(null, "", `?s=${sel}#fitted`);
-      render();
-    });
-    render();
     // diagram: each box shows its equation(s), taken from the equation cards below
     const cards = {};
     for (const c of document.querySelectorAll(".eqcard")) {

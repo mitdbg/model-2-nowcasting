@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fitted Parameters · Model 2 (dev)</title>
+<link rel="stylesheet" href="assets/site.css?v=3c54a15-1794508911">
+<style>
+  #fit td.n { font-variant-numeric: tabular-nums; }
+  td.sym, th.sym { white-space: nowrap; font-style: italic; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Fitted Parameters</h1>
+  <p class="sub">The sector parameters of the <a href="forecast_overview.html">current fit</a>, one sector at a time, beside
+  the value the fit started from (the prior's centre)<span id="truthnote"></span>. Each parameter's role is on
+  <a href="forecast_model.html#params">Model Structure</a>. Entity parameters are on each entity's page in
+  <a href="entity.html">Forecasts, by entity</a>.</p>
+  <div class="tabs" id="sectabs" role="tablist" aria-label="Sector"></div>
+  <div class="tablewrap"><table id="fit"></table></div>
+</main>
+<script src="assets/site.js?v=3c54a15-1794508911"></script>
+<script>
+(async () => {
+  try {
+    const [meta, f] = await Promise.all([M2.load("meta.json"), M2.load("forecast.json")]);
+    M2.header(meta, "forecast_fit.html");
+    // fitted sector parameters, per sector
+    const synthetic = f.sectors.some((s) => s.params.some((p) => p.truth != null));
+    if (synthetic) document.getElementById("truthnote").innerHTML = `, and the truth that generated this synthetic world.
+      In this world every sector parameter's starting value equals its truth (the simulation set them at the
+      priors' centres), so the table shows how far the fit wandered from the truth, not how far it travelled to find it;
+      red marks a fitted value more than 5% from the truth`;
+    const short = Object.fromEntries(meta.sectors.map((s) => [s.code, s.short]));
+    let sel = M2.param("s") || f.sectors[0].code;
+    const fmt = (v) => v == null ? "–" : Math.abs(v) >= 100 ? v.toFixed(0) : Math.abs(v) >= 1 ? v.toFixed(3) : v.toPrecision(3);
+    const sym = (s) => M2.esc(s).replace(/\^([\p{L}\w]+)/gu, "<sup>$1</sup>").replace(/_([\p{L}\w]+)/gu, "<sub>$1</sub>");
+    const render = () => {
+      document.getElementById("sectabs").innerHTML = f.sectors.map((s) =>
+        `<button type="button" role="tab" data-s="${s.code}" aria-selected="${s.code === sel}" class="${s.code === sel ? "on" : ""}">${M2.esc(short[s.code] || s.code)}</button>`).join("");
+      const s = f.sectors.find((x) => x.code === sel) || f.sectors[0];
+      const off = (p) => p.truth != null && Math.abs(p.fit - p.truth) > 0.05 * Math.max(Math.abs(p.truth), 1e-3);
+      document.getElementById("fit").innerHTML = `<tr><th class="sym">symbol</th><th>meaning</th><th class="n">fitted</th><th class="n">started from</th>
+        ${synthetic ? '<th class="n">truth</th>' : ""}</tr>` + s.params.map((p) => `<tr><td class="sym">${sym(p.symbol)}</td>
+        <td>${M2.esc(p.description)}</td><td class="n${off(p) ? " bad" : ""}">${fmt(p.fit)}</td><td class="n muted">${fmt(p.prior)}</td>
+        ${synthetic ? `<td class="n">${fmt(p.truth)}</td>` : ""}</tr>`).join("");
+    };
+    document.getElementById("sectabs").addEventListener("click", (e) => {
+      const t = e.target.closest("button[data-s]");
+      if (!t) return;
+      sel = t.dataset.s;
+      history.replaceState(null, "", `?s=${sel}`);
+      render();
+    });
+    render();
+  } catch (e) { M2.fail(e); }
+})();
+</script>
+</body>
+</html>

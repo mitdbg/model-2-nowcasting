@@ -18,12 +18,12 @@ backtest (its runs export entity detail). Build with the model code that ran it,
 `PYTHONPATH=../model-2-compute/src python scripts/build_site_data.py WS`, so the observation types match.
 
 Then open http://127.0.0.1:8765/. Pages: under the Overview tab, as sub-tabs (`M2.SUBPAGES` in site.js),
-`index.html` (introduction), `howitworks.html` (the three stages, a static page), `datamodel.html` (below) and `forecast_model.html?s=CODE` (Model Structure: the equations, templates, parameters and each sector's fitted sector parameters); under Current World, `world_overview.html` (the world's identity from the workspace's
+`index.html` (introduction), `howitworks.html` (the three stages, a static page), `datamodel.html` (below) and `forecast_model.html?s=CODE` (Model Structure: the equations, drawn per template, and the parameters); under Current World, `world_overview.html` (the world's identity from the workspace's
 `world.json`, written when the world is built, and its counts), `world_entities.html?e=ID`
 (what the world contains), `world_observations.html?type=…&entity=…&open=ID` (every
 observation, filterable, from `data/observations.json`, and the kinds of observation) and `world_bundle.html?s=CODE`
 (the input bundle's drivers and sector statistics, from `data/bundle.json`); under Current Forecast,
-`forecast_overview.html` (the run and the fit it uses, from `data/forecast.json`) and, as the Forecasts sub-tab with a
+`forecast_overview.html` (the run and the fit it uses, from `data/forecast.json`), `forecast_fit.html?s=CODE` (each sector's fitted sector parameters) and, as the Forecasts sub-tab with a
 by sector / by entity switch (`M2.SUBALIAS`), `sector.html?s=CODE` and `entity.html?e=ID`; then
 `accuracy.html`, and out of the navigation but kept: `groupings.html?g=ID` (shown under Current World, Entities; entity pages link to it) and `evidence.html`.
 `datamodel.html?t=TABLE` is the data model,
