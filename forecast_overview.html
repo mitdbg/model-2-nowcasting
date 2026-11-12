@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Current Forecast · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=12d0b89-1794495552">
+<link rel="stylesheet" href="assets/site.css?v=3bf9f9d-1794495640">
 <style>
   .wkv { display: grid; grid-template-columns: 200px 1fr; gap: 6px 16px; max-width: 900px; font-size: 14px; }
   .wkv .k { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; padding-top: 2px; }
@@ -30,7 +30,7 @@
   the round kept.</p>
   <div class="tablewrap"><table id="secs"></table></div>
 </main>
-<script src="assets/site.js?v=12d0b89-1794495552"></script>
+<script src="assets/site.js?v=3bf9f9d-1794495640"></script>
 <script>
 (async () => {
   try {
@@ -47,7 +47,7 @@
       numbers, correcting its hidden states with each month's observations, to the last observed month (history), the
       months since (nowcast) and a year ahead (forecast). It runs ${f.n_members} copies of the world at once, each with
       its own random shocks and its own draw of the uncertain parameters; their spread gives the 90% band.
-      <a href="forecast_model.html">Model Structure</a> gives the equations, and <a href="sector.html">Forecasts</a>
+      <a href="forecast_model.html">Overview › Model Structure</a> gives the equations, and <a href="sector.html">Forecasts</a>
       shows the results.`;
     const row = (k, v) => v == null || v === "" ? "" : `<span class="k">${k}</span><span>${v}</span>`;
     const bi = f.band_inflation;
