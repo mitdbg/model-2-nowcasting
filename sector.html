@@ -3,7 +3,11 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Sectors · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=e126874-1794513609">
+<link rel="stylesheet" href="assets/site.css?v=06b8199-1794513824">
+<style>
+  .card .head .chips { display: flex; gap: 6px; align-items: center; }
+  .chip.frommodel { color: var(--warn); background: color-mix(in srgb, var(--warn) 14%, transparent); font-weight: 600; cursor: help; }
+</style>
 </head>
 <body>
 <main>
@@ -23,7 +27,9 @@
   <h2>Sector totals</h2>
   <p class="sub">Each chart shows the median and widened 90% band of a sector total, with the truth (dashed). Shading
   marks nowcast months (after the last observation) and forecast months (after the as-of date). The ⓘ button defines
-  each quantity.</p>
+  each quantity. A <span class="chip frommodel">mostly from the model</span> tag marks a total the observations barely
+  reach: its estimate comes from the equations and drivers, not from data (see
+  <a href="evaluation.html#totals">What the data pin down</a>).</p>
   <div id="leg1"></div>
   <div class="grid" id="totals"></div>
 
@@ -42,18 +48,12 @@
   total, in the statistic's units.</p>
   <div class="grid" id="recon"></div>
 
-  <h2>Information from the data</h2>
-  <p class="sub">Each row compares a sector total's variance after the observations with its variance from the model's
-  dynamics alone (posterior over prior variance, across history). Near 1, the data add little, and the run flags the
-  total as prior-dominated.</p>
-  <div class="tablewrap"><table id="ident"></table></div>
-
   <h2>Entities in this sector</h2>
   <div class="tablewrap"><table id="ents"></table></div>
   </div>
   </div>
 </main>
-<script src="assets/site.js?v=e126874-1794513609"></script>
+<script src="assets/site.js?v=06b8199-1794513824"></script>
 <script>
 (async () => {
   try {
@@ -75,11 +75,15 @@
                    "capacity_in_use", "capacity_announced", "capacity_under_construction", "backlog_overdue", "phantom_backlog",
                    "input_inventory", "finished_stock", "lost_demand", "load_factor"].filter((v) => d.series[v]);
     const ylab = (v) => { const n = (M2.SHORT_VAR[v] || v).replace(/ \(.*\)$/, ""), u = M2.isShare(v) ? "%" : (units[v] || {}).unit; return u ? `${n} (${u})` : n; };
-    const card = (parent, v, extra = "", note = " Sector total: tracked plus representative entities.") => {
+    // totals the observations barely reach (posterior over prior variance 0.8 to 1.2): their estimate comes from the
+    // model; well above 1 the filter is unsettled, which is not the same thing (What the data pin down shows those)
+    const ratio = Object.fromEntries((d.identifiability || []).map((r) => [r.variable, +r.posterior_to_prior_variance]));
+    const fromModel = (v) => ratio[v] > 0.8 && ratio[v] <= 1.2 ? `<span class="chip frommodel" title="The observations barely narrow this total: with them, the copies of the world disagree ${Math.round(100 * ratio[v])}% as much as without them. Its estimate comes from the equations and drivers, not from data.">mostly from the model</span>` : "";
+    const card = (parent, v, extra = "", note = " Sector total: tracked plus representative entities.", tag = "") => {
       const el = document.createElement("div");
       el.className = "card";
       const u = units[v] || {};
-      el.innerHTML = `<div class="head"><h3>${M2.SHORT_VAR[v] || v}${M2.info(M2.explain(v, d.template, d.code) + note)}</h3><span class="chip">${M2.esc(u.unit || "")}</span></div>
+      el.innerHTML = `<div class="head"><h3>${M2.SHORT_VAR[v] || v}${M2.info(M2.explain(v, d.template, d.code) + note)}</h3><span class="chips">${tag}<span class="chip">${M2.esc(u.unit || "")}</span></span></div>
         <p class="desc">${extra || "&nbsp;"}</p><div class="ch"></div>`;
       parent.appendChild(el);
       return el.querySelector(".ch");
@@ -94,7 +98,7 @@
         const inside = t.truth.filter((x, i) => x != null && x >= t.q05[i] && x <= t.q95[i]).length;
         if (n) extra = `<span class="${inside / n >= 0.8 ? "good" : "bad"}">In band: ${M2.pct(inside / n, 0)} of ${n} months.</span>`;
       }
-      M2.chart(card(totals, v, extra), { bands: [{ ...t, label: "total" }], truth: t.truth ? { month: t.month, value: t.truth } : null,
+      M2.chart(card(totals, v, extra, undefined, fromModel(v)), { bands: [{ ...t, label: "total" }], truth: t.truth ? { month: t.month, value: t.truth } : null,
                                          status: t, unit, yZero: !M2.isShare(v) && v !== "price" && v !== "unit_cost", yLabel: ylab(v) });
       const tr = d.series[v].tracked, rp = d.series[v].representative;
       if (tr && rp && !["price", "unit_cost", "lead_time", "utilization", "load_factor"].includes(v)) {
@@ -124,9 +128,6 @@
         points: r.month.map((m, i) => ({ month: m, y: r.m1[i], label: `bundle: ${M2.fmt(r.m1[i])}` })),
         yLabel: `${name} (series units)` });
     }
-    document.getElementById("ident").innerHTML = `<tr><th>quantity</th><th class="n">posterior / prior variance</th><th>prior-dominated</th></tr>` +
-      d.identifiability.map((r) => `<tr><td>${M2.SHORT_VAR[r.variable] || r.variable}</td><td class="n">${(+r.posterior_to_prior_variance).toFixed(2)}</td>
-        <td class="${String(r.prior_dominated) === "true" ? "warn" : ""}">${r.prior_dominated}</td></tr>`).join("");
     const mine = ents.filter((x) => x.sector === code);
     document.getElementById("ents").innerHTML = `<tr><th>entity</th><th>kind</th><th>company</th><th>size</th><th>region</th><th class="n">observations</th><th>observation types</th></tr>` +
       mine.map((x) => `<tr><td><a href="entity.html?e=${encodeURIComponent(x.id)}">${M2.esc(x.name)}</a></td><td>${x.kind}</td><td>${M2.esc(x.operator)}</td>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>What the data pin down · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=e126874-1794513609">
+<link rel="stylesheet" href="assets/site.css?v=06b8199-1794513824">
 <style>
   main > p, main > ul { max-width: 80ch; }
   .tiles2 { display: flex; flex-wrap: wrap; gap: 10px; margin: 8px 0 4px; }
@@ -25,6 +25,16 @@
   .ctl { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; font-size: 13px; margin: 6px 0 8px; color: var(--muted); }
   .ctl select { width: auto; font-size: 13px; padding: 2px 6px; }
   .sym { font-style: italic; white-space: nowrap; }
+  .pgrid td, .pgrid th { text-align: center; padding: 3px 4px; }
+  .pgrid th.q { font-size: 11px; font-weight: 500; color: var(--muted); vertical-align: bottom; max-width: 62px; line-height: 1.2; white-space: normal; }
+  .pgrid td.s, .pgrid th.s { text-align: left; white-space: nowrap; }
+  .pgrid td.c { font-size: 11.5px; font-variant-numeric: tabular-nums; min-width: 44px; border: 2px solid var(--bg); border-radius: 4px; }
+  .pgrid td.c.p3 { background: repeating-linear-gradient(135deg, var(--grid) 0 4px, transparent 4px 8px); color: var(--muted); }
+  .pgrid td.c.p0 { background: color-mix(in srgb, var(--good) 38%, transparent); }
+  .pgrid td.c.p1 { background: color-mix(in srgb, var(--good) 16%, transparent); }
+  .pgrid td.c.p2 { background: color-mix(in srgb, var(--warn) 34%, transparent); font-weight: 600; }
+  .gleg { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12.5px; color: var(--muted); margin: 6px 0; align-items: center; }
+  .gleg i { display: inline-block; width: 22px; height: 12px; border-radius: 3px; vertical-align: -2px; margin-right: 5px; }
   /* the view pills, filters and column labels stay in view while the long table scrolls */
   .pbar { position: sticky; top: var(--hdr, 43px); z-index: 3; background: var(--bg); padding-top: 4px; }
   .pbar .ctl { margin-bottom: 0; padding-bottom: 6px; }
@@ -61,8 +71,17 @@
   <div class="ptbl"><table id="ptab"></table></div>
   <p class="sub" id="more"></p>
 
+  <h2 id="totals">Sector totals</h2>
+  <p>The same question for the sector totals the forecasts show, such as a sector's output or its order book. The model
+  runs its filter twice over the same history, once with the observations and once without, and compares how much its
+  copies of the world disagree. Where the observations barely narrow that disagreement, the total is
+  <b>mostly from the model</b>: its estimate comes from the equations and drivers, not from data, and it would look
+  stable from one run to the next even if it were wrong. The forecast charts carry the same tag.</p>
+  <div class="gleg" id="gleg"></div>
+  <div class="tablewrap"><table class="pgrid" id="grid"></table></div>
+
 </main>
-<script src="assets/site.js?v=e126874-1794513609"></script>
+<script src="assets/site.js?v=06b8199-1794513824"></script>
 <script>
 (async () => {
   try {
@@ -151,6 +170,22 @@
     pbar();
     addEventListener("resize", pbar);
     new ResizeObserver(pbar).observe(document.getElementById("pbar"));
+
+    // sector totals: how much the observations narrow each one (posterior over prior variance)
+    const name = (v) => (M2.SHORT_VAR[v] || v).replace(/ \(.*\)$/, "");
+    const ORDER = ["capacity", "output", "utilization", "load_factor", "shipments", "new_orders", "backlog", "backlog_overdue",
+      "phantom_backlog", "lost_demand", "lead_time", "price", "unit_cost", "finished_stock", "input_inventory",
+      "capacity_in_use", "capacity_announced", "capacity_under_construction"];
+    const qs = ORDER.filter((v) => q.ident.some((x) => v in x.ratio));
+    const band = (r) => r > 1.2 ? "p3" : r > 0.8 ? "p2" : r > 0.5 ? "p1" : "p0";
+    document.getElementById("gleg").innerHTML = `<span><i class="p0" style="background:color-mix(in srgb, var(--good) 38%, transparent)"></i>pinned by the data (ratio 0.5 or less)</span>
+      <span><i style="background:color-mix(in srgb, var(--good) 16%, transparent)"></i>partly (0.5 to 0.8)</span>
+      <span><i style="background:color-mix(in srgb, var(--warn) 34%, transparent)"></i>mostly from the model (0.8 to 1.2)</span>
+      <span><i style="background:repeating-linear-gradient(135deg, var(--grid) 0 4px, transparent 4px 8px); border: 1px solid var(--line)"></i>wider with the data than without (above 1.2): not a measure of data, a sign the filter is unsettled there</span>
+      <span>Each number: spread with the observations ÷ spread without them. Blank: not part of the sector's template.</span>`;
+    document.getElementById("grid").innerHTML = `<tr><th class="s">sector</th>${qs.map((v) => `<th class="q">${M2.esc(name(v))}</th>`).join("")}</tr>` +
+      [...q.ident].sort((a, b) => short[a.sector].localeCompare(short[b.sector])).map((x) => `<tr><td class="s"><a href="sector.html?s=${x.sector}">${M2.esc(short[x.sector])}</a></td>` +
+        qs.map((v) => v in x.ratio ? `<td class="c ${band(x.ratio[v])}" title="${M2.esc(short[x.sector])}, ${M2.esc(name(v))}: ${x.ratio[v].toFixed(2)}">${x.ratio[v].toFixed(2)}</td>` : "<td></td>").join("") + "</tr>").join("");
 
   } catch (e) { M2.fail(e); }
 })();
