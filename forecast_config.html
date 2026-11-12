@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Model Configuration · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=6412150-1794517184">
+<link rel="stylesheet" href="assets/site.css?v=88c4a9b-1794517467">
 <style>
   main > p, main > ul { max-width: 80ch; }
   .wkv { display: grid; grid-template-columns: 230px 1fr; gap: 6px 16px; max-width: 980px; font-size: 14px; }
@@ -14,6 +14,7 @@
   .sym { font-style: italic; white-space: nowrap; }
   .c-fix { color: #92651a; }
   @media (prefers-color-scheme: dark) { .c-fix { color: #e0b866; } }
+  .cmp td.fnote { white-space: normal; min-width: 340px; max-width: 520px; font-size: 12.5px; color: var(--muted); line-height: 1.4; }
   .setby { font-size: 11px; color: var(--muted); }
   .setby.on { color: var(--accent); font-weight: 600; }
   .ctl { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; font-size: 13px; color: var(--muted); margin: 6px 0; }
@@ -76,7 +77,7 @@
   representative entities that stand for untracked establishments.</p>
   <div class="cmp tablewrap"><table id="estab"></table></div>
 </main>
-<script src="assets/site.js?v=6412150-1794517184"></script>
+<script src="assets/site.js?v=88c4a9b-1794517467"></script>
 <script>
 (async () => {
   try {
@@ -89,11 +90,30 @@
     const row = (k, v) => v == null || v === "" ? "" : `<span class="k">${k}</span><span>${v}</span>`;
     const sym = (s) => M2.esc(s).replace(/\^([\p{L}\w]+)/gu, "<sup>$1</sup>").replace(/_([\p{L}\w]+)/gu, "<sub>$1</sub>");
 
+    // a plain reading of each sector's fixed values: how demand and capacity have moved since the window began,
+    // what that does to demand pressure against its fixed starting level, and how long goods take to ship
+    const ch = (v) => { const p = Math.round(100 * (Math.exp(v) - 1)); return p === 0 ? "unchanged" : `${p > 0 ? "up" : "down"} ${Math.abs(p)}%`; };
+    const start = meta.time_grid?.history_start;
+    const UNITS = { seat_mile: "seat-miles", patient_day: "patient-days", room_night: "room-nights", usd_2017: "in 2017 dollars",
+      MW: "MW", boe: "barrels of oil equivalent", tonne: "tonnes", vehicle: "vehicles", home: "homes", wafer: "wafers" };
+    const SERVICE = new Set(["perishable_service", "contracted_capacity"]);
+    const note = (s) => {
+      const ship = s.transit ? `Goods take about ${Math.round(30 * s.transit)} days to reach customers.`
+        : SERVICE.has(s.template) ? "Nothing is shipped: the service is used where it is sold."
+        : "The model counts no shipping time for this sector.";
+      if (s.D_now == null || s.K_now == null) return ship;
+      const dD = s.D_now - s.Dbar, dK = Math.log(s.K_now / s.K0), px = Math.round(100 * (Math.exp(dD - dK) - 1));
+      const level = Math.abs(px) < 2 ? "about where it started" : px > 0 ? `${px}% above where it started` : `${-px}% below where it started`;
+      const effect = s.template === "contracted_capacity" ? " (here it shows up in leasing, not in how hard sites run)"
+        : Math.abs(px) < 2 ? ", neither pushing nor holding back utilization" : px > 0 ? ", pushing utilization up" : ", holding utilization down";
+      return `By ${s.last}, real demand is ${ch(dD)} on its early-window level and capacity is ${ch(dK)} from ${M2.fmt(s.K0)} ${UNITS[s.unit] || unit(s.unit)} a month,
+        so demand pressure is ${level}${effect}. ${ship}`;
+    };
     document.getElementById("fixed").innerHTML = `<tr><th>sector</th><th>template</th><th class="n"><span class="sym c-fix">D̄</span></th>
-      <th class="n"><span class="sym c-fix">x̄</span></th><th class="n"><span class="sym c-fix">K₀</span></th><th class="n"><span class="sym c-fix">transit</span> (months)</th></tr>` +
+      <th class="n"><span class="sym c-fix">x̄</span></th><th class="n"><span class="sym c-fix">K₀</span></th><th class="n"><span class="sym c-fix">transit</span> (months)</th><th>Notes</th></tr>` +
       secs.map((s) => `<tr><td><a href="sector.html?s=${s.code}">${M2.esc(short[s.code])}</a></td><td class="muted">${s.template.replace(/_/g, " ")}</td>
         <td class="n">${f(s.Dbar)}</td><td class="n">${f(s.xbar)}</td><td class="n">${M2.fmt(s.K0)} <span class="muted">${unit(s.unit)}</span></td>
-        <td class="n">${f(s.transit)}</td></tr>`).join("");
+        <td class="n">${f(s.transit)}</td><td class="fnote">${note(s)}</td></tr>`).join("");
     const r = c.run, bi = r.band_inflation;
     document.getElementById("kc").textContent = r.lead_time_congestion === "on" ? "on (κ_C = 1)" : "off (κ_C = 0)";
     document.getElementById("runkv").innerHTML = [
