@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Model Structure · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=146cceb-1794499594">
+<link rel="stylesheet" href="assets/site.css?v=b5106bf-1794500063">
 <style>
   main > p, main > ul, main > ol { max-width: 78ch; }
   main > .eqcard, main > figure, main > .tablewrap { max-width: 1000px; }
@@ -18,7 +18,15 @@
   .eqcard p { margin: 4px 0 8px; }
   .pl { font-size: 12.5px; color: var(--muted); }
   .eq i, .sym { font-style: italic; }
-  figure { margin: 10px 0 18px; }
+  figure { margin: 10px 0 18px; position: relative; }
+  .fl .node { cursor: pointer; outline: none; }
+  .fl .node:hover rect, .fl .node:focus rect { stroke: var(--accent); stroke-width: 2; }
+  .fl .fbl { fill: var(--truth); }
+  .eqtip { position: absolute; z-index: 4; background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12); padding: 8px 12px; max-width: min(640px, 92vw); pointer-events: none; }
+  .eqtip h4 { margin: 2px 0; font-size: 13px; display: flex; gap: 8px; align-items: baseline; }
+  .eqtip h4 span { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11px; color: var(--muted); font-weight: 400; }
+  .eqtip .eq { margin: 4px 0 6px; font-size: 15px; overflow: hidden; }
   figure svg { max-width: 100%; height: auto; display: block; }
   figcaption { font-size: 13px; color: var(--muted); max-width: 78ch; }
   figcaption p, figcaption ul { margin: 6px 0; }
@@ -62,39 +70,45 @@
 
   <h2 id="picture">One month at a glance</h2>
   <figure>
-    <svg class="fl" viewBox="0 0 910 300" role="img" aria-label="Demand drives orders into the order book; the order book and capacity set output and shipments; tightness feeds back into utilization, price and order inflation">
+    <svg class="fl" viewBox="0 -14 880 434" role="img" aria-label="Demand drives orders into the order book; the order book and capacity set output and shipments; tightness feeds back into utilization, price and order inflation">
       <defs><marker id="ar" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L8,4 L0,8 z" style="fill: var(--muted); stroke: none"/></marker>
         <marker id="arf" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L8,4 L0,8 z" style="fill: var(--truth); stroke: none"/></marker></defs>
-      <rect class="drv" x="10" y="30" width="140" height="44" rx="6"/><text x="80" y="50" text-anchor="middle">Sector demand</text><text class="lbl" x="80" y="65" text-anchor="middle">driver, after prices</text>
-      <rect class="drv" x="10" y="242" width="140" height="44" rx="6"/><text x="80" y="262" text-anchor="middle">Input cost</text><text class="lbl" x="80" y="277" text-anchor="middle">driver</text>
-      <rect class="box" x="200" y="30" width="140" height="44" rx="6"/><text x="270" y="50" text-anchor="middle">New orders</text><text class="lbl" x="270" y="65" text-anchor="middle">L6</text>
-      <rect class="box" x="390" y="30" width="140" height="44" rx="6"/><text x="460" y="50" text-anchor="middle">Order book</text><text class="lbl" x="460" y="65" text-anchor="middle">L9</text>
-      <rect class="box" x="580" y="30" width="140" height="44" rx="6"/><text x="650" y="50" text-anchor="middle">Shipments</text><text class="lbl" x="650" y="65" text-anchor="middle">L8</text>
-      <rect class="box" x="200" y="136" width="140" height="44" rx="6"/><text x="270" y="156" text-anchor="middle">Capacity</text><text class="lbl" x="270" y="171" text-anchor="middle">L1</text>
-      <rect class="box" x="390" y="136" width="140" height="44" rx="6"/><text x="460" y="156" text-anchor="middle">Utilization → output</text><text class="lbl" x="460" y="171" text-anchor="middle">L3</text>
-      <rect class="box" x="580" y="136" width="140" height="44" rx="6"/><text x="650" y="156" text-anchor="middle">Finished stock</text><text class="lbl" x="650" y="171" text-anchor="middle">L11</text>
-      <rect class="box" x="760" y="136" width="140" height="44" rx="6"/><text x="830" y="156" text-anchor="middle">Tightness, lead time</text><text class="lbl" x="830" y="171" text-anchor="middle">L13</text>
-      <rect class="box" x="200" y="242" width="140" height="44" rx="6"/><text x="270" y="262" text-anchor="middle">Unit cost</text><text class="lbl" x="270" y="277" text-anchor="middle">L4</text>
-      <rect class="box" x="390" y="242" width="140" height="44" rx="6"/><text x="460" y="262" text-anchor="middle">Markup → price</text><text class="lbl" x="460" y="277" text-anchor="middle">L5</text>
-      <line x1="150" y1="52" x2="198" y2="52" marker-end="url(#ar)"/>
-      <line x1="150" y1="264" x2="198" y2="264" marker-end="url(#ar)"/>
-      <line x1="340" y1="52" x2="388" y2="52" marker-end="url(#ar)"/><text class="lbl" x="364" y="44" text-anchor="middle">placed</text>
-      <line x1="530" y1="52" x2="578" y2="52" marker-end="url(#ar)"/><text class="lbl" x="554" y="44" text-anchor="middle">due</text>
-      <line x1="340" y1="158" x2="388" y2="158" marker-end="url(#ar)"/><text class="lbl" x="364" y="150" text-anchor="middle">limits</text>
-      <line x1="530" y1="158" x2="578" y2="158" marker-end="url(#ar)"/><text class="lbl" x="554" y="150" text-anchor="middle">made</text>
-      <line x1="650" y1="136" x2="650" y2="76" marker-end="url(#ar)"/><text class="lbl" x="644" y="126" text-anchor="end">shipped from</text>
-      <line x1="340" y1="264" x2="388" y2="264" marker-end="url(#ar)"/><text class="lbl" x="364" y="256" text-anchor="middle">+ markup</text>
-      <line x1="720" y1="158" x2="758" y2="158" marker-end="url(#ar)"/>
-      <path d="M 460 30 V 14 H 830 V 134" marker-end="url(#ar)"/><text class="lbl" x="836" y="40">book ÷ output</text>
-      <path d="M 120 74 C 150 112, 400 104, 440 134" marker-end="url(#ar)"/><text class="lbl" x="170" y="118">demand pressure</text>
-      <path class="fb" d="M 790 180 C 770 214, 520 214, 490 182" marker-end="url(#arf)"/><text class="lbl" x="640" y="226" text-anchor="middle" style="fill: var(--truth)">runs harder</text>
-      <path class="fb" d="M 850 180 C 850 264, 640 264, 532 264" marker-end="url(#arf)"/><text class="lbl" x="700" y="280" text-anchor="middle" style="fill: var(--truth)">raises margin</text>
-      <path class="fb" d="M 780 136 C 760 92, 330 96, 290 76" marker-end="url(#arf)"/><text class="lbl" x="540" y="88" text-anchor="middle" style="fill: var(--truth)">long lead times: over-ordering</text>
+      <line x1="150" y1="62" x2="188" y2="62" marker-end="url(#ar)"/>
+      <line x1="330" y1="62" x2="368" y2="62" marker-end="url(#ar)"/><text class="lbl" x="349" y="54" text-anchor="middle">placed</text>
+      <line x1="510" y1="62" x2="548" y2="62" marker-end="url(#ar)"/><text class="lbl" x="529" y="54" text-anchor="middle">due</text>
+      <line x1="260" y1="84" x2="260" y2="138" marker-end="url(#ar)"/><text class="lbl" x="266" y="116" text-anchor="start">extra orders</text>
+      <path d="M 330 150 C 400 150, 420 120, 420 86" marker-end="url(#ar)"/><text class="lbl" x="428" y="114" text-anchor="start">cancelled</text>
+      <path d="M 80 84 V 210 H 410 V 238" marker-end="url(#ar)"/><text class="lbl" x="160" y="204" text-anchor="middle">demand pressure</text>
+      <line x1="330" y1="262" x2="368" y2="262" marker-end="url(#ar)"/><text class="lbl" x="349" y="254" text-anchor="middle">limits</text>
+      <line x1="510" y1="262" x2="548" y2="262" marker-end="url(#ar)"/><text class="lbl" x="529" y="254" text-anchor="middle">made</text>
+      <line x1="620" y1="240" x2="620" y2="86" marker-end="url(#ar)"/><text class="lbl" x="614" y="200" text-anchor="end">shipped from</text>
+      <line x1="690" y1="262" x2="728" y2="262" marker-end="url(#ar)"/>
+      <path d="M 470 40 V 26 H 770 V 238" marker-end="url(#ar)"/><text class="lbl" x="764" y="150" text-anchor="end">book ÷ output</text>
+      <path d="M 410 284 V 304 H 80 V 286" marker-end="url(#ar)"/><text class="lbl" x="250" y="298" text-anchor="middle">inputs used</text>
+      <line x1="150" y1="362" x2="188" y2="362" marker-end="url(#ar)"/>
+      <line x1="330" y1="362" x2="368" y2="362" marker-end="url(#ar)"/>
+      <path class="fb" d="M 830 240 V 12 H 230 V 38" marker-end="url(#arf)"/><text class="lbl fbl" x="530" y="6" text-anchor="middle">long lead times: over-ordering</text>
+      <path class="fb" d="M 760 284 V 318 H 470 V 286" marker-end="url(#arf)"/><text class="lbl fbl" x="615" y="332" text-anchor="middle">runs harder</text>
+      <path class="fb" d="M 840 284 V 410 H 460 V 388" marker-end="url(#arf)"/><text class="lbl fbl" x="650" y="403" text-anchor="middle">raises margin</text>
+      <g class="node" data-eq="L2" tabindex="0" role="button" aria-label="Demand, price: show equation L2"><rect class="drv" x="10" y="40" width="140" height="44" rx="6"/><text x="80" y="60" text-anchor="middle">Demand, price</text><text class="lbl" x="80" y="75" text-anchor="middle">drivers · L2</text></g>
+      <g class="node" data-eq="L6" tabindex="0" role="button" aria-label="New orders: show equation L6"><rect class="box" x="190" y="40" width="140" height="44" rx="6"/><text x="260" y="60" text-anchor="middle">New orders</text><text class="lbl" x="260" y="75" text-anchor="middle">L6</text></g>
+      <g class="node" data-eq="L9" tabindex="0" role="button" aria-label="Order book: show equation L9"><rect class="box" x="370" y="40" width="140" height="44" rx="6"/><text x="440" y="60" text-anchor="middle">Order book</text><text class="lbl" x="440" y="75" text-anchor="middle">L9</text></g>
+      <g class="node" data-eq="L8" tabindex="0" role="button" aria-label="Shipments: show equation L8"><rect class="box" x="550" y="40" width="140" height="44" rx="6"/><text x="620" y="60" text-anchor="middle">Shipments</text><text class="lbl" x="620" y="75" text-anchor="middle">L8</text></g>
+      <g class="node" data-eq="L7,L10" tabindex="0" role="button" aria-label="Phantom orders: show equation L7,L10"><rect class="box" x="190" y="140" width="140" height="44" rx="6"/><text x="260" y="160" text-anchor="middle">Phantom orders</text><text class="lbl" x="260" y="175" text-anchor="middle">cancellations · L7, L10</text></g>
+      <g class="node" data-eq="L12" tabindex="0" role="button" aria-label="Input inventory: show equation L12"><rect class="box" x="10" y="240" width="140" height="44" rx="6"/><text x="80" y="260" text-anchor="middle">Input inventory</text><text class="lbl" x="80" y="275" text-anchor="middle">L12</text></g>
+      <g class="node" data-eq="L1" tabindex="0" role="button" aria-label="Capacity: show equation L1"><rect class="box" x="190" y="240" width="140" height="44" rx="6"/><text x="260" y="260" text-anchor="middle">Capacity</text><text class="lbl" x="260" y="275" text-anchor="middle">L1</text></g>
+      <g class="node" data-eq="L3" tabindex="0" role="button" aria-label="Utilization → output: show equation L3"><rect class="box" x="370" y="240" width="140" height="44" rx="6"/><text x="440" y="260" text-anchor="middle">Utilization → output</text><text class="lbl" x="440" y="275" text-anchor="middle">L3</text></g>
+      <g class="node" data-eq="L11" tabindex="0" role="button" aria-label="Finished stock: show equation L11"><rect class="box" x="550" y="240" width="140" height="44" rx="6"/><text x="620" y="260" text-anchor="middle">Finished stock</text><text class="lbl" x="620" y="275" text-anchor="middle">L11</text></g>
+      <g class="node" data-eq="L13" tabindex="0" role="button" aria-label="Tightness, lead time: show equation L13"><rect class="box" x="730" y="240" width="140" height="44" rx="6"/><text x="800" y="260" text-anchor="middle">Tightness, lead time</text><text class="lbl" x="800" y="275" text-anchor="middle">L13</text></g>
+      <g class="node" data-eq="L4" tabindex="0" role="button" aria-label="Input cost: show equation L4"><rect class="drv" x="10" y="340" width="140" height="44" rx="6"/><text x="80" y="360" text-anchor="middle">Input cost</text><text class="lbl" x="80" y="375" text-anchor="middle">driver</text></g>
+      <g class="node" data-eq="L4" tabindex="0" role="button" aria-label="Unit cost: show equation L4"><rect class="box" x="190" y="340" width="140" height="44" rx="6"/><text x="260" y="360" text-anchor="middle">Unit cost</text><text class="lbl" x="260" y="375" text-anchor="middle">L4</text></g>
+      <g class="node" data-eq="L5" tabindex="0" role="button" aria-label="Markup → price: show equation L5"><rect class="box" x="370" y="340" width="140" height="44" rx="6"/><text x="440" y="360" text-anchor="middle">Markup → price</text><text class="lbl" x="440" y="375" text-anchor="middle">L5</text></g>
     </svg>
+    <div class="eqtip" id="eqtip" hidden></div>
     <figcaption>
       <p class="key"><span><svg width="34" height="10" aria-hidden="true"><line x1="0" y1="5" x2="34" y2="5" style="stroke: var(--muted); stroke-width: 1.5"/></svg>
         within the month</span><span><svg width="34" height="10" aria-hidden="true"><line x1="0" y1="5" x2="34" y2="5" style="stroke: var(--truth); stroke-width: 1.5; stroke-dasharray: 4 3"/></svg>
-        feedback into next month</span></p>
+        feedback into next month</span><span>hover over a box for its equation; click to go to it</span></p>
       <p>The chain for a factory that makes goods to order. The grey arrows are one month's flow: demand brings orders
       into the order book; capacity and utilization set output; what falls due is shipped from output and stock.</p>
       <p>The orange arrows close the loop. At the end of each month the entity's <b>tightness</b> is how far it is
@@ -376,7 +390,7 @@
     band; the published sector bands are then widened by factors from backtests.</li>
   </ol>
 </main>
-<script src="assets/site.js?v=146cceb-1794499594"></script>
+<script src="assets/site.js?v=b5106bf-1794500063"></script>
 <script>
 (async () => {
   try {
@@ -453,6 +467,37 @@
       render();
     });
     render();
+    // diagram: each box shows its equation(s), taken from the equation cards below
+    const cards = {};
+    for (const c of document.querySelectorAll(".eqcard")) {
+      const tag = c.querySelector("h3 .tag")?.textContent.trim(), eq = c.querySelector(".eq");
+      if (!tag || !eq) continue;
+      const title = [...c.querySelector("h3").childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent).join("").trim();
+      for (const t of tag.split(/[,\s]+/)) cards[t] = { card: c, title, tag, eq: eq.innerHTML };
+      c.id ||= "eq-" + tag.replace(/[^A-Za-z0-9]+/g, "-");
+    }
+    const tip = document.getElementById("eqtip"), fig = tip.parentElement;
+    const show = (g) => {
+      const hits = g.dataset.eq.split(",").map((t) => cards[t] || cards[Object.keys(cards).find((k) => k.startsWith(t + "–"))]).filter(Boolean);
+      if (!hits.length) return;
+      tip.innerHTML = hits.map((h) => `<h4>${M2.esc(h.title)} <span>${M2.esc(h.tag)}</span></h4><div class="eq">${h.eq}</div>`).join("");
+      tip.hidden = false;
+      const r = g.getBoundingClientRect(), f = fig.getBoundingClientRect();
+      const left = Math.max(0, Math.min(r.left - f.left, f.width - tip.offsetWidth));
+      const below = r.bottom - f.top + 6, above = r.top - f.top - tip.offsetHeight - 6;
+      tip.style.left = left + "px";
+      tip.style.top = (r.top - f.top > f.height / 2 && above > 0 ? above : below) + "px";
+    };
+    const nodes = document.querySelectorAll(".fl .node");
+    nodes.forEach((g) => {
+      g.addEventListener("mouseenter", () => show(g));
+      g.addEventListener("focus", () => show(g));
+      g.addEventListener("mouseleave", () => { tip.hidden = true; });
+      g.addEventListener("blur", () => { tip.hidden = true; });
+      const go = () => { const t = g.dataset.eq.split(",")[0]; (cards[t] || cards[Object.keys(cards).find((k) => k.startsWith(t + "–"))])?.card.scrollIntoView({ behavior: "smooth", block: "center" }); };
+      g.addEventListener("click", go);
+      g.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
+    });
     if (location.hash) document.getElementById(location.hash.slice(1))?.scrollIntoView();
   } catch (e) { M2.fail(e); }
 })();
