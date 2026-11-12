@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Model Configuration · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=c7a380b-1794518434">
+<link rel="stylesheet" href="assets/site.css?v=91c7d6a-1794519495">
 <style>
   main > p, main > ul { max-width: 80ch; }
   .wkv { display: grid; grid-template-columns: 230px 1fr; gap: 6px 16px; max-width: 980px; font-size: 14px; }
@@ -34,8 +34,8 @@
   <a href="forecast_model.html">Model Structure</a> they are the symbols marked <b class="c-fix">Fixed, not learned</b>.</p>
 
   <h2>Fixed values in the equations</h2>
-  <p>The symbols marked "Fixed, not learned" on Model Structure, sector by sector. Real demand <span class="sym">D</span>
-  and capacity <span class="sym">K</span> are on the log scale; K₀ is shown in the sector's own units per month. Hover
+  <p>The symbols marked "Fixed, not learned" on Model Structure, sector by sector. Here D̄ is shown as a demand index (January 2010 = 100), K₀ in the sector's own
+  units and shipping time in days. Hover
   over (or tap) the ⓘ beside a value for what it means.</p>
   <div class="cmp tablewrap"><table id="fixed"></table></div>
   <ul class="sub">
@@ -81,7 +81,7 @@
   representative entities that stand for untracked establishments.</p>
   <div class="cmp tablewrap"><table id="estab"></table></div>
 </main>
-<script src="assets/site.js?v=c7a380b-1794518434"></script>
+<script src="assets/site.js?v=91c7d6a-1794519495"></script>
 <script>
 (async () => {
   try {
@@ -100,6 +100,10 @@
     const start = meta.time_grid?.history_start;
     const UNITS = { seat_mile: "seat-miles", patient_day: "patient-days", room_night: "room-nights", usd_2017: "in 2017 dollars",
       MW: "MW", boe: "barrels of oil equivalent", tonne: "tonnes", vehicle: "vehicles", home: "homes", wafer: "wafers" };
+    // capacity with its unit, as a reader would say it: "3.19M tonnes/month", "$4.66B/month (2017 dollars)", "2,724 MW"
+    const capText = (v, un) => un === "usd_2017" ? `$${M2.fmt(v)}/month <span class="muted">(2017 dollars)</span>`
+      : un === "MW" ? `${M2.fmt(v)} MW` : `${M2.fmt(v)} <span class="muted">${UNITS[un] || unit(un)}/month</span>`;
+    const index = (d) => (100 * Math.exp(d)).toFixed(1);
     const SERVICE = new Set(["perishable_service", "contracted_capacity"]);
     // the demand drivers are indexes set to 0 (log) in January 2010; the window starts at history_start
     const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -115,12 +119,12 @@
       const have = s.D_now != null && s.K_now != null;
       const dD = have ? s.D_now - s.Dbar : null, dK = have ? Math.log(s.K_now / s.K0) : null;
       // D̄: orders are balanced at this demand level; demand away from it moves orders by β^O
-      let D = `The demand level at which this sector's firms get exactly their normal output in orders, set from ${mon(start)} to ${mon(plus(start, 23))}.`
-        + ` Each 1% of real demand above it adds about ${f(s.betaO, 2)}% to their orders.`;
+      let D = `From ${mon(start)} to ${mon(plus(start, 23))} this sector's demand, adjusted for prices, averaged ${index(s.Dbar)} (January 2010 = 100).`
+        + ` That is its normal demand: at this level firms get orders equal to their normal output, and each 1% more demand adds about ${f(s.betaO, 2)}% to their orders.`;
       if (have && s.betaO != null) {
         const o = s.betaO * dD;
-        D += Math.abs(Math.exp(o) - 1) < 0.01 ? ` In ${when} demand is close to it, so orders run near normal on that account.`
-          : ` In ${when} demand is ${pct1(dD)} ${dD > 0 ? "above" : "below"} it, so orders run about ${pct1(o)} ${o > 0 ? "above" : "below"} normal on that account.`;
+        D += Math.abs(Math.exp(o) - 1) < 0.01 ? ` In ${when} demand is ${index(s.D_now)}, close to normal, so orders run near normal on that account.`
+          : ` In ${when} demand is ${index(s.D_now)}, ${pct1(dD)} ${dD > 0 ? "above" : "below"} normal, so orders run about ${pct1(o)} ${o > 0 ? "above" : "below"} normal on that account.`;
       }
       // x̄: utilization is normal at this demand pressure; pressure away from it moves utilization by β
       let x;
@@ -145,15 +149,15 @@
     };
     document.getElementById("fixed").innerHTML = `<tr><th>sector</th>
       <th>template</th>
-      <th class="n"><span class="sym c-fix">D̄</span>${M2.info("Baseline real demand (L6): the demand level at which firms get exactly their normal output in orders. Demand above it raises orders; below it, lowers them.")}</th>
-      <th class="n"><span class="sym c-fix">x̄</span>${M2.info("Baseline demand pressure (L3): the balance of demand against capacity at which firms run at their normal rate. Pressure above it makes them run harder.")}</th>
-      <th class="n"><span class="sym c-fix">K₀</span>${M2.info("Starting sector capacity (L6): the yardstick for market share. A firm's share of orders follows its capacity measured against it.")}</th>
-      <th class="n"><span class="sym c-fix">transit</span> (months)${M2.info("Shipping time (L13): added to every lead time a firm quotes, so it is part of how long a customer waits.")}</th></tr>` +
+      <th class="n"><span class="sym c-fix">D̄</span> <span class="muted">(index)</span>${M2.info("Normal demand (L6). The sector's demand, adjusted for prices, averaged over the first two years of the fit window and written as an index: 100 is the January 2010 level, so 108 means 8% more. The model treats this as normal: firms get orders equal to their normal output when demand is here, more when it is higher, fewer when lower.")}</th>
+      <th class="n"><span class="sym c-fix">x̄</span>${M2.info("Normal demand pressure (L3): demand set against capacity at the start of the window. Firms run at their normal rate when pressure is here and harder when it is higher. It is a reference point with no unit of its own (the demand index minus the log of capacity), so only changes from it mean anything.")}</th>
+      <th class="n"><span class="sym c-fix">K₀</span>${M2.info("The sector's capacity at the start of the window: the most all its firms together could produce in a month. It is the yardstick for market share: a firm's share of orders follows its capacity measured against it (L6).")}</th>
+      <th class="n"><span class="sym c-fix">transit</span> <span class="muted">(days)</span>${M2.info("Shipping time (L13): added to every lead time a firm quotes, so it is part of how long a customer waits.")}</th></tr>` +
       secs.map((s) => { const e = explain(s);
         return `<tr><td><a href="sector.html?s=${s.code}">${M2.esc(short[s.code])}</a></td><td class="muted">${s.template.replace(/_/g, " ")}</td>
-        <td class="n">${f(s.Dbar)}${M2.info(e.D)}</td><td class="n">${f(s.xbar)}${M2.info(e.x)}</td>
-        <td class="n">${M2.fmt(s.K0)} <span class="muted">${unit(s.unit)}</span>${M2.info(e.K)}</td>
-        <td class="n">${f(s.transit)}${M2.info(e.t)}</td></tr>`; }).join("");
+        <td class="n">${index(s.Dbar)}${M2.info(e.D)}</td><td class="n">${f(s.xbar)}${M2.info(e.x)}</td>
+        <td class="n">${capText(s.K0, s.unit)}${M2.info(e.K)}</td>
+        <td class="n">${Math.round(30 * (s.transit || 0))}${M2.info(e.t)}</td></tr>`; }).join("");
     const r = c.run, bi = r.band_inflation;
     document.getElementById("kc").textContent = r.lead_time_congestion === "on" ? "on (κ_C = 1)" : "off (κ_C = 0)";
     document.getElementById("runkv").innerHTML = [
