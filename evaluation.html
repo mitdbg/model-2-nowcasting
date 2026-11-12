@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Without Ground Truth · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=045bece-1794511146">
+<link rel="stylesheet" href="assets/site.css?v=f939f3f-1794511664">
 <style>
   main > p, main > ul { max-width: 80ch; }
   .tiles2 { display: flex; flex-wrap: wrap; gap: 10px; margin: 8px 0 4px; }
@@ -20,19 +20,8 @@
 <main>
   <h1>Without Ground Truth</h1>
   <p class="sub">Measures of quality that need no ground truth, so they work on a real world as well as a synthetic one.
-  The first set is the most telling: it checks forecasts against what came later. The rest check how well the model
-  fits the data it has used, which is a weaker test, since a model always looks better on data it has seen.</p>
-
-  <h2>Forecasts against later estimates</h2>
-  <p>At each run date of the backtest (<span id="dates"></span>), the model made a nowcast and a year of forecasts. A year
-  later the next run, with a year more observations, estimated the same months again. That later estimate is not the
-  truth, but it is better informed, so a good forecast should land near it: the later estimate should fall inside the
-  earlier 90% band about 90% of the time, and the revision should be small. Bands are as published, after widening.</p>
-  <div class="tiles2" id="revtiles"></div>
-  <div class="two">
-    <div><h3>By sector</h3><div class="tablewrap"><table id="revsec"></table></div></div>
-    <div><h3>By quantity</h3><div class="tablewrap"><table id="revvar"></table></div></div>
-  </div>
+  They check how well the model fits the data it has used, which is a weaker test than
+  <a href="eval_revisions.html">forecasts against later estimates</a>, since a model always looks better on data it has seen.</p>
 
   <h2>Observations against the model</h2>
   <p>Each observation against the model's prediction of it, plus the observation's own noise. About 90% should fall
@@ -58,7 +47,7 @@
   alone carry them.</p>
   <div class="tablewrap"><table id="pin"></table></div>
 </main>
-<script src="assets/site.js?v=045bece-1794511146"></script>
+<script src="assets/site.js?v=f939f3f-1794511664"></script>
 <script>
 (async () => {
   try {
@@ -71,21 +60,6 @@
     const pct = (v, d = 0) => v == null ? "–" : M2.pct(v, d);
     const tile = (v, l, cls = "") => `<div class="tile"><div class="v ${cls}">${v}</div><div class="l">${l}</div></div>`;
     const name = (v) => (M2.SHORT_VAR[v] || v).replace(/ \(.*\)$/, "");
-
-    const rv = q.revisions;
-    if (rv) {
-      document.getElementById("dates").textContent = rv.pairs.map((p) => p.replace(" → next", "")).join(", ");
-      const H = { nowcast: "nowcast", "1-6": "forecast, 1–6 months ahead", "7-12": "forecast, 7–12 months ahead" };
-      document.getElementById("revtiles").innerHTML = ["nowcast", "1-6", "7-12"].map((h) => rv.by_horizon.find((x) => x.horizon === h)).filter(Boolean)
-        .map((x) => tile(`${pct(x.inside)} · ${pct(x.err, 1)}`, `${H[x.horizon]}: inside the band · median revision (${x.n.toLocaleString()} values)`, cov(x.inside, x.n))).join("");
-      document.getElementById("revsec").innerHTML = `<tr><th>sector</th><th class="n">inside band</th><th class="n">median revision</th><th class="n">values</th></tr>` +
-        bySec(rv.by_sector).map((x) => `<tr><td>${M2.esc(short[x.sector] || x.sector)}</td><td class="n ${cov(x.inside, x.n)}">${pct(x.inside)}</td>
-          <td class="n">${pct(x.err, 1)}</td><td class="n muted">${x.n}</td></tr>`).join("");
-      const fmtErr = (x) => x.err == null ? "–" : x.unit === "pp" ? (100 * x.err).toFixed(1) + " pp" : x.unit === "months" ? x.err.toFixed(2) + " mo" : pct(x.err, 1);
-      document.getElementById("revvar").innerHTML = `<tr><th>quantity</th><th class="n">inside band</th><th class="n">median revision</th></tr>` +
-        [...rv.by_variable].sort((a, b) => name(a.variable).localeCompare(name(b.variable))).map((x) =>
-          `<tr><td>${M2.esc(name(x.variable))}</td><td class="n ${cov(x.inside, x.n)}">${pct(x.inside)}</td><td class="n">${fmtErr(x)}</td></tr>`).join("");
-    } else document.getElementById("revtiles").innerHTML = `<p class="muted">This workspace has only one run date, so there is nothing to compare yet.</p>`;
 
     const oa = q.obs_all;
     document.getElementById("obstiles").innerHTML = tile(pct(oa.inside, 1), `inside the band (${oa.n.toLocaleString()} observations)`, cov(oa.inside, oa.n)) +

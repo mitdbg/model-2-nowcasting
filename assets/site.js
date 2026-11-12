@@ -14,13 +14,13 @@ M2.param = (k) => new URLSearchParams(location.search).get(k);
 M2.esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
 M2.PAGES = [["index.html", "Overview"], ["world_overview.html", "Current World"], ["forecast_overview.html", "Current Forecast"],
-            ["evaluation.html", "Evaluation"],
+            ["eval_revisions.html", "Evaluation"],
             ["https://claude.ai/artifact/GbJQDmoHyttq2W6xiSyJ5w", "Development Dashboard"]];
 // Pages shown as sub-tabs under a top-level tab, chosen near the top of the page.
 M2.SUBPAGES = {"index.html": [["index.html", "Introduction"], ["howitworks.html", "How It Works"], ["datamodel.html", "Data Model"], ["forecast_model.html", "Model Structure"]],
   "world_overview.html": [["world_overview.html", "Introduction"], ["world_entities.html", "Entities"], ["world_observations.html", "Observations"], ["world_bundle.html", "Sector input bundle"]],
   "forecast_overview.html": [["forecast_overview.html", "Introduction"], ["forecast_fit.html", "Fitted Parameters"], ["sector.html", "Forecasts"]],
-  "evaluation.html": [["evaluation.html", "Without Ground Truth"], ["accuracy.html", "With Ground Truth"]]};
+  "eval_revisions.html": [["eval_revisions.html", "Forecasts against later estimates"], ["evaluation.html", "Without Ground Truth"], ["accuracy.html", "With Ground Truth"]]};
 // Pages reached through a sub-tab without being one: they light up that sub-tab.
 M2.SUBALIAS = {"entity.html": "sector.html", "groupings.html": "world_entities.html"};
 // The Forecasts sub-tab's search panel, on the left of sector.html and entity.html: facets narrow one list
