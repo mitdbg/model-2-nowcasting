@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Model Structure · Model 2 (dev)</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital@0;1&display=swap">
-<link rel="stylesheet" href="assets/site.css?v=e7ce44b-1794503296">
+<link rel="stylesheet" href="assets/site.css?v=3099713-1794504272">
 <style>
   main > p, main > ul, main > ol { max-width: 78ch; }
   main > .eqcard, main > figure, main > .tablewrap { max-width: 1000px; }
@@ -46,6 +46,7 @@
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12); padding: 8px 12px; max-width: min(760px, 92vw); pointer-events: none; }
   .eqtip h4 { margin: 2px 0; font-size: 13px; display: flex; gap: 8px; align-items: baseline; }
   .eqtip h4 span { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11px; color: var(--muted); font-weight: 400; }
+  .eqtip h4 em { font-style: normal; font-weight: 400; font-size: 11.5px; color: var(--muted); margin-left: auto; }
   .eqtip .eq { margin: 4px 0 6px; font-size: 15px; overflow: hidden; }
   .eqtip p { margin: 0 0 8px; font-size: 13px; line-height: 1.45; color: var(--fg); }
   .eqtip a { color: inherit; text-decoration: none; }
@@ -91,8 +92,7 @@
   <span class="k c-shk">Random shock</span> drawn afresh each month.</span></p>
   <nav class="toc" aria-label="On this page">
     <a href="#picture">One month at a glance</a><a href="#states">Hidden states</a><a href="#drivers">Drivers</a>
-    <a href="#capacity">Capacity</a><a href="#output">Utilization and output</a><a href="#price">Cost and price</a>
-    <a href="#orders">Orders and the order book</a><a href="#stocks">Stocks</a><a href="#leadtime">Lead time and tightness</a>
+    <a href="#variants">Other kinds of business</a>
     <a href="#shocks">Shocks</a><a href="#templates">Templates</a><a href="#params">Parameters</a>
     <a href="#fitted">Fitted values</a><a href="#obs">Observations</a><a href="#totals">Sector totals</a>
     <a href="#filter">How the forecast is made</a>
@@ -142,7 +142,7 @@
       <p class="key"><span><svg width="28" height="16" aria-hidden="true"><rect x="1" y="1" width="26" height="14" rx="3" style="fill: var(--band2); stroke: var(--accent)"/></svg>
         driver, from the sector input bundle</span><span><svg width="28" height="16" aria-hidden="true"><rect x="1" y="1" width="26" height="14" rx="3" style="fill: var(--panel); stroke: var(--line)"/></svg>
         hidden state, or a quantity the model works out from the states</span></p>
-      <p>Hover over a box for its equation; click to go to it. Observations are not drawn: they play no part in moving
+      <p>Hover over (or tap) a box for its equation. Observations are not drawn: they play no part in moving
       the states forward. Each month, after this step, the filter compares the states with that month's observations
       and corrects them (see <a href="#obs">Observations</a> and <a href="#filter">How the forecast is made</a>).</p>
       <p>Solid arrows carry a value worked out this month; dashed arrows carry a value from last month. Each state
@@ -223,23 +223,9 @@
   <p>The forecast runs as many copies of the world as there are draws, and copy <span class="sym">j</span> uses draw
   <span class="sym">j</span>. A copy fed a weak-demand draw sees fewer orders than one fed a strong-demand draw, so the
   drivers' uncertainty widens the forecast's 90% band along with the model's own shocks.</p>
-  <div class="eqcard"><h3>Real demand and demand pressure <span class="tag">L2</span></h3>
-    <div class="eq"><span class="c-out">D<sub>t</sub></span> = <span class="c-bnd">d<sub>t</sub></span> − <span class="c-bnd">pr<sub>t</sub></span><span class="c">when demand is in dollars; otherwise D<sub>t</sub> = d<sub>t</sub></span><br>
-      <span class="c-out">x<sub>t</sub></span> = <span class="c-out">D<sub>t</sub></span> − log <span class="c-oth">K<sub>t−1</sub></span></div>
-    <p><span class="sym">D</span> is real sector demand: a demand series in dollars rises with prices as well as volume, so
-    it is divided by the price driver. <span class="sym">x</span> is demand pressure, demand against the sector's own
-    capacity <span class="sym">K</span> (the sum over its entities, from last month).</p>
-    <div class="src"><span class="k c-out">Computed here</span><span><span class="c-out">D<sub>t</sub></span> real sector demand; <span class="c-out">x<sub>t</sub></span> demand pressure</span><span class="k c-bnd">From the sector input bundle</span><span><span class="c-bnd">d<sub>t</sub></span> the demand driver; <span class="c-bnd">pr<sub>t</sub></span> the price driver</span><span class="k c-oth">From other equations</span><span><span class="c-oth">K<sub>t−1</sub></span> last month's sector capacity, the sum of its entities' capacity (L15)</span></div>
-  </div>
-
-  <h2 id="capacity">Capacity</h2>
-  <div class="eqcard"><h3>Capacity drifts, with rare jumps <span class="tag">L1</span><span class="when">most templates</span></h3>
-    <div class="eq"><span class="c-out">k<sub>t</sub></span> = <span class="c-oth">k<sub>t−1</sub></span> + <span class="c-lrn">δ</span> + <span class="c-shk">J<sub>t</sub></span></div>
-    <p>δ is a slow drift per month; <span class="sym">J</span> is a jump that is nearly zero in most months and occasionally
-    large (an expansion, a closure). Announced capacity changes are observations of <span class="sym">k</span>, not forced
-    jumps, because projects slip.</p>
-    <div class="src"><span class="k c-out">Computed here</span><span><span class="c-out">k<sub>t</sub></span> capacity (log)</span><span class="k c-lrn">Learned by the fit</span><span><span class="c-lrn">δ</span> drift per month, per entity</span><span class="k c-oth">From other equations</span><span><span class="c-oth">k<sub>t−1</sub></span> last month's capacity (L1)</span><span class="k c-shk">Random shock</span><span><span class="c-shk">J<sub>t</sub></span> a jump: near zero most months, now and then large; how heavy its tail is and its typical size are learned per sector</span></div>
-  </div>
+  <h2 id="variants">Equations for other kinds of business</h2>
+  <p>The diagram shows a factory that makes goods to order. Other templates replace some of its equations with these.
+  The diagram's boxes give the rest of the equations when you hover over them.</p>
   <div class="eqcard"><h3>Capacity built through a pipeline <span class="tag">L19–L22</span><span class="when">pipeline producers, contracted capacity</span></h3>
     <div class="eq"><span class="c-out">Ann<sub>t</sub></span> = e<sup><span class="c-oth">k<sub>t−1</sub></span></sup> · exp(<span class="c-lrn">o<sup>A</sup></span> + <span class="c-lrn">β<sup>A</sup></span> <span class="c-oth">h<sub>t−1</sub></span>) · <span class="c-shk">ε<sup>A</sup><sub>t</sub></span><span class="c">announced (L19)</span><br>
       <span class="c-out">A<sub>t</sub></span> = <span class="c-oth">A<sub>t−1</sub></span> + <span class="c-out">Ann<sub>t</sub></span> − <span class="c-oth">A<sub>t−1</sub></span>/<span class="c-lrn">T<sup>A</sup></span> − <span class="c-lrn">d<sup>A</sup></span> <span class="c-oth">A<sub>t−1</sub></span><span class="c">announced, not started (L20)</span><br>
@@ -251,16 +237,6 @@
     rate ret. The delay is why a capacity shortage can last years.</p>
     <div class="src"><span class="k c-out">Computed here</span><span><span class="c-out">Ann<sub>t</sub></span> capacity announced; <span class="c-out">A<sub>t</sub></span> announced, not yet started; <span class="c-out">U<sub>t</sub></span> under construction; <span class="c-out">k<sub>t</sub></span> capacity (log)</span><span class="k c-lrn">Learned by the fit</span><span><span class="c-lrn">o<sup>A</sup></span> announcements relative to replacement, per entity; <span class="c-lrn">β<sup>A</sup></span> response of announcements to tightness, per sector; <span class="c-lrn">T<sup>A</sup></span> months from announcement to start, per sector; <span class="c-lrn">d<sup>A</sup></span> share abandoned per month, per sector; <span class="c-lrn">T<sup>U</sup></span> months to build, per sector; <span class="c-lrn">ret</span> share of capacity retired per month, per sector</span><span class="k c-oth">From other equations</span><span><span class="c-oth">k<sub>t−1</sub></span> last month's capacity (L22); <span class="c-oth">A<sub>t−1</sub></span> last month's announced projects (L20); <span class="c-oth">U<sub>t−1</sub></span> last month's projects under construction (L21); <span class="c-oth">h<sub>t−1</sub></span> last month's tightness (L13)</span><span class="k c-shk">Random shock</span><span><span class="c-shk">ε<sup>A</sup><sub>t</sub></span> announcement surprise, mean 1; its typical size is learned per sector</span></div>
   </div>
-
-  <h2 id="output">Utilization and output</h2>
-  <div class="eqcard"><h3>Utilization returns to normal, pushed by demand and tightness <span class="tag">L3</span><span class="when">all but contracted capacity</span></h3>
-    <div class="eq"><span class="c-out">z<sub>t</sub></span> = <span class="c-lrn">α</span> + <span class="c-lrn">φ<sub>z</sub></span> (<span class="c-oth">z<sub>t−1</sub></span> − <span class="c-lrn">α</span>) + <span class="c-lrn">β</span> (<span class="c-oth">x<sub>t</sub></span> − <span class="c-fix">x̄</span>) + <span class="c-lrn">β<sup>B</sup></span> <span class="c-oth">h<sub>t−1</sub></span> + <span class="c-shk">η<sub>t</sub></span><br>
-      <span class="c-out">Q<sub>t</sub></span> = <span class="c-out">u<sub>t</sub></span> · e<sup><span class="c-oth">k<sub>t</sub></span></sup></div>
-    <p>α is normal utilization; φ<sub>z</sub> how slowly utilization returns to it. The entity runs harder when sector demand
-    pressure is above its level at the start of the window (x̄), and when it is tight (booked further ahead than normal). η stands
-    for outages, maintenance and strikes. The logit scale keeps output below capacity.</p>
-    <div class="src"><span class="k c-out">Computed here</span><span><span class="c-out">z<sub>t</sub></span> utilization, logit scale; <span class="c-out">u<sub>t</sub></span> utilization, 1 / (1 + e<sup>−z<sub>t</sub></sup>); <span class="c-out">Q<sub>t</sub></span> output</span><span class="k c-lrn">Learned by the fit</span><span><span class="c-lrn">α</span> normal utilization, per entity; <span class="c-lrn">β</span> response to demand pressure, per entity; <span class="c-lrn">φ<sub>z</sub></span> persistence, per sector; <span class="c-lrn">β<sup>B</sup></span> response to tightness, per sector</span><span class="k c-oth">From other equations</span><span><span class="c-oth">z<sub>t−1</sub></span> last month's utilization (L3); <span class="c-oth">x<sub>t</sub></span> demand pressure (L2); <span class="c-oth">h<sub>t−1</sub></span> last month's tightness (L13); <span class="c-oth">k<sub>t</sub></span> capacity (L1)</span><span class="k c-fix">Fixed, not learned</span><span><span class="c-fix">x̄</span> the sector's demand pressure at the start of the fit window: average demand over its first two years against the starting capacity</span><span class="k c-shk">Random shock</span><span><span class="c-shk">η<sub>t</sub></span> outages, maintenance, strikes; its typical size is learned per sector</span></div>
-  </div>
   <div class="eqcard"><h3>Occupancy: capacity in use under lease <span class="tag">L18</span><span class="when">contracted capacity (data centers)</span></h3>
     <div class="eq"><span class="c-out">Free<sub>t</sub></span> = e<sup><span class="c-oth">k<sub>t</sub></span></sup> − <span class="c-oth">Occ<sub>t−1</sub></span> (1 − 1/<span class="c-lrn">term</span>)<br>
       <span class="c-out">Start<sub>t</sub></span> = min(<span class="c-oth">Due<sub>t</sub></span>, max(0, <span class="c-out">Free<sub>t</sub></span>))<br>
@@ -269,8 +245,39 @@
     as an overdue order. Utilization is not chosen; it is how much is leased.</p>
     <div class="src"><span class="k c-out">Computed here</span><span><span class="c-out">Free<sub>t</sub></span> capacity free for new leases; <span class="c-out">Start<sub>t</sub></span> leases starting; <span class="c-out">Occ<sub>t</sub></span> capacity in use; <span class="c-out">u<sub>t</sub></span> utilization; <span class="c-out">Q<sub>t</sub></span> output</span><span class="k c-lrn">Learned by the fit</span><span><span class="c-lrn">term</span> average lease, months, per sector</span><span class="k c-oth">From other equations</span><span><span class="c-oth">k<sub>t</sub></span> capacity (L22); <span class="c-oth">Occ<sub>t−1</sub></span> last month's capacity in use (L18); <span class="c-oth">Due<sub>t</sub></span> leases coming due (L8)</span></div>
   </div>
+  <div class="eqcard"><h3>Lost demand in place of overdue orders <span class="tag">L17</span><span class="when">distribution, perishable services</span></h3>
+    <div class="eq"><span class="c-out">B<sup>late</sup><sub>t</sub></span> = 0;&nbsp;&nbsp; <span class="c-out">Lost<sub>t</sub></span> = <span class="c-oth">Due<sub>t</sub></span> − <span class="c-oth">Sh<sub>t</sub></span>;&nbsp;&nbsp; <span class="c-out">O<sub>t+1</sub></span> gains <span class="c-lrn">r</span> · <span class="c-out">Lost<sub>t</sub></span><br>
+      <span class="c-out">lf<sub>t</sub></span> = <span class="c-oth">Sh<sub>t</sub></span> / <span class="c-oth">Q<sub>t</sub></span><span class="c">load factor</span></div>
+    <p>A flight that is full does not owe its turned-away passengers a seat later: they are lost, and a share
+    <span class="sym">r</span> book again next month. Empty seats (Q − Sh) cannot be stored.</p>
+    <div class="src"><span class="k c-out">Computed here</span><span><span class="c-out">B<sup>late</sup><sub>t</sub></span> overdue orders, always zero; <span class="c-out">Lost<sub>t</sub></span> demand turned away; <span class="c-out">O<sub>t+1</sub></span> next month's orders (L6); <span class="c-out">lf<sub>t</sub></span> load factor</span><span class="k c-lrn">Learned by the fit</span><span><span class="c-lrn">r</span> share of lost customers who book again, per sector</span><span class="k c-oth">From other equations</span><span><span class="c-oth">Due<sub>t</sub>, Sh<sub>t</sub></span> orders falling due, and shipments (L8); <span class="c-oth">Q<sub>t</sub></span> output (L3)</span></div>
+  </div>
 
-  <h2 id="price">Cost and price</h2>
+  <!-- the diagram's popups read these; they are not shown on the page -->
+  <div id="eqsource" hidden>
+  <div class="eqcard"><h3>Real demand and demand pressure <span class="tag">L2</span></h3>
+    <div class="eq"><span class="c-out">D<sub>t</sub></span> = <span class="c-bnd">d<sub>t</sub></span> − <span class="c-bnd">pr<sub>t</sub></span><span class="c">when demand is in dollars; otherwise D<sub>t</sub> = d<sub>t</sub></span><br>
+      <span class="c-out">x<sub>t</sub></span> = <span class="c-out">D<sub>t</sub></span> − log <span class="c-oth">K<sub>t−1</sub></span></div>
+    <p><span class="sym">D</span> is real sector demand: a demand series in dollars rises with prices as well as volume, so
+    it is divided by the price driver. <span class="sym">x</span> is demand pressure, demand against the sector's own
+    capacity <span class="sym">K</span> (the sum over its entities, from last month).</p>
+    <div class="src"><span class="k c-out">Computed here</span><span><span class="c-out">D<sub>t</sub></span> real sector demand; <span class="c-out">x<sub>t</sub></span> demand pressure</span><span class="k c-bnd">From the sector input bundle</span><span><span class="c-bnd">d<sub>t</sub></span> the demand driver; <span class="c-bnd">pr<sub>t</sub></span> the price driver</span><span class="k c-oth">From other equations</span><span><span class="c-oth">K<sub>t−1</sub></span> last month's sector capacity, the sum of its entities' capacity (L15)</span></div>
+  </div>
+  <div class="eqcard"><h3>Capacity drifts, with rare jumps <span class="tag">L1</span><span class="when">most templates</span></h3>
+    <div class="eq"><span class="c-out">k<sub>t</sub></span> = <span class="c-oth">k<sub>t−1</sub></span> + <span class="c-lrn">δ</span> + <span class="c-shk">J<sub>t</sub></span></div>
+    <p>δ is a slow drift per month; <span class="sym">J</span> is a jump that is nearly zero in most months and occasionally
+    large (an expansion, a closure). Announced capacity changes are observations of <span class="sym">k</span>, not forced
+    jumps, because projects slip.</p>
+    <div class="src"><span class="k c-out">Computed here</span><span><span class="c-out">k<sub>t</sub></span> capacity (log)</span><span class="k c-lrn">Learned by the fit</span><span><span class="c-lrn">δ</span> drift per month, per entity</span><span class="k c-oth">From other equations</span><span><span class="c-oth">k<sub>t−1</sub></span> last month's capacity (L1)</span><span class="k c-shk">Random shock</span><span><span class="c-shk">J<sub>t</sub></span> a jump: near zero most months, now and then large; how heavy its tail is and its typical size are learned per sector</span></div>
+  </div>
+  <div class="eqcard"><h3>Utilization returns to normal, pushed by demand and tightness <span class="tag">L3</span><span class="when">all but contracted capacity</span></h3>
+    <div class="eq"><span class="c-out">z<sub>t</sub></span> = <span class="c-lrn">α</span> + <span class="c-lrn">φ<sub>z</sub></span> (<span class="c-oth">z<sub>t−1</sub></span> − <span class="c-lrn">α</span>) + <span class="c-lrn">β</span> (<span class="c-oth">x<sub>t</sub></span> − <span class="c-fix">x̄</span>) + <span class="c-lrn">β<sup>B</sup></span> <span class="c-oth">h<sub>t−1</sub></span> + <span class="c-shk">η<sub>t</sub></span><br>
+      <span class="c-out">Q<sub>t</sub></span> = <span class="c-out">u<sub>t</sub></span> · e<sup><span class="c-oth">k<sub>t</sub></span></sup></div>
+    <p>α is normal utilization; φ<sub>z</sub> how slowly utilization returns to it. The entity runs harder when sector demand
+    pressure is above its level at the start of the window (x̄), and when it is tight (booked further ahead than normal). η stands
+    for outages, maintenance and strikes. The logit scale keeps output below capacity.</p>
+    <div class="src"><span class="k c-out">Computed here</span><span><span class="c-out">z<sub>t</sub></span> utilization, logit scale; <span class="c-out">u<sub>t</sub></span> utilization, 1 / (1 + e<sup>−z<sub>t</sub></sup>); <span class="c-out">Q<sub>t</sub></span> output</span><span class="k c-lrn">Learned by the fit</span><span><span class="c-lrn">α</span> normal utilization, per entity; <span class="c-lrn">β</span> response to demand pressure, per entity; <span class="c-lrn">φ<sub>z</sub></span> persistence, per sector; <span class="c-lrn">β<sup>B</sup></span> response to tightness, per sector</span><span class="k c-oth">From other equations</span><span><span class="c-oth">z<sub>t−1</sub></span> last month's utilization (L3); <span class="c-oth">x<sub>t</sub></span> demand pressure (L2); <span class="c-oth">h<sub>t−1</sub></span> last month's tightness (L13); <span class="c-oth">k<sub>t</sub></span> capacity (L1)</span><span class="k c-fix">Fixed, not learned</span><span><span class="c-fix">x̄</span> the sector's demand pressure at the start of the fit window: average demand over its first two years against the starting capacity</span><span class="k c-shk">Random shock</span><span><span class="c-shk">η<sub>t</sub></span> outages, maintenance, strikes; its typical size is learned per sector</span></div>
+  </div>
   <div class="eqcard"><h3>Unit cost follows input cost <span class="tag">L4</span></h3>
     <div class="eq"><span class="c-out">c<sub>t</sub></span> = <span class="c-oth">c<sub>t−1</sub></span> + <span class="c-lrn">w</span> Δ<span class="c-bnd">π<sub>t</sub></span> + <span class="c-shk">ν<sub>t</sub></span></div>
     <p>A change in the sector's input-cost driver passes through at rate <span class="sym">w</span>, roughly the input's
@@ -285,8 +292,6 @@
     revenue reports.</p>
     <div class="src"><span class="k c-out">Computed here</span><span><span class="c-out">m<sub>t</sub></span> markup (log); <span class="c-out">p<sub>t</sub></span> price (log)</span><span class="k c-lrn">Learned by the fit</span><span><span class="c-lrn">μ</span> normal markup, per entity; <span class="c-lrn">φ<sub>m</sub></span> persistence, per sector; <span class="c-lrn">γ</span> scarcity premium, per sector</span><span class="k c-oth">From other equations</span><span><span class="c-oth">m<sub>t−1</sub></span> last month's markup (L5); <span class="c-oth">h<sub>t−1</sub></span> last month's tightness (L13); <span class="c-oth">c<sub>t</sub></span> unit cost (L4)</span><span class="k c-shk">Random shock</span><span><span class="c-shk">ζ<sub>t</sub></span> markup surprise; its typical size is learned per sector</span></div>
   </div>
-
-  <h2 id="orders">Orders and the order book</h2>
   <div class="eqcard"><h3>New orders <span class="tag">L6</span></h3>
     <div class="eq">log <span class="c-out">O<sup>gen</sup><sub>t</sub></span> = <span class="c-lrn">õ</span> + log <span class="c-lrn">O<sup>bal</sup></span> + <span class="c-lrn">β<sup>O</sup></span> (<span class="c-oth">D<sub>t</sub></span> − <span class="c-fix">D̄</span>) + (<span class="c-oth">k<sub>t−1</sub></span> − <span class="c-lrn">k<sub>0</sub></span>) − (log <span class="c-oth">K<sub>t−1</sub></span> − log <span class="c-fix">K<sub>0</sub></span>) + log <span class="c-shk">ε<sup>O</sup><sub>t</sub></span><span class="c">genuine orders</span><br>
       <span class="c-out">O<sub>t</sub></span> = <span class="c-out">O<sup>gen</sup><sub>t</sub></span> · (1 + <span class="c-lrn">ω</span> · max(0, <span class="c-oth">LT<sub>t−1</sub></span> / <span class="c-lrn">LT<sup>norm</sup></span> − 1))<span class="c">orders placed</span></div>
@@ -318,20 +323,11 @@
     <p>New orders join the scheduled book; what falls due and cannot be shipped becomes overdue.</p>
     <div class="src"><span class="k c-out">Computed here</span><span><span class="c-out">B<sup>sched</sup><sub>t</sub></span> scheduled orders; <span class="c-out">B<sup>late</sup><sub>t</sub></span> overdue orders</span><span class="k c-lrn">Learned by the fit</span><span><span class="c-lrn">ℓ</span> normal order-book cover, months, per entity</span><span class="k c-oth">From other equations</span><span><span class="c-oth">B<sup>sched</sup><sub>t−1</sub></span> last month's scheduled orders (L9); <span class="c-oth">O<sub>t</sub></span> orders placed (L6); <span class="c-oth">X<sub>t</sub></span> cancellations (L7); <span class="c-oth">Due<sub>t</sub>, Sh<sub>t</sub></span> orders falling due, and shipments (L8)</span></div>
   </div>
-  <div class="eqcard"><h3>Lost demand in place of overdue orders <span class="tag">L17</span><span class="when">distribution, perishable services</span></h3>
-    <div class="eq"><span class="c-out">B<sup>late</sup><sub>t</sub></span> = 0;&nbsp;&nbsp; <span class="c-out">Lost<sub>t</sub></span> = <span class="c-oth">Due<sub>t</sub></span> − <span class="c-oth">Sh<sub>t</sub></span>;&nbsp;&nbsp; <span class="c-out">O<sub>t+1</sub></span> gains <span class="c-lrn">r</span> · <span class="c-out">Lost<sub>t</sub></span><br>
-      <span class="c-out">lf<sub>t</sub></span> = <span class="c-oth">Sh<sub>t</sub></span> / <span class="c-oth">Q<sub>t</sub></span><span class="c">load factor</span></div>
-    <p>A flight that is full does not owe its turned-away passengers a seat later: they are lost, and a share
-    <span class="sym">r</span> book again next month. Empty seats (Q − Sh) cannot be stored.</p>
-    <div class="src"><span class="k c-out">Computed here</span><span><span class="c-out">B<sup>late</sup><sub>t</sub></span> overdue orders, always zero; <span class="c-out">Lost<sub>t</sub></span> demand turned away; <span class="c-out">O<sub>t+1</sub></span> next month's orders (L6); <span class="c-out">lf<sub>t</sub></span> load factor</span><span class="k c-lrn">Learned by the fit</span><span><span class="c-lrn">r</span> share of lost customers who book again, per sector</span><span class="k c-oth">From other equations</span><span><span class="c-oth">Due<sub>t</sub>, Sh<sub>t</sub></span> orders falling due, and shipments (L8); <span class="c-oth">Q<sub>t</sub></span> output (L3)</span></div>
-  </div>
   <div class="eqcard"><h3>Phantom orders <span class="tag">L10</span><span class="when">where order inflation is on</span></h3>
     <div class="eq"><span class="c-out">P<sub>t</sub></span> = clip( <span class="c-oth">P<sub>t−1</sub></span> + (<span class="c-oth">O<sub>t</sub></span> − <span class="c-oth">O<sup>gen</sup><sub>t</sub></span>) − <span class="c-oth">X<sub>t</sub></span> − (<span class="c-oth">P<sub>t−1</sub></span> / <span class="c-oth">B<sub>t−1</sub></span>) · <span class="c-oth">Sh<sub>t</sub></span>,&nbsp; 0,&nbsp; <span class="c-oth">B<sub>t</sub></span> )</div>
     <p>Phantom orders are cancelled, or shipped in proportion to their share of the book.</p>
     <div class="src"><span class="k c-out">Computed here</span><span><span class="c-out">P<sub>t</sub></span> phantom orders</span><span class="k c-oth">From other equations</span><span><span class="c-oth">P<sub>t−1</sub></span> last month's phantom orders (L10); <span class="c-oth">O<sub>t</sub>, O<sup>gen</sup><sub>t</sub></span> orders placed and genuine orders (L6); <span class="c-oth">X<sub>t</sub></span> cancellations (L7); <span class="c-oth">Sh<sub>t</sub></span> shipments (L8); <span class="c-oth">B<sub>t−1</sub>, B<sub>t</sub></span> the order book last month and this month, scheduled plus overdue (L9)</span></div>
   </div>
-
-  <h2 id="stocks">Stocks</h2>
   <div class="eqcard"><h3>Finished stock <span class="tag">L11</span><span class="when">where output can be stored</span></h3>
     <div class="eq"><span class="c-out">G<sub>t</sub></span> = <span class="c-oth">G<sub>t−1</sub></span> + <span class="c-oth">Q<sub>t</sub></span> − <span class="c-oth">Sh<sub>t</sub></span></div>
     <p>Stock rises by what is made and falls by what is shipped. It lets an entity ship more than it makes in a month,
@@ -346,8 +342,6 @@
     always cover the month's use: inputs can always be bought.</p>
     <div class="src"><span class="k c-out">Computed here</span><span><span class="c-out">R<sub>t</sub></span> purchases of input; <span class="c-out">S<sub>t</sub></span> input inventory</span><span class="k c-lrn">Learned by the fit</span><span><span class="c-lrn">a</span> input per unit of output, per sector; <span class="c-lrn">n</span> target stock, months of use, per sector; <span class="c-lrn">τ</span> months to close a gap to target, per sector</span><span class="k c-oth">From other equations</span><span><span class="c-oth">Q<sub>t</sub>, Q<sub>t−1</sub></span> output this month and last (L3); <span class="c-oth">S<sub>t−1</sub></span> last month's input inventory (L12)</span></div>
   </div>
-
-  <h2 id="leadtime">Lead time and tightness</h2>
   <div class="eqcard"><h3>Lead time, order-book position and tightness <span class="tag">L13</span></h3>
     <div class="eq"><span class="c-out">LT<sub>t</sub></span> = <span class="c-fix">transit</span> + <span class="c-lrn">proc</span> + max(0, <span class="c-oth">B<sub>t</sub></span> − <span class="c-oth">G<sub>t</sub></span>) / <span class="c-oth">Q<sub>t</sub></span> + <span class="c-out">C<sub>t</sub></span><br>
       <span class="c-out">C<sub>t</sub></span> = (<span class="c-oth">u<sub>t</sub></span> / (1 − <span class="c-oth">u<sub>t</sub></span>)) · (<span class="c-lrn">ca² + cs²</span>) / 2 · <span class="c-lrn">proc</span><span class="c">congestion</span><br>
@@ -359,6 +353,7 @@
     way: the load factor above its normal level for airlines and hotels, and capacity in use plus waiting
     customers above normal occupancy for data centers. Tightness feeds back into L3, L5, L6 and L19.</p>
     <div class="src"><span class="k c-out">Computed here</span><span><span class="c-out">LT<sub>t</sub></span> quoted lead time; <span class="c-out">C<sub>t</sub></span> congestion wait; <span class="c-out">h<sub>t</sub></span> tightness</span><span class="k c-lrn">Learned by the fit</span><span><span class="c-lrn">proc</span> processing time, months, per sector; <span class="c-lrn">ca² + cs²</span> variability of arrivals and processing, per sector; <span class="c-lrn">ℓ</span> normal order-book cover, per entity; <span class="c-lrn">g</span> target finished stock, months of output, per sector</span><span class="k c-oth">From other equations</span><span><span class="c-oth">B<sub>t</sub></span> the order book (L9); <span class="c-oth">G<sub>t</sub></span> finished stock (L11); <span class="c-oth">Q<sub>t</sub>, u<sub>t</sub></span> output and utilization (L3); <span class="c-oth">ob<sub>t</sub></span> order-book position, (B − G) / Q, from the order book (L9), finished stock (L11) and output (L3)</span><span class="k c-fix">Fixed, not learned</span><span><span class="c-fix">transit</span> shipping time, known from geography</span></div>
+  </div>
   </div>
 
   <h2 id="shocks">Shocks</h2>
@@ -466,7 +461,7 @@
     band; the published sector bands are then widened by factors from backtests.</li>
   </ol>
 </main>
-<script src="assets/site.js?v=e7ce44b-1794503296"></script>
+<script src="assets/site.js?v=3099713-1794504272"></script>
 <script>
 (async () => {
   try {
@@ -549,15 +544,16 @@
       const tag = c.querySelector("h3 .tag")?.textContent.trim(), eq = c.querySelector(".eq");
       if (!tag || !eq) continue;
       const title = [...c.querySelector("h3").childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent).join("").trim();
+      const when = c.querySelector("h3 .when")?.textContent || "";
       const desc = c.querySelector("p")?.innerHTML || "", from = c.querySelector(".src")?.outerHTML || "";
-      for (const t of tag.split(/[,\s]+/)) cards[t] = { card: c, title, tag, eq: eq.innerHTML, desc, from };
+      for (const t of tag.split(/[,\s]+/)) cards[t] = { card: c, title, tag, when, eq: eq.innerHTML, desc, from };
       c.id ||= "eq-" + tag.replace(/[^A-Za-z0-9]+/g, "-");
     }
     const tip = document.getElementById("eqtip"), fig = tip.parentElement;
     const show = (g) => {
       const hits = g.dataset.eq.split(",").map((t) => cards[t] || cards[Object.keys(cards).find((k) => k.startsWith(t + "–"))]).filter(Boolean);
       if (!hits.length) return;
-      tip.innerHTML = hits.map((h) => `<h4>${M2.esc(h.title)} <span>${M2.esc(h.tag)}</span></h4><div class="eq">${h.eq}</div>${h.desc ? `<p>${h.desc}</p>` : ""}${h.from}`).join("");
+      tip.innerHTML = hits.map((h) => `<h4>${M2.esc(h.title)} <span>${M2.esc(h.tag)}</span>${h.when ? `<em>${M2.esc(h.when)}</em>` : ""}</h4><div class="eq">${h.eq}</div>${h.desc ? `<p>${h.desc}</p>` : ""}${h.from}`).join("");
       tip.hidden = false;
       const r = g.getBoundingClientRect(), f = fig.getBoundingClientRect();
       const left = Math.max(0, Math.min(r.left - f.left, f.width - tip.offsetWidth));
@@ -573,9 +569,10 @@
       g.addEventListener("focus", () => show(g));
       g.addEventListener("mouseleave", () => { tip.hidden = true; });
       g.addEventListener("blur", () => { tip.hidden = true; });
-      const go = () => { const t = g.dataset.eq.split(",")[0]; (cards[t] || cards[Object.keys(cards).find((k) => k.startsWith(t + "–"))])?.card.scrollIntoView({ behavior: "smooth", block: "center" }); };
-      g.addEventListener("click", go);
-      g.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
+      // a tap (touch screens) or Enter toggles the popup
+      const toggle = () => { if (tip.hidden) show(g); else tip.hidden = true; };
+      g.addEventListener("click", toggle);
+      g.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); } });
     });
     if (location.hash) document.getElementById(location.hash.slice(1))?.scrollIntoView();
   } catch (e) { M2.fail(e); }
