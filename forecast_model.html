@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Model Structure · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=9d280cf-1794500785">
+<link rel="stylesheet" href="assets/site.css?v=440a1b5-1794501132">
 <style>
   main > p, main > ul, main > ol { max-width: 78ch; }
   main > .eqcard, main > figure, main > .tablewrap { max-width: 1000px; }
@@ -34,6 +34,8 @@
   .fl .node { cursor: pointer; outline: none; }
   .fl .node:hover rect, .fl .node:focus rect { stroke: var(--accent); stroke-width: 2; }
   .fl .fbl { fill: var(--truth); }
+  .fl .lag { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 10px; fill: var(--accent); }
+  .lagk { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11px; color: var(--accent); }
   .eqtip { position: absolute; z-index: 4; background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12); padding: 8px 12px; max-width: min(760px, 92vw); pointer-events: none; }
   .eqtip h4 { margin: 2px 0; font-size: 13px; display: flex; gap: 8px; align-items: baseline; }
@@ -95,13 +97,14 @@
         <marker id="arf" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L8,4 L0,8 z" style="fill: var(--truth); stroke: none"/></marker></defs>
       <line x1="150" y1="62" x2="188" y2="62" marker-end="url(#ar)"/>
       <line x1="330" y1="62" x2="368" y2="62" marker-end="url(#ar)"/><text class="lbl" x="349" y="54" text-anchor="middle">placed</text>
-      <line x1="510" y1="62" x2="548" y2="62" marker-end="url(#ar)"/><text class="lbl" x="529" y="54" text-anchor="middle">due</text>
+      <line x1="510" y1="62" x2="548" y2="62" marker-end="url(#ar)"/><text class="lbl" x="529" y="54" text-anchor="middle">due</text><text class="lbl lag" x="529" y="76" text-anchor="middle">t−1</text>
       <line x1="260" y1="84" x2="260" y2="138" marker-end="url(#ar)"/><text class="lbl" x="266" y="116" text-anchor="start">extra orders</text>
       <path d="M 330 150 C 400 150, 420 120, 420 86" marker-end="url(#ar)"/><text class="lbl" x="428" y="114" text-anchor="start">cancelled</text>
       <path d="M 80 84 V 210 H 410 V 238" marker-end="url(#ar)"/><text class="lbl" x="160" y="204" text-anchor="middle">demand pressure</text>
       <line x1="330" y1="262" x2="368" y2="262" marker-end="url(#ar)"/><text class="lbl" x="349" y="254" text-anchor="middle">limits</text>
       <line x1="510" y1="262" x2="548" y2="262" marker-end="url(#ar)"/><text class="lbl" x="529" y="254" text-anchor="middle">made</text>
-      <line x1="620" y1="240" x2="620" y2="86" marker-end="url(#ar)"/><text class="lbl" x="614" y="200" text-anchor="end">shipped from</text>
+      <line x1="620" y1="240" x2="620" y2="86" marker-end="url(#ar)"/><text class="lbl" x="614" y="200" text-anchor="end">shipped from</text><text class="lbl lag" x="614" y="213" text-anchor="end">t−1</text>
+      <path d="M 590 84 C 590 112, 500 112, 500 86" marker-end="url(#ar)"/><text class="lbl" x="545" y="124" text-anchor="middle">left overdue</text>
       <line x1="690" y1="262" x2="728" y2="262" marker-end="url(#ar)"/>
       <path d="M 470 40 V 26 H 770 V 238" marker-end="url(#ar)"/><text class="lbl" x="764" y="150" text-anchor="end">book ÷ output</text>
       <path d="M 410 284 V 304 H 80 V 286" marker-end="url(#ar)"/><text class="lbl" x="250" y="298" text-anchor="middle">inputs used</text>
@@ -127,7 +130,7 @@
     <div class="eqtip" id="eqtip" hidden></div>
     <figcaption>
       <p class="key"><span><svg width="34" height="10" aria-hidden="true"><line x1="0" y1="5" x2="34" y2="5" style="stroke: var(--muted); stroke-width: 1.5"/></svg>
-        within the month</span><span><svg width="34" height="10" aria-hidden="true"><line x1="0" y1="5" x2="34" y2="5" style="stroke: var(--truth); stroke-width: 1.5; stroke-dasharray: 4 3"/></svg>
+        this month's step; <span class="lagk">t−1</span> marks last month's level</span><span><svg width="34" height="10" aria-hidden="true"><line x1="0" y1="5" x2="34" y2="5" style="stroke: var(--truth); stroke-width: 1.5; stroke-dasharray: 4 3"/></svg>
         feedback into next month</span></p>
       <p class="key"><span><svg width="28" height="16" aria-hidden="true"><rect x="1" y="1" width="26" height="14" rx="3" style="fill: var(--band2); stroke: var(--accent)"/></svg>
         driver, from the sector input bundle</span><span><svg width="28" height="16" aria-hidden="true"><rect x="1" y="1" width="26" height="14" rx="3" style="fill: var(--panel); stroke: var(--line)"/></svg>
@@ -135,8 +138,13 @@
       <p>Hover over a box for its equation; click to go to it. Observations are not drawn: they play no part in moving
       the states forward. Each month, after this step, the filter compares the states with that month's observations
       and corrects them (see <a href="#obs">Observations</a> and <a href="#filter">How the forecast is made</a>).</p>
-      <p>The chain for a factory that makes goods to order. The grey arrows are one month's flow: demand brings orders
-      into the order book; capacity and utilization set output; what falls due is shipped from output and stock.</p>
+      <p>The chain for a factory that makes goods to order. The grey arrows are one month's step: demand brings orders
+      into the order book; capacity and utilization set output; what falls due from last month's order book is shipped
+      from this month's output and last month's stock, and what cannot be shipped goes back into the book as overdue
+      orders.</p>
+      <p>Within a month the equations run in order, and each reads only last month's levels or values already worked out
+      this month, so nothing is circular. The order book and shipments show this: shipments (L8) read last month's order
+      book, and this month's order book (L9) then reads this month's shipments.</p>
       <p>The orange arrows close the loop. At the end of each month the entity's <b>tightness</b> is how far it is
       booked beyond normal (its order book net of stock, in months of output, against its normal cover), and its
       <b>lead time</b> is how long a new order would wait. Both act on the next month in three ways:</p>
@@ -448,7 +456,7 @@
     band; the published sector bands are then widened by factors from backtests.</li>
   </ol>
 </main>
-<script src="assets/site.js?v=9d280cf-1794500785"></script>
+<script src="assets/site.js?v=440a1b5-1794501132"></script>
 <script>
 (async () => {
   try {
