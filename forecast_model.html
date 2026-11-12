@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Model Structure · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=b5106bf-1794500063">
+<link rel="stylesheet" href="assets/site.css?v=9b6d465-1794500218">
 <style>
   main > p, main > ul, main > ol { max-width: 78ch; }
   main > .eqcard, main > figure, main > .tablewrap { max-width: 1000px; }
@@ -27,6 +27,8 @@
   .eqtip h4 { margin: 2px 0; font-size: 13px; display: flex; gap: 8px; align-items: baseline; }
   .eqtip h4 span { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11px; color: var(--muted); font-weight: 400; }
   .eqtip .eq { margin: 4px 0 6px; font-size: 15px; overflow: hidden; }
+  .eqtip p { margin: 0 0 8px; font-size: 13px; line-height: 1.45; color: var(--fg); }
+  .eqtip a { color: inherit; text-decoration: none; }
   figure svg { max-width: 100%; height: auto; display: block; }
   figcaption { font-size: 13px; color: var(--muted); max-width: 78ch; }
   figcaption p, figcaption ul { margin: 6px 0; }
@@ -269,7 +271,9 @@
 
   <h2 id="stocks">Stocks</h2>
   <div class="eqcard"><h3>Finished stock <span class="tag">L11</span><span class="when">where output can be stored</span></h3>
-    <div class="eq">G<sub>t</sub> = G<sub>t−1</sub> + Q<sub>t</sub> − Sh<sub>t</sub></div></div>
+    <div class="eq">G<sub>t</sub> = G<sub>t−1</sub> + Q<sub>t</sub> − Sh<sub>t</sub></div>
+    <p>Stock rises by what is made and falls by what is shipped. It lets an entity ship more than it makes in a month,
+    and absorbs output nobody has ordered yet.</p></div>
   <div class="eqcard"><h3>Input inventory <span class="tag">L12</span><span class="when">where the entity stocks its input</span></h3>
     <div class="eq">R<sub>t</sub> = max( a Q<sub>t</sub> − S<sub>t−1</sub>,&nbsp; a Q<sub>t−1</sub> + (n a Q<sub>t−1</sub> − S<sub>t−1</sub>) / τ,&nbsp; 0 )<br>
       S<sub>t</sub> = S<sub>t−1</sub> + R<sub>t</sub> − a Q<sub>t</sub></div>
@@ -390,7 +394,7 @@
     band; the published sector bands are then widened by factors from backtests.</li>
   </ol>
 </main>
-<script src="assets/site.js?v=b5106bf-1794500063"></script>
+<script src="assets/site.js?v=9b6d465-1794500218"></script>
 <script>
 (async () => {
   try {
@@ -473,14 +477,15 @@
       const tag = c.querySelector("h3 .tag")?.textContent.trim(), eq = c.querySelector(".eq");
       if (!tag || !eq) continue;
       const title = [...c.querySelector("h3").childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent).join("").trim();
-      for (const t of tag.split(/[,\s]+/)) cards[t] = { card: c, title, tag, eq: eq.innerHTML };
+      const desc = c.querySelector("p:not(.pl)")?.innerHTML || "";
+      for (const t of tag.split(/[,\s]+/)) cards[t] = { card: c, title, tag, eq: eq.innerHTML, desc };
       c.id ||= "eq-" + tag.replace(/[^A-Za-z0-9]+/g, "-");
     }
     const tip = document.getElementById("eqtip"), fig = tip.parentElement;
     const show = (g) => {
       const hits = g.dataset.eq.split(",").map((t) => cards[t] || cards[Object.keys(cards).find((k) => k.startsWith(t + "–"))]).filter(Boolean);
       if (!hits.length) return;
-      tip.innerHTML = hits.map((h) => `<h4>${M2.esc(h.title)} <span>${M2.esc(h.tag)}</span></h4><div class="eq">${h.eq}</div>`).join("");
+      tip.innerHTML = hits.map((h) => `<h4>${M2.esc(h.title)} <span>${M2.esc(h.tag)}</span></h4><div class="eq">${h.eq}</div>${h.desc ? `<p>${h.desc}</p>` : ""}`).join("");
       tip.hidden = false;
       const r = g.getBoundingClientRect(), f = fig.getBoundingClientRect();
       const left = Math.max(0, Math.min(r.left - f.left, f.width - tip.offsetWidth));
