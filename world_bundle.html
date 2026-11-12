@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Sector input bundle · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=8bee831-1794510100">
+<link rel="stylesheet" href="assets/site.css?v=9927737-1794510246">
 </head>
 <body>
 <main>
@@ -14,7 +14,7 @@
   <div class="grid" id="charts"></div>
   <div id="leg"></div>
 </main>
-<script src="assets/site.js?v=8bee831-1794510100"></script>
+<script src="assets/site.js?v=9927737-1794510246"></script>
 <script>
 (async () => {
   try {
@@ -35,9 +35,10 @@
                     general_activity: "activity across the whole economy", general_prices: "prices across the whole economy" };
     const tidy = (d) => d.replace(/\s*\(?synthetic\)?\s*/g, " ").trim();
     const cap = (d) => d.charAt(0).toUpperCase() + d.slice(1);
-    const secs = b.sectors;
-    let sel = M2.param("s") || (secs.find((s) => s.code !== "all") || secs[0]).code;
     const short = (s) => meta.sectors.find((m) => m.code === s.code)?.short || s.label;
+    // economy-wide drivers first, then the sectors A to Z
+    const secs = [...b.sectors].sort((x, y) => (x.code === "all" ? -1 : y.code === "all" ? 1 : short(x).localeCompare(short(y))));
+    let sel = M2.param("s") || secs[0].code;
     const render = () => {
       document.getElementById("sectabs").innerHTML = secs.map((s) =>
         `<button type="button" role="tab" data-s="${s.code}" aria-selected="${s.code === sel}" class="${s.code === sel ? "on" : ""}">${M2.esc(short(s))}</button>`).join("");
