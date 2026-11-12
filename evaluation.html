@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>What the data pin down · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=a227b49-1794513217">
+<link rel="stylesheet" href="assets/site.css?v=a250967-1794513483">
 <style>
   main > p, main > ul { max-width: 80ch; }
   .tiles2 { display: flex; flex-wrap: wrap; gap: 10px; margin: 8px 0 4px; }
@@ -25,6 +25,10 @@
   .ctl { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; font-size: 13px; margin: 6px 0 8px; color: var(--muted); }
   .ctl select { width: auto; font-size: 13px; padding: 2px 6px; }
   .sym { font-style: italic; white-space: nowrap; }
+  /* the view pills, filters and column labels stay in view while the long table scrolls */
+  .pbar { position: sticky; top: var(--hdr, 43px); z-index: 3; background: var(--bg); padding-top: 4px; }
+  .pbar .ctl { margin-bottom: 0; padding-bottom: 6px; }
+  .ptbl th { position: sticky; top: calc(var(--hdr, 43px) + var(--pbar, 70px)); z-index: 2; background: var(--bg); box-shadow: 0 1px 0 var(--line); }
 </style>
 </head>
 <body>
@@ -45,6 +49,7 @@
   <div class="tiles2" id="tiles"></div>
 
   <h2>Entity parameters</h2>
+  <div class="pbar" id="pbar">
   <div class="tabs" id="views" role="tablist" aria-label="View">
     <button type="button" role="tab" data-v="param">By parameter</button>
     <button type="button" role="tab" data-v="sector">By sector</button>
@@ -52,7 +57,8 @@
     <button type="button" role="tab" data-v="every">Every parameter</button>
   </div>
   <div class="ctl" id="ctl"></div>
-  <div class="tablewrap"><table id="ptab"></table></div>
+  </div>
+  <div class="ptbl"><table id="ptab"></table></div>
   <p class="sub" id="more"></p>
 
   <h2>Sector totals</h2>
@@ -62,7 +68,7 @@
   equations rather than from data. These are listed for each sector.</p>
   <div class="tablewrap"><table id="pin"></table></div>
 </main>
-<script src="assets/site.js?v=a227b49-1794513217"></script>
+<script src="assets/site.js?v=a250967-1794513483"></script>
 <script>
 (async () => {
   try {
@@ -146,6 +152,11 @@
     document.getElementById("ctl").addEventListener("change", (e) => { const s = e.target.closest("select[data-k]"); if (s) { F[s.dataset.k] = s.value; render(); } });
     document.getElementById("ptab").addEventListener("click", (e) => { const a = e.target.closest("a[data-s]"); if (a) { e.preventDefault(); F.s = a.dataset.s; F.v = "param"; render(); } });
     render();
+    // the height of the pinned bar, so the column labels pin just below it
+    const pbar = () => document.documentElement.style.setProperty("--pbar", document.getElementById("pbar").offsetHeight + "px");
+    pbar();
+    addEventListener("resize", pbar);
+    new ResizeObserver(pbar).observe(document.getElementById("pbar"));
 
     const name = (v) => (M2.SHORT_VAR[v] || v).replace(/ \(.*\)$/, "");
     document.getElementById("pin").innerHTML = `<tr><th>sector</th><th>totals the data barely reach</th></tr>` +
