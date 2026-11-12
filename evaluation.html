@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>What the data pin down · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=a250967-1794513483">
+<link rel="stylesheet" href="assets/site.css?v=e126874-1794513609">
 <style>
   main > p, main > ul { max-width: 80ch; }
   .tiles2 { display: flex; flex-wrap: wrap; gap: 10px; margin: 8px 0 4px; }
@@ -61,14 +61,8 @@
   <div class="ptbl"><table id="ptab"></table></div>
   <p class="sub" id="more"></p>
 
-  <h2>Sector totals</h2>
-  <p>The same question for sector totals, answered by running the filter twice over the same history: once with the
-  observations and once without them. If the copies of the world disagree almost as much with the observations as
-  without them (variance ratio above 0.8), the observations barely reach that total, and its estimate comes from the
-  equations rather than from data. These are listed for each sector.</p>
-  <div class="tablewrap"><table id="pin"></table></div>
 </main>
-<script src="assets/site.js?v=a250967-1794513483"></script>
+<script src="assets/site.js?v=e126874-1794513609"></script>
 <script>
 (async () => {
   try {
@@ -158,10 +152,6 @@
     addEventListener("resize", pbar);
     new ResizeObserver(pbar).observe(document.getElementById("pbar"));
 
-    const name = (v) => (M2.SHORT_VAR[v] || v).replace(/ \(.*\)$/, "");
-    document.getElementById("pin").innerHTML = `<tr><th>sector</th><th>totals the data barely reach</th></tr>` +
-      [...q.ident].sort((a, b) => short[a.sector].localeCompare(short[b.sector])).map((x) =>
-        `<tr><td><a href="sector.html?s=${x.sector}">${M2.esc(short[x.sector])}</a></td><td>${x.prior_dominated.map(name).join(", ") || '<span class="muted">none</span>'}</td></tr>`).join("");
   } catch (e) { M2.fail(e); }
 })();
 </script>
