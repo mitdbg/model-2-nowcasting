@@ -2,55 +2,155 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Without Ground Truth · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=f1c1a49-1794512124">
+<title>What the data pin down · Model 2 (dev)</title>
+<link rel="stylesheet" href="assets/site.css?v=a227b49-1794513217">
 <style>
   main > p, main > ul { max-width: 80ch; }
   .tiles2 { display: flex; flex-wrap: wrap; gap: 10px; margin: 8px 0 4px; }
-  .tile { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 14px; min-width: 190px; }
+  .tile { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 14px; min-width: 170px; }
   .tile .v { font-size: 22px; font-weight: 600; }
   .tile .l { font-size: 12px; color: var(--muted); }
   td.n { font-variant-numeric: tabular-nums; }
-  .two { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 18px; }
-  .two > div { min-width: 0; }
-  h3 { margin: 10px 0 4px; font-size: 14px; }
+  .example { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; max-width: 760px; margin: 10px 0; }
+  .example .rows { display: grid; grid-template-columns: 150px 1fr 150px; gap: 4px 10px; align-items: center; font-size: 13px; margin: 8px 0 4px; }
+  .rng { position: relative; height: 12px; }
+  .rng span { position: absolute; top: 2px; height: 8px; border-radius: 4px; }
+  .rng .pr { background: var(--grid); border: 1px solid var(--line); }
+  .rng .ft { background: var(--band); border: 1px solid var(--accent); }
+  .lab { font-size: 11px; font-weight: 600; padding: 1px 8px; border-radius: 9px; white-space: nowrap; }
+  .lab.inf { color: var(--good); background: color-mix(in srgb, var(--good) 12%, transparent); }
+  .lab.uninf { color: var(--warn); background: color-mix(in srgb, var(--warn) 14%, transparent); }
+  .split { display: flex; height: 10px; width: 140px; border-radius: 3px; overflow: hidden; background: color-mix(in srgb, var(--warn) 45%, transparent); }
+  .split i { display: block; background: color-mix(in srgb, var(--good) 70%, transparent); }
+  .ctl { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; font-size: 13px; margin: 6px 0 8px; color: var(--muted); }
+  .ctl select { width: auto; font-size: 13px; padding: 2px 6px; }
+  .sym { font-style: italic; white-space: nowrap; }
 </style>
 </head>
 <body>
 <main>
-  <h1>Without Ground Truth</h1>
-  <p class="sub">Measures of quality that need no ground truth, so they work on a real world as well as a synthetic one.
-  Like <a href="eval_observations.html">observations against the model</a> and
-  <a href="eval_official.html">sector totals against official statistics</a>, they check how well the model fits data
-  it has used, which is a weaker test than <a href="eval_revisions.html">forecasts against later estimates</a>, since a
-  model always looks better on data it has seen.</p>
+  <h1>What the data pin down</h1>
+  <p class="sub">Before it sees any data, the model has a rough idea of each entity parameter: a <b>prior</b>, a range of
+  plausible values. Fitting the model to the observations narrows that range. The <b>sd ratio</b> compares the two: the
+  width of the range after fitting divided by its width before. A parameter is labelled</p>
+  <ul class="sub">
+    <li><span class="lab inf">Informative</span> when its sd ratio is below 0.8: the data narrowed its range by at least a fifth;</li>
+    <li><span class="lab uninf">Uninformative</span> when it is 0.8 or more: its estimate is about as uncertain as before,
+      so it rests on the prior rather than on the data.</li>
+  </ul>
+  <div class="example" id="example"></div>
+  <p class="sub">Only tracked entities have their own parameters; representative entities take their group's averages.
+  Part of the narrowing comes from the pull toward the entity's group average (L14), so a sparsely observed entity can
+  look informative because it borrowed from similar entities.</p>
+  <div class="tiles2" id="tiles"></div>
 
-  <h2>What the data pin down</h2>
-  <p>How much the data narrowed what the model knew before seeing them. For entity parameters, the share whose
-  uncertainty the fit cut by at least a fifth (sd ratio below 0.8). For sector totals, the quantities whose estimate
-  is still mostly prior (posterior over prior variance above 0.8): no observation reaches them, so the equations
-  alone carry them.</p>
+  <h2>Entity parameters</h2>
+  <div class="tabs" id="views" role="tablist" aria-label="View">
+    <button type="button" role="tab" data-v="param">By parameter</button>
+    <button type="button" role="tab" data-v="sector">By sector</button>
+    <button type="button" role="tab" data-v="entity">By entity</button>
+    <button type="button" role="tab" data-v="every">Every parameter</button>
+  </div>
+  <div class="ctl" id="ctl"></div>
+  <div class="tablewrap"><table id="ptab"></table></div>
+  <p class="sub" id="more"></p>
+
+  <h2>Sector totals</h2>
+  <p>The same question for sector totals, answered by running the filter twice over the same history: once with the
+  observations and once without them. If the copies of the world disagree almost as much with the observations as
+  without them (variance ratio above 0.8), the observations barely reach that total, and its estimate comes from the
+  equations rather than from data. These are listed for each sector.</p>
   <div class="tablewrap"><table id="pin"></table></div>
 </main>
-<script src="assets/site.js?v=f1c1a49-1794512124"></script>
+<script src="assets/site.js?v=a227b49-1794513217"></script>
 <script>
 (async () => {
   try {
     const [meta, q] = await Promise.all([M2.load("meta.json"), M2.load("quality.json")]);
     M2.header(meta, "evaluation.html");
     const short = Object.fromEntries(meta.sectors.map((s) => [s.code, s.short]));
-    const bySec = (xs) => [...xs].sort((a, b) => (short[a.sector] || a.sector).localeCompare(short[b.sector] || b.sector));
-    const cov = (c, n) => { if (c == null || !(n >= 8)) return ""; const se = Math.sqrt(0.09 / n);
-      return c >= 0.9 - 2 * se ? "good" : c >= 0.9 - 4 * se ? "warn" : "bad"; };
-    const pct = (v, d = 0) => v == null ? "–" : M2.pct(v, d);
-    const tile = (v, l, cls = "") => `<div class="tile"><div class="v ${cls}">${v}</div><div class="l">${l}</div></div>`;
-    const name = (v) => (M2.SHORT_VAR[v] || v).replace(/ \(.*\)$/, "");
+    const pr = q.param_rows, info = q.param_info;
+    const rows = pr.param.map((_, i) => Object.fromEntries(Object.keys(pr).map((k) => [k, pr[k][i]])));
+    const INF = 0.8, isInf = (x) => x.sd_ratio < INF;
+    const sym = (n) => M2.esc(info[n]?.symbol || n).replace(/\^([\p{L}\w]+)/gu, "<sup>$1</sup>").replace(/_([\p{L}\w]+)/gu, "<sub>$1</sub>");
+    const means = (n) => M2.esc(M2.PARAM?.[n] || info[n]?.description || n);
+    const lab = (x) => isInf(x) ? `<span class="lab inf">Informative</span>` : `<span class="lab uninf">Uninformative</span>`;
+    const split = (k, n) => `<span class="split" title="${k} of ${n} informative"><i style="width:${(100 * k / n).toFixed(1)}%"></i></span>`;
+    const pct = (v) => M2.pct(v, 0);
+    const median = (xs) => { const s = [...xs].sort((a, b) => a - b); return s.length ? s[Math.floor((s.length - 1) / 2)] : null; };
+    const group = (xs, key) => { const m = new Map(); for (const x of xs) { const k = key(x); if (!m.has(k)) m.set(k, []); m.get(k).push(x); } return m; };
+    const sectors = [...new Set(rows.map((x) => x.sector))].sort((a, b) => short[a].localeCompare(short[b]));
 
-    const par = Object.fromEntries(q.params.map((x) => [x.sector, x]));
-    document.getElementById("pin").innerHTML = `<tr><th>sector</th><th class="n">entity parameters informed</th><th class="n">median sd ratio</th><th>sector totals still mostly prior</th></tr>` +
-      bySec(q.ident).map((x) => { const p = par[x.sector] || {};
-        return `<tr><td>${M2.esc(short[x.sector] || x.sector)}</td><td class="n">${pct(p.informed)} <span class="muted">of ${p.n ?? 0}</span></td>
-          <td class="n">${p.median_ratio?.toFixed(2) ?? "–"}</td><td class="muted">${x.prior_dominated.map(name).join(", ") || "none"}</td></tr>`; }).join("");
+    // a worked example: a tracked steel entity's normal markup if there is one, else the first parameter
+    const ex = rows.find((x) => x.param === "mu" && x.sector === "naics_3311_2") || rows[0];
+    if (ex) {
+      const lo = Math.min(ex.prior_lo, ex.fit_lo), hi = Math.max(ex.prior_hi, ex.fit_hi), at = (v) => (100 * (v - lo) / ((hi - lo) || 1)).toFixed(1);
+      const bar = (a, b, cls) => `<div class="rng"><span class="${cls}" style="left:${at(a)}%;width:${(at(b) - at(a)).toFixed(1)}%"></span></div>`;
+      document.getElementById("example").innerHTML = `<b>An example.</b> The normal markup <span class="sym">${sym(ex.param)}</span> of
+        <a href="entity.html?e=${encodeURIComponent(ex.entity)}">${M2.esc(ex.name)}</a> (${M2.esc(short[ex.sector])}):
+        <div class="rows"><span>before the data (prior)</span>${bar(ex.prior_lo, ex.prior_hi, "pr")}<span class="muted">${M2.fmt(ex.prior_lo)} to ${M2.fmt(ex.prior_hi)}</span>
+        <span>after fitting</span>${bar(ex.fit_lo, ex.fit_hi, "ft")}<span class="muted">${M2.fmt(ex.fit_lo)} to ${M2.fmt(ex.fit_hi)}</span></div>
+        Ranges are 90% ranges. The fitted range is ${ex.sd_ratio.toFixed(2)} times as wide as the prior's, so the sd ratio is
+        ${ex.sd_ratio.toFixed(2)} and the parameter is ${lab(ex)}.`;
+    }
+    const nInf = rows.filter(isInf).length;
+    document.getElementById("tiles").innerHTML =
+      `<div class="tile"><div class="v">${rows.length.toLocaleString()}</div><div class="l">entity parameters fitted</div></div>
+       <div class="tile"><div class="v good">${nInf.toLocaleString()}</div><div class="l">informative (${pct(nInf / rows.length)})</div></div>
+       <div class="tile"><div class="v warn">${(rows.length - nInf).toLocaleString()}</div><div class="l">uninformative (${pct(1 - nInf / rows.length)})</div></div>`;
+
+    // views, with a sector filter (and, for every parameter, parameter and label filters)
+    const F = { v: M2.param("v") || "param", s: M2.param("s") || "", p: M2.param("p") || "", l: M2.param("l") || "" };
+    const sel = (k, all, opts) => `<label>${all[0]} <select data-k="${k}"><option value="">${all[1]}</option>${opts.map(([v, t]) =>
+      `<option value="${M2.esc(v)}"${F[k] === v ? " selected" : ""}>${M2.esc(t)}</option>`).join("")}</select></label>`;
+    const render = () => {
+      document.querySelectorAll("#views button").forEach((b) => { b.classList.toggle("on", b.dataset.v === F.v); b.setAttribute("aria-selected", b.dataset.v === F.v); });
+      let ctl = F.v === "sector" ? "" : sel("s", ["Sector", "all sectors"], sectors.map((c) => [c, short[c]]));
+      if (F.v === "every") ctl += sel("p", ["Parameter", "all parameters"], Object.keys(info).map((n) => [n, `${info[n].symbol} — ${M2.PARAM?.[n] || info[n].description}`]))
+        + sel("l", ["Label", "both labels"], [["inf", "Informative"], ["uninf", "Uninformative"]]);
+      document.getElementById("ctl").innerHTML = ctl;
+      const xs = rows.filter((x) => (!F.s || F.v === "sector" || x.sector === F.s));
+      const t = document.getElementById("ptab"), more = document.getElementById("more");
+      more.textContent = "";
+      const stat = (g) => { const k = g.filter(isInf).length; return { n: g.length, k, med: median(g.map((x) => x.sd_ratio)) }; };
+      if (F.v === "param") {
+        const g = [...group(xs, (x) => x.param)].map(([p, g]) => [p, stat(g)]).sort((a, b) => a[1].k / a[1].n - b[1].k / b[1].n);
+        t.innerHTML = `<tr><th>parameter</th><th>meaning</th><th class="n">entities</th><th>informative</th><th class="n"></th><th class="n">median sd ratio</th></tr>` +
+          g.map(([p, s]) => `<tr><td class="sym">${sym(p)}</td><td>${means(p)}</td><td class="n">${s.n}</td><td>${split(s.k, s.n)}</td>
+            <td class="n">${s.k} of ${s.n}</td><td class="n">${s.med.toFixed(2)}</td></tr>`).join("");
+        more.textContent = "Least informed first.";
+      } else if (F.v === "sector") {
+        const g = [...group(xs, (x) => x.sector)].sort((a, b) => short[a[0]].localeCompare(short[b[0]]));
+        t.innerHTML = `<tr><th>sector</th><th class="n">parameters</th><th>informative</th><th class="n"></th><th class="n">median sd ratio</th><th>least informed parameter</th></tr>` +
+          g.map(([c, g]) => { const s = stat(g);
+            const worst = [...group(g, (x) => x.param)].map(([p, h]) => [p, h.filter(isInf).length / h.length]).sort((a, b) => a[1] - b[1])[0];
+            return `<tr><td><a href="#" data-s="${c}">${M2.esc(short[c])}</a></td><td class="n">${s.n}</td><td>${split(s.k, s.n)}</td><td class="n">${pct(s.k / s.n)}</td>
+              <td class="n">${s.med.toFixed(2)}</td><td><span class="sym">${sym(worst[0])}</span> <span class="muted">${means(worst[0])}, ${pct(worst[1])} informative</span></td></tr>`; }).join("");
+        more.textContent = "Click a sector to see its parameters.";
+      } else if (F.v === "entity") {
+        const g = [...group(xs, (x) => x.entity)].map(([e, g]) => [g[0], stat(g)]).sort((a, b) => a[1].k / a[1].n - b[1].k / b[1].n || a[0].name.localeCompare(b[0].name));
+        t.innerHTML = `<tr><th>entity</th><th>sector</th><th class="n">parameters</th><th>informative</th><th class="n"></th><th class="n">median sd ratio</th></tr>` +
+          g.map(([x, s]) => `<tr><td><a href="entity.html?e=${encodeURIComponent(x.entity)}">${M2.esc(x.name)}</a></td><td>${M2.esc(short[x.sector])}</td>
+            <td class="n">${s.n}</td><td>${split(s.k, s.n)}</td><td class="n">${s.k} of ${s.n}</td><td class="n">${s.med.toFixed(2)}</td></tr>`).join("");
+        more.textContent = "Least informed first. Each entity's page lists its parameters with their ranges.";
+      } else {
+        const ys = xs.filter((x) => (!F.p || x.param === F.p) && (!F.l || (F.l === "inf") === isInf(x))).sort((a, b) => b.sd_ratio - a.sd_ratio);
+        t.innerHTML = `<tr><th>entity</th><th>sector</th><th>parameter</th><th>meaning</th><th class="n">sd ratio</th><th></th></tr>` +
+          ys.slice(0, 400).map((x) => `<tr><td><a href="entity.html?e=${encodeURIComponent(x.entity)}">${M2.esc(x.name)}</a></td><td>${M2.esc(short[x.sector])}</td>
+            <td class="sym">${sym(x.param)}</td><td class="muted">${means(x.param)}</td><td class="n">${x.sd_ratio.toFixed(2)}</td><td>${lab(x)}</td></tr>`).join("");
+        more.textContent = `${ys.length.toLocaleString()} parameters, least informed first${ys.length > 400 ? "; the first 400 are shown" : ""}.`;
+      }
+      history.replaceState(null, "", "?" + Object.entries(F).filter(([k, v]) => v && !(k === "v" && v === "param")).map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join("&"));
+    };
+    document.getElementById("views").addEventListener("click", (e) => { const b = e.target.closest("button[data-v]"); if (b) { F.v = b.dataset.v; render(); } });
+    document.getElementById("ctl").addEventListener("change", (e) => { const s = e.target.closest("select[data-k]"); if (s) { F[s.dataset.k] = s.value; render(); } });
+    document.getElementById("ptab").addEventListener("click", (e) => { const a = e.target.closest("a[data-s]"); if (a) { e.preventDefault(); F.s = a.dataset.s; F.v = "param"; render(); } });
+    render();
+
+    const name = (v) => (M2.SHORT_VAR[v] || v).replace(/ \(.*\)$/, "");
+    document.getElementById("pin").innerHTML = `<tr><th>sector</th><th>totals the data barely reach</th></tr>` +
+      [...q.ident].sort((a, b) => short[a.sector].localeCompare(short[b.sector])).map((x) =>
+        `<tr><td><a href="sector.html?s=${x.sector}">${M2.esc(short[x.sector])}</a></td><td>${x.prior_dominated.map(name).join(", ") || '<span class="muted">none</span>'}</td></tr>`).join("");
   } catch (e) { M2.fail(e); }
 })();
 </script>
