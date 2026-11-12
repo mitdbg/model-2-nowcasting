@@ -3,7 +3,15 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Entities · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=d51ed2a-1794510420">
+<link rel="stylesheet" href="assets/site.css?v=9f04403-1794510585">
+<style>
+  .gchips { display: flex; flex-wrap: wrap; gap: 4px 6px; margin-top: 6px; align-items: center; font-size: 12.5px; }
+  .gchips .gk { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; margin-right: 2px; }
+  .gchip { border: 1px solid var(--line); border-radius: 12px; padding: 0 8px; background: var(--panel); color: var(--fg); white-space: nowrap; }
+  .gchip:hover { border-color: var(--accent); text-decoration: none; }
+  .gchip .gkind { color: var(--muted); font-size: 11px; }
+  .gchip .gn { color: var(--accent); font-size: 11px; font-variant-numeric: tabular-nums; }
+</style>
 </head>
 <body>
 <main>
@@ -13,14 +21,8 @@
       <div class="ehead">
         <h1 id="title">Entity</h1>
         <p class="sub" id="sub"></p>
+        <div class="gchips" id="gchips"></div>
       </div>
-
-      <h2>Groupings</h2>
-      <p class="sub">Groupings are the companies, segments, sites and Census cells that contain this entity. An
-      observation about a grouping covers all its entities at once, each at its weight, so the model predicts it from
-      their combined states.</p>
-      <p class="sub" id="ownobs"></p>
-      <div class="tablewrap"><table id="groupings"></table></div>
 
       <h2>Hidden states</h2>
       <p class="sub">Hidden states are the quantities Model 2 estimates for this entity each month: capacity, output,
@@ -61,7 +63,7 @@
     </div>
   </div>
 </main>
-<script src="assets/site.js?v=d51ed2a-1794510420"></script>
+<script src="assets/site.js?v=9f04403-1794510585"></script>
 <script>
 const toT = (tr, v) => (tr === "log" ? Math.log(v) : tr === "logit" ? Math.log(v / (1 - v)) : v);
 (async () => {
@@ -82,17 +84,13 @@ const toT = (tr, v) => (tr === "log" ? Math.log(v) : tr === "logit" ? Math.log(v
       · ${d.size}, ${d.region}${d.n_establishments > 1 ? ` · stands for ${d.n_establishments} establishments` : ""}
       · ${d.n_obs} observations · <span class="mono">${M2.esc(d.id)}</span>`;
 
-    const gt = document.getElementById("groupings");
-    // a site holding only this entity is not shown as a grouping: its observations are about this entity
-    const soloSites = (d.groupings || []).filter((g) => g.kind === "site" && g.n_members === 1);
-    document.getElementById("ownobs").textContent = `Observations about this entity alone: ${(d.n_obs_own ?? 0) +
-      soloSites.reduce((a, g) => a + g.n_obs, 0)}` + (soloSites.length ? ` (${soloSites.map((g) => `${g.n_obs} of them name its site, ${g.name}, which holds no other entity`).join("; ")}).` : ".");
+    // groupings that contain this entity, as compact links (a site holding only this entity is the entity itself)
     const gk = M2.GROUPING_KINDS, gorder = Object.keys(gk);
-    const gr = (d.groupings || []).filter((g) => !soloSites.includes(g)).sort((a, b) => gorder.indexOf(a.kind) - gorder.indexOf(b.kind));
-    gt.innerHTML = gr.length ? `<tr><th>grouping</th><th>kind</th><th class="n">weight</th><th>weight means</th><th>member from</th><th>member to</th><th class="n">observations about it</th></tr>` +
-      gr.map((g) => `<tr><td><a href="groupings.html?g=${encodeURIComponent(g.id)}">${M2.esc(g.name)}</a></td><td>${(gk[g.kind] || [g.kind])[0]}</td>
-        <td class="n">${g.weight}</td><td class="muted">${g.weight_meaning}</td><td>${g.first}</td><td>${g.last}</td><td class="n">${g.n_obs}</td></tr>`).join("")
-      : `<tr><td class="muted">No grouping contains this entity.</td></tr>`;
+    const gr = (d.groupings || []).filter((g) => !(g.kind === "site" && g.n_members === 1))
+      .sort((a, b) => gorder.indexOf(a.kind) - gorder.indexOf(b.kind));
+    document.getElementById("gchips").innerHTML = gr.length ? `<span class="gk">In</span>` + gr.map((g) =>
+      `<a class="gchip" href="groupings.html?g=${encodeURIComponent(g.id)}" title="${M2.esc(`${(gk[g.kind] || [g.kind])[0]} · weight ${g.weight} (${g.weight_meaning}) · member ${g.first} to ${g.last} · ${g.n_obs} observations about it`)}">` +
+      `<span class="gkind">${(gk[g.kind] || [g.kind])[0]}</span> ${M2.esc(g.name)}${g.n_obs ? ` <span class="gn">${g.n_obs} obs</span>` : ""}</a>`).join("") : "";
 
     const order = ["capacity", "output", "utilization", "shipments", "backlog", "lead_time", "price", "unit_cost",
                    "capacity_announced", "capacity_under_construction"];
