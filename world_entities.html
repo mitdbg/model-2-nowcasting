@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Entities · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=11344b0-1794509844">
+<link rel="stylesheet" href="assets/site.css?v=8bee831-1794510100">
 <style>
   .every .side { height: calc(100vh - 330px); min-height: 420px; max-height: none; overflow: hidden;
     display: flex; flex-direction: column; }
@@ -35,9 +35,9 @@
   <p class="sub" id="intro"></p>
 
   <div class="tabs" id="views" role="tablist" aria-label="View">
+    <button type="button" role="tab" data-v="every">Every entity</button>
     <button type="button" role="tab" data-v="sector">By sector</button>
     <button type="button" role="tab" data-v="groupings">Groupings</button>
-    <button type="button" role="tab" data-v="every">Every entity</button>
   </div>
 
   <section data-v="sector">
@@ -69,7 +69,7 @@
   </div>
   </section>
 </main>
-<script src="assets/site.js?v=11344b0-1794509844"></script>
+<script src="assets/site.js?v=8bee831-1794510100"></script>
 <script>
 (async () => {
   try {
@@ -206,8 +206,8 @@
       const b = ev.target.closest("button.vchip[data-k]");
       if (b) filterTo(b.dataset.k, b.dataset.v);
     });
-    const VIEWS = ["sector", "groupings", "every"];
-    let view = VIEWS.includes(M2.param("v")) ? M2.param("v") : M2.param("e") ? "every" : "sector";
+    const VIEWS = ["every", "sector", "groupings"];
+    let view = VIEWS.includes(M2.param("v")) ? M2.param("v") : "every";
     const url = () => {
       const p = new URLSearchParams({ v: view });
       if (view === "every") { p.set("e", sel); Object.entries(F).forEach(([k, v]) => v && p.set(k, v)); }
