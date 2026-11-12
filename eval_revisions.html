@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Forecasts against later estimates · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=d8f42dc-1794516387">
+<link rel="stylesheet" href="assets/site.css?v=cb57f73-1794516520">
 <style>
   main > p { max-width: 80ch; }
   .excard { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; max-width: 980px; }
@@ -19,8 +19,12 @@
   .hz { display: grid; grid-template-columns: 120px 1fr 56px; gap: 4px 8px; align-items: center; font-size: 12.5px; margin-top: 8px; }
   .hz .bar { height: 10px; background: var(--accent); border-radius: 3px; opacity: 0.75; }
   td.n { font-variant-numeric: tabular-nums; }
-  .two { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 18px; }
+  .two { display: flex; flex-wrap: wrap; gap: 14px 40px; align-items: flex-start; }
   .two > div { min-width: 0; }
+  .two table { width: auto; font-size: 13px; }
+  .two td, .two th { padding: 3px 8px; white-space: nowrap; }
+  .two th.qh { white-space: normal; max-width: 110px; line-height: 1.25; vertical-align: bottom; }
+  .verdict.few { color: var(--muted); background: transparent; border: 1px dashed var(--line); font-weight: 500; }
   h3.t { margin: 10px 0 4px; font-size: 14px; }
   .verdict { font-size: 11.5px; font-weight: 600; padding: 1px 8px; border-radius: 9px; white-space: nowrap; }
   .verdict.ok { color: var(--good); background: color-mix(in srgb, var(--good) 12%, transparent); }
@@ -57,7 +61,7 @@
     <div><h3 class="t">By quantity</h3><div class="tablewrap"><table id="revvar"></table></div></div>
   </div>
 </main>
-<script src="assets/site.js?v=d8f42dc-1794516387"></script>
+<script src="assets/site.js?v=cb57f73-1794516520"></script>
 <script>
 (async () => {
   try {
@@ -67,10 +71,13 @@
     const name = (v) => (M2.SHORT_VAR[v] || v).replace(/ \(.*\)$/, "");
     const R = q.revisions;
     const of100 = (c) => Math.round(100 * c);
-    const gap = (x) => x.err == null ? "–" : x.unit === "pp" ? (100 * x.err).toFixed(1) + " points" : x.unit === "months" ? x.err.toFixed(2) + " months of output" : M2.pct(x.err, 1);
-    // judged against 90 of 100 with the binomial spread of n values
+    const gap = (x) => x.err == null ? "–" : x.unit === "pp" ? `${(100 * x.err).toFixed(1)} <span class="muted" title="percentage points">pts</span>` : x.unit === "months" ? `${x.err.toFixed(2)} <span class="muted" title="months of the sector's output">mo</span>` : M2.pct(x.err, 1);
+    // judged against 90 of 100 allowing for chance (as on Observations against the model)
     const verdict = (c, n) => { const se = Math.sqrt(0.09 / n);
-      return c < 0.9 - 2 * se ? `<span class="verdict narrow">range too narrow</span>` : c > 0.9 + 2 * se ? `<span class="verdict wide">range wider than needed</span>` : `<span class="verdict ok">range about right</span>`; };
+      if (c < 0.9 - 2 * se) return `<span class="verdict narrow" title="Clearly fewer than 90 of 100, even allowing for chance with ${n} values">too narrow</span>`;
+      if (c > 0.9 + 2 * se) return `<span class="verdict wide" title="Clearly more than 90 of 100, even allowing for chance with ${n} values">wider than needed</span>`;
+      if (0.9 + 2 * se >= 1) return `<span class="verdict few" title="With only ${n} values, chance alone could move the share anywhere from ${Math.round(100 * (0.9 - 2 * se))} to 100 of 100">too few to tell</span>`;
+      return `<span class="verdict ok" title="Within what chance allows around 90 of 100 with ${n} values">about right</span>`; };
 
     // the example: one sector total, one run date
     const secs = Object.keys(rv.series).sort((a, b) => short[a].localeCompare(short[b]));
@@ -114,11 +121,11 @@
       <div class="hz">${H.map(([l, x]) => `<span>${l}</span><div class="bar" style="width:${(100 * x.err / mx).toFixed(0)}%"></div><span class="n">${M2.pct(x.err, 1)}</span>`).join("")}</div>`;
 
     // sector by sector
-    const head = (k) => `<tr><th>${k}</th><th class="n">Was the range honest?</th><th class="n">How far off was the forecast?</th><th></th></tr>`;
+    const head = (k) => `<tr><th>${k}</th><th class="n qh">Was the range honest?</th><th class="n qh">How far off was the forecast?</th><th></th></tr>`;
     document.getElementById("revsec").innerHTML = head("sector") + [...R.by_sector].sort((a, b) => short[a.sector].localeCompare(short[b.sector])).map((x) =>
-      `<tr><td><a href="?s=${x.sector}&v=output&a=${ex.a}">${M2.esc(short[x.sector])}</a></td><td class="n">${of100(x.inside)} of 100</td><td class="n">${gap({ ...x, unit: "log" })}</td><td>${verdict(x.inside, x.n)}</td></tr>`).join("");
+      `<tr><td><a href="?s=${x.sector}&v=output&a=${ex.a}">${M2.esc(short[x.sector])}</a></td><td class="n">${of100(x.inside)}<span class="muted">/100</span></td><td class="n">${gap({ ...x, unit: "log" })}</td><td>${verdict(x.inside, x.n)}</td></tr>`).join("");
     document.getElementById("revvar").innerHTML = head("quantity") + [...R.by_variable].sort((a, b) => name(a.variable).localeCompare(name(b.variable))).map((x) =>
-      `<tr><td>${M2.esc(name(x.variable))}</td><td class="n">${of100(x.inside)} of 100</td><td class="n">${gap(x)}</td><td>${verdict(x.inside, x.n)}</td></tr>`).join("");
+      `<tr><td>${M2.esc(name(x.variable))}</td><td class="n">${of100(x.inside)}<span class="muted">/100</span></td><td class="n">${gap(x)}</td><td>${verdict(x.inside, x.n)}</td></tr>`).join("");
   } catch (e) { M2.fail(e); }
 })();
 </script>
