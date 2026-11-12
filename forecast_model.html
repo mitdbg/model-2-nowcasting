@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Model Structure · Model 2 (dev)</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital@0;1&display=swap">
-<link rel="stylesheet" href="assets/site.css?v=875f397-1794505002">
+<link rel="stylesheet" href="assets/site.css?v=70ae61f-1794505133">
 <style>
   main > p, main > ul, main > ol { max-width: 78ch; }
   main > .eqcard, main > figure, main > .tablewrap { max-width: 1000px; }
@@ -96,7 +96,6 @@
   <span class="k c-shk">Random shock</span> drawn afresh each month.</span></p>
   <nav class="toc" aria-label="On this page">
     <a href="#picture">One month at a glance</a><a href="#states">Hidden states</a><a href="#drivers">Drivers</a>
-    <a href="#variants">Other kinds of business</a>
     <a href="#shocks">Shocks</a><a href="#templates">Templates</a><a href="#params">Parameters</a>
     <a href="#fitted">Fitted values</a><a href="#obs">Observations</a><a href="#totals">Sector totals</a>
     <a href="#filter">How the forecast is made</a>
@@ -175,9 +174,8 @@
   <p>The forecast runs as many copies of the world as there are draws, and copy <span class="sym">j</span> uses draw
   <span class="sym">j</span>. A copy fed a weak-demand draw sees fewer orders than one fed a strong-demand draw, so the
   drivers' uncertainty widens the forecast's 90% band along with the model's own shocks.</p>
-  <h2 id="variants">Equations for other kinds of business</h2>
-  <p>The diagram shows a factory that makes goods to order. Other templates replace some of its equations with these.
-  The diagram's boxes give the rest of the equations when you hover over them.</p>
+  <!-- the diagram's popups read these; they are not shown on the page -->
+  <div id="eqsource" hidden>
   <div class="eqcard"><h3>Capacity built through a pipeline <span class="tag">L19–L22</span><span class="when">pipeline producers, contracted capacity</span></h3>
     <div class="eq"><span class="c-out">Ann<sub>t</sub></span> = e<sup><span class="c-oth">k<sub>t−1</sub></span></sup> · exp(<span class="c-lrn">o<sup>A</sup></span> + <span class="c-lrn">β<sup>A</sup></span> <span class="c-oth">h<sub>t−1</sub></span>) · <span class="c-shk">ε<sup>A</sup><sub>t</sub></span><span class="c">announced (L19)</span><br>
       <span class="c-out">A<sub>t</sub></span> = <span class="c-oth">A<sub>t−1</sub></span> + <span class="c-out">Ann<sub>t</sub></span> − <span class="c-oth">A<sub>t−1</sub></span>/<span class="c-lrn">T<sup>A</sup></span> − <span class="c-lrn">d<sup>A</sup></span> <span class="c-oth">A<sub>t−1</sub></span><span class="c">announced, not started (L20)</span><br>
@@ -207,9 +205,6 @@
     <span class="sym">r</span> book again next month. Empty seats (Q − Sh) cannot be stored.</p>
     <div class="src"><span class="k c-out">Computed here</span><span><span class="c-out">B<sup>late</sup><sub>t</sub></span> overdue orders, always zero; <span class="c-out">Lost<sub>t</sub></span> demand turned away; <span class="c-out">O<sub>t+1</sub></span> next month's orders (L6); <span class="c-out">lf<sub>t</sub></span> load factor; <span class="c-out">h<sub>t</sub></span> tightness</span><span class="k c-lrn">Learned by the fit</span><span><span class="c-lrn">r</span> share of lost customers who book again, per sector; <span class="c-lrn">lf<sup>norm</sup></span> normal load factor, per entity (1 where unsold goods can be stored)</span><span class="k c-oth">From other equations</span><span><span class="c-oth">Due<sub>t</sub>, Sh<sub>t</sub></span> orders falling due, and shipments (L8); <span class="c-oth">Q<sub>t</sub></span> output (L3)</span></div>
   </div>
-
-  <!-- the diagram's popups read these; they are not shown on the page -->
-  <div id="eqsource" hidden>
   <div class="eqcard"><h3>Real demand and demand pressure <span class="tag">L2</span></h3>
     <div class="eq"><span class="c-out">D<sub>t</sub></span> = <span class="c-bnd">d<sub>t</sub></span> − <span class="c-bnd">pr<sub>t</sub></span><span class="c">when demand is in dollars; otherwise D<sub>t</sub> = d<sub>t</sub></span><br>
       <span class="c-out">x<sub>t</sub></span> = <span class="c-out">D<sub>t</sub></span> − log <span class="c-oth">K<sub>t−1</sub></span></div>
@@ -418,7 +413,7 @@
   </ol>
 </main>
 <div class="eqtip" id="eqtip" hidden></div>
-<script src="assets/site.js?v=875f397-1794505002"></script>
+<script src="assets/site.js?v=70ae61f-1794505133"></script>
 <script>
 // One month's chain of equations, drawn for a template's modules (src/firm_model/templates.py):
 // pipeline (capacity built through L19–L22), occ (output is capacity in use, L18), stock (finished stock),
