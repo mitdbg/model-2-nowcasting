@@ -25,8 +25,8 @@ observation, filterable, from `data/observations.json`, and the kinds of observa
 (the input bundle's drivers and sector statistics, from `data/bundle.json`); under Current Forecast,
 `forecast_overview.html` (the run and the fit it uses, from `data/forecast.json`), `forecast_model.html?s=CODE`
 (the equations, templates, parameters and each sector's fitted sector parameters) and, as the Forecasts sub-tab with a
-by sector / by entity switch (`M2.SUBALIAS`), `sector.html?s=CODE` and `entity.html?e=ID`; then `groupings.html`,
-`accuracy.html` and `evidence.html` (out of the navigation, kept).
+by sector / by entity switch (`M2.SUBALIAS`), `sector.html?s=CODE` and `entity.html?e=ID`; then
+`accuracy.html`, and out of the navigation but kept: `groupings.html?g=ID` (shown under Current World, Entities; entity pages link to it) and `evidence.html`.
 `datamodel.html?t=TABLE` is the data model,
 drawn from `docs/datamodel.json` by `assets/datamodel.js`; edit that file and rebuild to change it. Not part of the Model 1 (KEYNES) site.
 

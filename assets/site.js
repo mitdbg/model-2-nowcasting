@@ -14,14 +14,14 @@ M2.param = (k) => new URLSearchParams(location.search).get(k);
 M2.esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
 M2.PAGES = [["index.html", "Overview"], ["world_overview.html", "Current World"], ["forecast_overview.html", "Current Forecast"],
-            ["groupings.html", "Groupings"], ["accuracy.html", "Accuracy"],
+            ["accuracy.html", "Accuracy"],
             ["https://claude.ai/artifact/GbJQDmoHyttq2W6xiSyJ5w", "Development Dashboard"]];
 // Pages shown as sub-tabs under a top-level tab, chosen near the top of the page.
 M2.SUBPAGES = {"index.html": [["index.html", "Introduction"], ["howitworks.html", "How It Works"], ["datamodel.html", "Data Model"]],
   "world_overview.html": [["world_overview.html", "Overview"], ["world_entities.html", "Entities"], ["world_observations.html", "Observations"], ["world_bundle.html", "Sector input bundle"]],
   "forecast_overview.html": [["forecast_overview.html", "Overview"], ["forecast_model.html", "Model Structure"], ["sector.html", "Forecasts"]]};
 // Pages reached through a sub-tab without being one: they light up that sub-tab.
-M2.SUBALIAS = {"entity.html": "sector.html"};
+M2.SUBALIAS = {"entity.html": "sector.html", "groupings.html": "world_entities.html"};
 // The Forecasts sub-tab's two views, shown as a switch at the top of each.
 M2.forecastViews = (page) => `<nav class="tabs viewsw" aria-label="Forecasts by">` +
   [["sector.html", "By sector"], ["entity.html", "By entity"]].map(([h, l]) =>
