@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Model Configuration · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=a7a625a-1794518104">
+<link rel="stylesheet" href="assets/site.css?v=35a55a6-1794518265">
 <style>
   main > p, main > ul { max-width: 80ch; }
   .wkv { display: grid; grid-template-columns: 230px 1fr; gap: 6px 16px; max-width: 980px; font-size: 14px; }
@@ -15,7 +15,9 @@
   .c-fix { color: #92651a; }
   @media (prefers-color-scheme: dark) { .c-fix { color: #e0b866; } }
   .cmp .infowrap { position: relative; }
-  .cmp .infotip { white-space: normal; width: 320px; left: auto; right: -6px; top: 22px; text-align: left; font-variant-numeric: normal; }
+  .cmp .infotip { white-space: normal; width: 320px; left: auto; right: -6px; top: 22px; text-align: left; font-variant-numeric: normal;
+    text-transform: none; letter-spacing: normal; font-weight: 400; color: var(--fg); }
+  .cmp th:first-child .infotip, .cmp th:nth-child(2) .infotip { right: auto; left: -6px; }
   .setby { font-size: 11px; color: var(--muted); }
   .setby.on { color: var(--accent); font-weight: 600; }
   .ctl { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; font-size: 13px; color: var(--muted); margin: 6px 0; }
@@ -79,7 +81,7 @@
   representative entities that stand for untracked establishments.</p>
   <div class="cmp tablewrap"><table id="estab"></table></div>
 </main>
-<script src="assets/site.js?v=a7a625a-1794518104"></script>
+<script src="assets/site.js?v=35a55a6-1794518265"></script>
 <script>
 (async () => {
   try {
@@ -141,8 +143,12 @@
         : SERVICE.has(s.template) ? "Nothing is shipped: the service is used where it is sold." : "The model counts no shipping time for this sector.";
       return { D, x, K, t };
     };
-    document.getElementById("fixed").innerHTML = `<tr><th>sector</th><th>template</th><th class="n"><span class="sym c-fix">D̄</span></th>
-      <th class="n"><span class="sym c-fix">x̄</span></th><th class="n"><span class="sym c-fix">K₀</span></th><th class="n"><span class="sym c-fix">transit</span> (months)</th></tr>` +
+    document.getElementById("fixed").innerHTML = `<tr><th>sector${M2.info("The sector these values belong to. Every entity in a sector shares them.")}</th>
+      <th>template${M2.info("The kind of business the sector's equations describe, which decides which equations it uses (see Templates on Model Structure).")}</th>
+      <th class="n"><span class="sym c-fix">D̄</span>${M2.info("Baseline real demand (L6): the demand level at which firms get exactly their normal output in orders. Demand above it raises orders; below it, lowers them.")}</th>
+      <th class="n"><span class="sym c-fix">x̄</span>${M2.info("Baseline demand pressure (L3): the balance of demand against capacity at which firms run at their normal rate. Pressure above it makes them run harder.")}</th>
+      <th class="n"><span class="sym c-fix">K₀</span>${M2.info("Starting sector capacity (L6): the yardstick for market share. A firm's share of orders follows its capacity measured against it.")}</th>
+      <th class="n"><span class="sym c-fix">transit</span> (months)${M2.info("Shipping time (L13): added to every lead time a firm quotes, so it is part of how long a customer waits.")}</th></tr>` +
       secs.map((s) => { const e = explain(s);
         return `<tr><td><a href="sector.html?s=${s.code}">${M2.esc(short[s.code])}</a></td><td class="muted">${s.template.replace(/_/g, " ")}</td>
         <td class="n">${f(s.Dbar)}${M2.info(e.D)}</td><td class="n">${f(s.xbar)}${M2.info(e.x)}</td>
@@ -180,7 +186,12 @@
       document.getElementById("pctl").innerHTML = `<label>Sector <select id="psel">${secs.map((s) => `<option value="${s.code}"${s.code === sel ? " selected" : ""}>${M2.esc(short[s.code])}</option>`).join("")}</select></label>
         <span>${secs.find((s) => s.code === sel).priors.filter((p) => p.set).length} set for this sector, the rest from the catalog</span>`;
       const s = secs.find((x) => x.code === sel);
-      document.getElementById("priors").innerHTML = `<tr><th class="sym">symbol</th><th>meaning</th><th>kind</th><th class="n">centre</th><th class="n">90% range</th><th>set by</th></tr>` +
+      document.getElementById("priors").innerHTML = `<tr><th class="sym">symbol${M2.info("The parameter as it appears in the equations on Model Structure.")}</th>
+        <th>meaning${M2.info("What the parameter controls, and the equation it appears in.")}</th>
+        <th>kind${M2.info("Entity: each firm gets its own value. Starting state: a firm's level in the first month of the window. Sector: one value shared by every firm in the sector.")}</th>
+        <th class="n">centre${M2.info("Where the fit starts: the most plausible value before seeing any data.")}</th>
+        <th class="n">90% range${M2.info("Values the model finds plausible before seeing data. The narrower the range, the harder the data must push to move the parameter outside it.")}</th>
+        <th>set by${M2.info("Catalog: the model's default for every sector. This sector: chosen for this sector, with the reason given.")}</th></tr>` +
         s.priors.map((p) => `<tr><td class="sym">${sym(p.symbol)}</td><td>${M2.esc(M2.PARAM?.[p.name] || p.description)}</td><td class="muted">${KIND[p.kind]}</td>
           <td class="n">${f(p.centre)}</td><td class="n">${f(p.lo)} to ${f(p.hi)}</td>
           <td>${p.set ? `<span class="setby on" title="${M2.esc(p.reason)}">this sector: ${M2.esc(p.reason)}</span>` : `<span class="setby">catalog</span>`}</td></tr>`).join("");
@@ -190,14 +201,22 @@
     drawPriors();
     if (c.fit.trend_priors) document.getElementById("trendnote").textContent = "Capacity drift δ is recentred on the sector's demand trend when the fit starts, so its centre here is the catalog's, not the one the fit used.";
 
-    document.getElementById("sigma").innerHTML = `<tr><th>kind of observation</th><th class="n">noise</th></tr>` +
+    document.getElementById("sigma").innerHTML = `<tr><th>kind of observation${M2.info("A kind of data the model reads, such as a company's revenue or a plant's stated capacity.")}</th>
+      <th class="n">noise${M2.info("How far an observation of this kind typically strays from the truth, as a fraction of its value. Larger noise means the model trusts each reading less and moves less when it disagrees.")}</th></tr>` +
       Object.entries(c.obs_sigma).filter(([, v]) => v > 0).sort((a, b) => (M2.OBS[a[0]]?.[0] || a[0]).localeCompare(M2.OBS[b[0]]?.[0] || b[0]))
         .map(([k, v]) => `<tr><td>${M2.esc(M2.OBS[k]?.[0] || k)}</td><td class="n">${v}</td></tr>`).join("") +
       `<tr><td colspan="2" class="muted">Satellite yes/no readings have no noise size: they are a probability, set by each sensor's curve.</td></tr>`;
-    document.getElementById("recon").innerHTML = `<tr><th>sector</th><th>statistic</th><th class="n">floor</th><th class="n">widened</th></tr>` +
+    document.getElementById("recon").innerHTML = `<tr><th>sector${M2.info("The sector whose total is checked against the statistic.")}</th>
+      <th>statistic${M2.info("The official series, by its code in the sector input bundle.")}</th>
+      <th class="n">floor${M2.info("Extra uncertainty, as a fraction of the statistic's value, combined with the uncertainty the bundle gives it, so the model never treats the statistic as exact. A larger floor makes the model follow it less closely.")}</th>
+      <th class="n">widened${M2.info("How much the statistic's uncertainty is multiplied when it already includes tracked companies' own reports, so the same information is not counted twice.")}</th></tr>` +
       secs.flatMap((s) => s.reconciliation.map((x) => `<tr><td>${M2.esc(short[s.code])}</td><td class="mono">${M2.esc(x.series)}</td>
         <td class="n">${x.floor != null ? M2.pct(x.floor, 0) : "–"}</td><td class="n">${x.contains_tracked ? `${x.inflate}×` : "–"}</td></tr>`)).join("");
-    document.getElementById("estab").innerHTML = `<tr><th>sector</th><th class="n">small</th><th class="n">medium</th><th class="n">large</th><th>unit</th></tr>` +
+    document.getElementById("estab").innerHTML = `<tr><th>sector${M2.info("The sector whose representative entities these sizes set.")}</th>
+      <th class="n">small${M2.info("Monthly capacity of one small establishment. Multiplied by the Census count of small establishments in a region, it sizes that region's small representative entity.")}</th>
+      <th class="n">medium${M2.info("Monthly capacity of one medium establishment, used the same way.")}</th>
+      <th class="n">large${M2.info("Monthly capacity of one large establishment, used the same way.")}</th>
+      <th>unit${M2.info("The sector's own unit of output.")}</th></tr>` +
       secs.filter((s) => s.capacity_per_establishment).map((s) => `<tr><td>${M2.esc(short[s.code])}</td>${["small", "medium", "large"].map((z) =>
         `<td class="n">${M2.fmt(s.capacity_per_establishment[z])}</td>`).join("")}<td class="muted">${unit(s.unit)} per month</td></tr>`).join("");
   } catch (e) { M2.fail(e); }
