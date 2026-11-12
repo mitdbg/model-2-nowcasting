@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Model Configuration · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=6afc0f9-1794517867">
+<link rel="stylesheet" href="assets/site.css?v=a7a625a-1794518104">
 <style>
   main > p, main > ul { max-width: 80ch; }
   .wkv { display: grid; grid-template-columns: 230px 1fr; gap: 6px 16px; max-width: 980px; font-size: 14px; }
@@ -79,7 +79,7 @@
   representative entities that stand for untracked establishments.</p>
   <div class="cmp tablewrap"><table id="estab"></table></div>
 </main>
-<script src="assets/site.js?v=6afc0f9-1794517867"></script>
+<script src="assets/site.js?v=a7a625a-1794518104"></script>
 <script>
 (async () => {
   try {
@@ -104,24 +104,42 @@
     const mon = (m) => m ? `${MON[+m.slice(5, 7) - 1]} ${m.slice(0, 4)}` : "";
     const plus = (m, k) => { const t = +m.slice(0, 4) * 12 + (+m.slice(5, 7) - 1) + k; return `${Math.floor(t / 12)}-${String(t % 12 + 1).padStart(2, "0")}`; };
     const pc = (v) => { const p = Math.round(1000 * (Math.exp(v) - 1)) / 10; return `${Math.abs(p)}% ${p >= 0 ? "above" : "below"}`; };
-    // plain-text explanations of each fixed value, shown behind an (i) beside it
+    // what each fixed value does in the sector now: the effect, through the sector's typical fitted responses
+    // (median over tracked entities), of where demand and capacity stand at the last observed month
+    const expit = (z) => 1 / (1 + Math.exp(-z));
+    const pct1 = (v) => `${Math.abs(Math.round(100 * (Math.exp(v) - 1)))}%`;
     const explain = (s) => {
-      const u = UNITS[s.unit] || unit(s.unit), w0 = start, w1 = start && plus(start, 23);
-      const real = /usd/.test(String(s.demand_unit)) ? "real demand (dollar demand divided by the sector's price index)" : "real demand";
-      const kNow = s.K_now ? ` By ${mon(s.last)} it was ${M2.fmt(s.K_now)} (${Math.round(100 * (s.K_now / s.K0 - 1)) >= 0 ? "+" : ""}${Math.round(100 * (s.K_now / s.K0 - 1))}%).` : "";
-      let x = `D̄ minus the log of K₀ (${f(s.Dbar)} − ${f(Math.log(s.K0))}). The large size is only units: an index set against ${u}. What matters is how far demand pressure moves from it.`;
-      if (s.template === "contracted_capacity") x += " Here utilization is set by leasing, so it does not enter.";
-      else if (s.D_now != null && s.K_now != null) {
-        const px = Math.round(100 * (Math.exp((s.D_now - s.Dbar) - Math.log(s.K_now / s.K0)) - 1));
-        x += Math.abs(px) < 2 ? ` By ${mon(s.last)} pressure is back about where it started.` : ` By ${mon(s.last)} pressure is ${Math.abs(px)}% ${px > 0 ? "above it, pushing utilization up" : "below it, holding utilization down"}.`;
+      const u = UNITS[s.unit] || unit(s.unit), when = mon(s.last);
+      const have = s.D_now != null && s.K_now != null;
+      const dD = have ? s.D_now - s.Dbar : null, dK = have ? Math.log(s.K_now / s.K0) : null;
+      // D̄: orders are balanced at this demand level; demand away from it moves orders by β^O
+      let D = `The demand level at which this sector's firms get exactly their normal output in orders, set from ${mon(start)} to ${mon(plus(start, 23))}.`
+        + ` Each 1% of real demand above it adds about ${f(s.betaO, 2)}% to their orders.`;
+      if (have && s.betaO != null) {
+        const o = s.betaO * dD;
+        D += Math.abs(Math.exp(o) - 1) < 0.01 ? ` In ${when} demand is close to it, so orders run near normal on that account.`
+          : ` In ${when} demand is ${pct1(dD)} ${dD > 0 ? "above" : "below"} it, so orders run about ${pct1(o)} ${o > 0 ? "above" : "below"} normal on that account.`;
       }
-      return {
-        D: `From ${mon(w0)} to ${mon(w1)}, ${real} averaged ${pc(s.Dbar)} its January 2010 level. The index is 0 in January 2010, and D̄ is the log of the average.`,
-        x,
-        K: `In ${mon(w0)} the sector could produce ${M2.fmt(s.K0)} ${u} a month, adding up its tracked and representative entities.${kNow}`,
-        t: s.transit ? `About ${Math.round(30 * s.transit)} days of shipping, part of every quoted lead time.`
-          : SERVICE.has(s.template) ? "Nothing is shipped: the service is used where it is sold." : "The model counts no shipping time for this sector.",
-      };
+      // x̄: utilization is normal at this demand pressure; pressure away from it moves utilization by β
+      let x;
+      if (s.template === "contracted_capacity") x = `Not used here: a data center's utilization is set by how much is leased, not by how hard its sites run.`;
+      else {
+        const un = s.alpha != null ? expit(s.alpha) : null;
+        x = `The balance of demand against capacity at which this sector's firms run at their normal rate${un != null ? ` (about ${Math.round(100 * un)}% of capacity)` : ""}.`
+          + ` When demand runs further ahead of capacity, they run harder. (The number looks large only because it sets a demand index against capacity counted in ${s.unit === "usd_2017" ? "dollars" : u}.)`;
+        if (have && s.beta != null && un != null) {
+          const dx = dD - dK, du = expit(s.alpha + s.beta * dx) - un, pts = Math.round(1000 * du) / 10;
+          x += Math.abs(pts) < 0.5 ? ` In ${when} the balance is close to it, so utilization runs near normal on that account.`
+            : ` In ${when} demand against capacity is ${pct1(dx)} ${dx > 0 ? "above" : "below"} it, which on its own puts utilization about ${Math.abs(pts)} points ${pts > 0 ? "above" : "below"} normal.`;
+        }
+      }
+      // K₀: the yardstick for each firm's share of orders
+      const K = `The sector's capacity when the window began: ${M2.fmt(s.K0)} ${u}${s.unit === "MW" ? "" : " a month"}. It is the yardstick for market share: a firm whose capacity`
+        + ` grows 10% faster than the sector's since then gets about 10% more orders.`
+        + (have ? ` By ${when} the sector had ${M2.fmt(s.K_now)} (${Math.abs(dK) < 0.01 ? "about the same" : `${dK >= 0 ? "up" : "down"} ${pct1(dK)}`}).` : "");
+      const t = s.transit ? `About ${Math.round(30 * s.transit)} days of shipping, part of every quoted lead time.`
+        : SERVICE.has(s.template) ? "Nothing is shipped: the service is used where it is sold." : "The model counts no shipping time for this sector.";
+      return { D, x, K, t };
     };
     document.getElementById("fixed").innerHTML = `<tr><th>sector</th><th>template</th><th class="n"><span class="sym c-fix">D̄</span></th>
       <th class="n"><span class="sym c-fix">x̄</span></th><th class="n"><span class="sym c-fix">K₀</span></th><th class="n"><span class="sym c-fix">transit</span> (months)</th></tr>` +
