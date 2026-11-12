@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Model Configuration · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=35a55a6-1794518265">
+<link rel="stylesheet" href="assets/site.css?v=c7a380b-1794518434">
 <style>
   main > p, main > ul { max-width: 80ch; }
   .wkv { display: grid; grid-template-columns: 230px 1fr; gap: 6px 16px; max-width: 980px; font-size: 14px; }
@@ -81,7 +81,7 @@
   representative entities that stand for untracked establishments.</p>
   <div class="cmp tablewrap"><table id="estab"></table></div>
 </main>
-<script src="assets/site.js?v=35a55a6-1794518265"></script>
+<script src="assets/site.js?v=c7a380b-1794518434"></script>
 <script>
 (async () => {
   try {
@@ -143,8 +143,8 @@
         : SERVICE.has(s.template) ? "Nothing is shipped: the service is used where it is sold." : "The model counts no shipping time for this sector.";
       return { D, x, K, t };
     };
-    document.getElementById("fixed").innerHTML = `<tr><th>sector${M2.info("The sector these values belong to. Every entity in a sector shares them.")}</th>
-      <th>template${M2.info("The kind of business the sector's equations describe, which decides which equations it uses (see Templates on Model Structure).")}</th>
+    document.getElementById("fixed").innerHTML = `<tr><th>sector</th>
+      <th>template</th>
       <th class="n"><span class="sym c-fix">D̄</span>${M2.info("Baseline real demand (L6): the demand level at which firms get exactly their normal output in orders. Demand above it raises orders; below it, lowers them.")}</th>
       <th class="n"><span class="sym c-fix">x̄</span>${M2.info("Baseline demand pressure (L3): the balance of demand against capacity at which firms run at their normal rate. Pressure above it makes them run harder.")}</th>
       <th class="n"><span class="sym c-fix">K₀</span>${M2.info("Starting sector capacity (L6): the yardstick for market share. A firm's share of orders follows its capacity measured against it.")}</th>
@@ -206,13 +206,13 @@
       Object.entries(c.obs_sigma).filter(([, v]) => v > 0).sort((a, b) => (M2.OBS[a[0]]?.[0] || a[0]).localeCompare(M2.OBS[b[0]]?.[0] || b[0]))
         .map(([k, v]) => `<tr><td>${M2.esc(M2.OBS[k]?.[0] || k)}</td><td class="n">${v}</td></tr>`).join("") +
       `<tr><td colspan="2" class="muted">Satellite yes/no readings have no noise size: they are a probability, set by each sensor's curve.</td></tr>`;
-    document.getElementById("recon").innerHTML = `<tr><th>sector${M2.info("The sector whose total is checked against the statistic.")}</th>
+    document.getElementById("recon").innerHTML = `<tr><th>sector</th>
       <th>statistic${M2.info("The official series, by its code in the sector input bundle.")}</th>
       <th class="n">floor${M2.info("Extra uncertainty, as a fraction of the statistic's value, combined with the uncertainty the bundle gives it, so the model never treats the statistic as exact. A larger floor makes the model follow it less closely.")}</th>
       <th class="n">widened${M2.info("How much the statistic's uncertainty is multiplied when it already includes tracked companies' own reports, so the same information is not counted twice.")}</th></tr>` +
       secs.flatMap((s) => s.reconciliation.map((x) => `<tr><td>${M2.esc(short[s.code])}</td><td class="mono">${M2.esc(x.series)}</td>
         <td class="n">${x.floor != null ? M2.pct(x.floor, 0) : "–"}</td><td class="n">${x.contains_tracked ? `${x.inflate}×` : "–"}</td></tr>`)).join("");
-    document.getElementById("estab").innerHTML = `<tr><th>sector${M2.info("The sector whose representative entities these sizes set.")}</th>
+    document.getElementById("estab").innerHTML = `<tr><th>sector</th>
       <th class="n">small${M2.info("Monthly capacity of one small establishment. Multiplied by the Census count of small establishments in a region, it sizes that region's small representative entity.")}</th>
       <th class="n">medium${M2.info("Monthly capacity of one medium establishment, used the same way.")}</th>
       <th class="n">large${M2.info("Monthly capacity of one large establishment, used the same way.")}</th>
