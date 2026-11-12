@@ -13,12 +13,19 @@ M2.param = (k) => new URLSearchParams(location.search).get(k);
 
 M2.esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
-M2.PAGES = [["index.html", "Overview"], ["world_overview.html", "Current World"], ["sector.html", "Sectors"], ["entity.html", "Entities"],
+M2.PAGES = [["index.html", "Overview"], ["world_overview.html", "Current World"], ["forecast_overview.html", "Current Forecast"],
             ["groupings.html", "Groupings"], ["accuracy.html", "Accuracy"],
             ["https://claude.ai/artifact/GbJQDmoHyttq2W6xiSyJ5w", "Development Dashboard"]];
 // Pages shown as sub-tabs under a top-level tab, chosen near the top of the page.
 M2.SUBPAGES = {"index.html": [["index.html", "Introduction"], ["howitworks.html", "How It Works"], ["datamodel.html", "Data Model"]],
-  "world_overview.html": [["world_overview.html", "Overview"], ["world_entities.html", "Entities"], ["world_observations.html", "Observations"], ["world_bundle.html", "Sector input bundle"]]};
+  "world_overview.html": [["world_overview.html", "Overview"], ["world_entities.html", "Entities"], ["world_observations.html", "Observations"], ["world_bundle.html", "Sector input bundle"]],
+  "forecast_overview.html": [["forecast_overview.html", "Overview"], ["forecast_model.html", "Model Structure"], ["sector.html", "Forecasts"]]};
+// Pages reached through a sub-tab without being one: they light up that sub-tab.
+M2.SUBALIAS = {"entity.html": "sector.html"};
+// The Forecasts sub-tab's two views, shown as a switch at the top of each.
+M2.forecastViews = (page) => `<nav class="tabs viewsw" aria-label="Forecasts by">` +
+  [["sector.html", "By sector"], ["entity.html", "By entity"]].map(([h, l]) =>
+    `<a href="${h}" class="${h === page ? "on" : ""}"${h === page ? ' aria-current="page"' : ""}>${l}</a>`).join("") + "</nav>";
 
 // Grouping kinds (src/firm_model/registry/groupings.py): label, and how members are found.
 M2.GROUPING_KINDS = {
@@ -32,13 +39,16 @@ M2.GROUPING_KINDS = {
 };
 
 M2.header = (meta, page) => {
+  const own = page;
+  page = M2.SUBALIAS[page] || page;
   const top = Object.keys(M2.SUBPAGES).find((t) => M2.SUBPAGES[t].some(([h]) => h === page)) || page;
   // a tab that leaves the site (the development dashboard) opens in a new browser tab
   const nav = M2.PAGES.map(([h, l]) => `<a href="${h}" class="${h === top ? "on" : ""}"${/^https?:/.test(h) ? ' target="_blank" rel="noopener"' : ""}>${l}</a>`).join("");
   const subs = M2.SUBPAGES[top];
   if (subs) {
     document.querySelector("main").insertAdjacentHTML("afterbegin", `<nav class="tabs subtabs" aria-label="${M2.esc(M2.PAGES.find((p) => p[0] === top)?.[1])}">`
-      + subs.map(([h, l]) => `<a href="${h}" class="${h === page ? "on" : ""}"${h === page ? ' aria-current="page"' : ""}>${l}</a>`).join("") + "</nav>");
+      + subs.map(([h, l]) => `<a href="${h}" class="${h === page ? "on" : ""}"${h === page ? ' aria-current="page"' : ""}>${l}</a>`).join("") + "</nav>"
+      + (page === "sector.html" ? M2.forecastViews(own) : ""));
   }
   document.body.insertAdjacentHTML("afterbegin", `
     <header class="top"><div class="in"><a class="brand" href="index.html">Model 2</a><nav>${nav}</nav>
@@ -52,7 +62,7 @@ M2.header = (meta, page) => {
     a.title = "About this world";
     a.hidden = false;
   }).catch(() => {});
-  const sub = subs?.find((p) => p[0] === page)?.[1];
+  const sub = page === "sector.html" ? (own === "entity.html" ? "Forecasts by entity" : "Forecasts by sector") : subs?.find((p) => p[0] === page)?.[1];
   document.title = `${sub && page !== top ? sub : M2.PAGES.find((p) => p[0] === top)?.[1] ?? "Model 2"} · Model 2 (dev)`;
 };
 

@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Model Structure · Model 2 (dev)</title>
+<link rel="stylesheet" href="assets/site.css?v=2646d9c-1794494728">
+<style>
+  main > p, main > ul, main > ol { max-width: 78ch; }
+  main > .eqcard, main > figure, main > .tablewrap { max-width: 1000px; }
+  .toc { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; margin: 4px 0 18px; }
+  .eqcard { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 16px 6px; margin: 10px 0; }
+  .eqcard h3 { margin: 0 0 4px; font-size: 15px; display: flex; gap: 10px; align-items: baseline; }
+  .eqcard h3 .tag { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12px; color: var(--muted); font-weight: 400; }
+  .eqcard h3 .when { font-size: 12px; font-weight: 400; color: var(--muted); margin-left: auto; }
+  .eq { font-family: "STIX Two Text", "Cambria Math", "Times New Roman", serif; font-size: 17px; line-height: 1.9;
+    padding: 6px 12px; margin: 6px 0 8px; background: var(--bg); border-radius: 6px; overflow-x: auto; white-space: nowrap; }
+  .eq .c { font-family: "IBM Plex Sans", system-ui, sans-serif; font-size: 12px; color: var(--muted); margin-left: 14px; }
+  .eqcard p { margin: 4px 0 8px; }
+  .pl { font-size: 12.5px; color: var(--muted); }
+  .eq i, .sym { font-style: italic; }
+  figure { margin: 10px 0 18px; }
+  figure svg { max-width: 100%; height: auto; display: block; }
+  figcaption { font-size: 13px; color: var(--muted); max-width: 78ch; }
+  .fl text { font-family: "IBM Plex Sans", system-ui, sans-serif; fill: var(--fg); font-size: 12px; }
+  .fl .lbl { fill: var(--muted); font-size: 11px; }
+  .fl .box { fill: var(--panel); stroke: var(--line); }
+  .fl .drv { fill: var(--band2); stroke: var(--accent); }
+  .fl .fb { stroke: var(--truth); }
+  .fl line, .fl path { stroke: var(--muted); fill: none; stroke-width: 1.3; }
+  .fl .fb { stroke: var(--truth); stroke-dasharray: 4 3; }
+  .tick { color: var(--good); }
+  .off { color: var(--muted); }
+  td.sym, th.sym { white-space: nowrap; }
+  #fitted td.n { font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Model Structure</h1>
+  <p class="sub">Model 2 describes every entity by a handful of <b>hidden states</b>, such as its capacity, its order
+  book and its unit cost, that change month by month. One set of equations moves them forward a month at a time.
+  <b>Drivers</b> from the sector input bundle push them; <b>parameters</b> set how strongly, and how fast each state
+  returns to normal; random <b>shocks</b> stand for everything else. <b>Observation equations</b> say what each kind of
+  observation would read, given the states. This page gives the equations as the current forecast runs them.</p>
+  <p class="sub">Every equation is per entity, and <span class="sym">t</span> is the month. Sector quantities (the
+  drivers, real demand <span class="sym">D</span>, sector capacity <span class="sym">K</span>) are the same for every
+  entity in a sector. Not every equation applies to every sector: each sector's <a href="#templates">template</a> switches
+  parts on or off, and the cards say when an equation applies. The tags (L1, L2, …) number the equations; the rest of the
+  site uses them too.</p>
+  <nav class="toc" aria-label="On this page">
+    <a href="#picture">One month at a glance</a><a href="#states">Hidden states</a><a href="#drivers">Drivers</a>
+    <a href="#capacity">Capacity</a><a href="#output">Utilization and output</a><a href="#price">Cost and price</a>
+    <a href="#orders">Orders and the order book</a><a href="#stocks">Stocks</a><a href="#leadtime">Lead time and tightness</a>
+    <a href="#shocks">Shocks</a><a href="#templates">Templates</a><a href="#params">Parameters</a>
+    <a href="#fitted">Fitted values</a><a href="#obs">Observations</a><a href="#totals">Sector totals</a>
+    <a href="#filter">How the forecast is made</a>
+  </nav>
+
+  <h2 id="picture">One month at a glance</h2>
+  <figure>
+    <svg class="fl" viewBox="0 0 910 300" role="img" aria-label="Demand drives orders into the order book; the order book and capacity set output and shipments; tightness feeds back into utilization, price and order inflation">
+      <defs><marker id="ar" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L8,4 L0,8 z" style="fill: var(--muted); stroke: none"/></marker>
+        <marker id="arf" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L8,4 L0,8 z" style="fill: var(--truth); stroke: none"/></marker></defs>
+      <rect class="drv" x="10" y="30" width="140" height="44" rx="6"/><text x="80" y="50" text-anchor="middle">Sector demand</text><text class="lbl" x="80" y="65" text-anchor="middle">driver, after prices</text>
+      <rect class="drv" x="10" y="242" width="140" height="44" rx="6"/><text x="80" y="262" text-anchor="middle">Input cost</text><text class="lbl" x="80" y="277" text-anchor="middle">driver</text>
+      <rect class="box" x="200" y="30" width="140" height="44" rx="6"/><text x="270" y="50" text-anchor="middle">New orders</text><text class="lbl" x="270" y="65" text-anchor="middle">L6</text>
+      <rect class="box" x="390" y="30" width="140" height="44" rx="6"/><text x="460" y="50" text-anchor="middle">Order book</text><text class="lbl" x="460" y="65" text-anchor="middle">L9</text>
+      <rect class="box" x="580" y="30" width="140" height="44" rx="6"/><text x="650" y="50" text-anchor="middle">Shipments</text><text class="lbl" x="650" y="65" text-anchor="middle">L8</text>
+      <rect class="box" x="200" y="136" width="140" height="44" rx="6"/><text x="270" y="156" text-anchor="middle">Capacity</text><text class="lbl" x="270" y="171" text-anchor="middle">L1</text>
+      <rect class="box" x="390" y="136" width="140" height="44" rx="6"/><text x="460" y="156" text-anchor="middle">Utilization → output</text><text class="lbl" x="460" y="171" text-anchor="middle">L3</text>
+      <rect class="box" x="580" y="136" width="140" height="44" rx="6"/><text x="650" y="156" text-anchor="middle">Finished stock</text><text class="lbl" x="650" y="171" text-anchor="middle">L11</text>
+      <rect class="box" x="760" y="136" width="140" height="44" rx="6"/><text x="830" y="156" text-anchor="middle">Tightness, lead time</text><text class="lbl" x="830" y="171" text-anchor="middle">L13</text>
+      <rect class="box" x="200" y="242" width="140" height="44" rx="6"/><text x="270" y="262" text-anchor="middle">Unit cost</text><text class="lbl" x="270" y="277" text-anchor="middle">L4</text>
+      <rect class="box" x="390" y="242" width="140" height="44" rx="6"/><text x="460" y="262" text-anchor="middle">Markup → price</text><text class="lbl" x="460" y="277" text-anchor="middle">L5</text>
+      <line x1="150" y1="52" x2="198" y2="52" marker-end="url(#ar)"/>
+      <line x1="150" y1="264" x2="198" y2="264" marker-end="url(#ar)"/>
+      <line x1="340" y1="52" x2="388" y2="52" marker-end="url(#ar)"/><text class="lbl" x="364" y="44" text-anchor="middle">placed</text>
+      <line x1="530" y1="52" x2="578" y2="52" marker-end="url(#ar)"/><text class="lbl" x="554" y="44" text-anchor="middle">due</text>
+      <line x1="340" y1="158" x2="388" y2="158" marker-end="url(#ar)"/><text class="lbl" x="364" y="150" text-anchor="middle">limits</text>
+      <line x1="530" y1="158" x2="578" y2="158" marker-end="url(#ar)"/><text class="lbl" x="554" y="150" text-anchor="middle">made</text>
+      <line x1="650" y1="136" x2="650" y2="76" marker-end="url(#ar)"/><text class="lbl" x="644" y="126" text-anchor="end">shipped from</text>
+      <line x1="340" y1="264" x2="388" y2="264" marker-end="url(#ar)"/><text class="lbl" x="364" y="256" text-anchor="middle">+ markup</text>
+      <line x1="720" y1="158" x2="758" y2="158" marker-end="url(#ar)"/>
+      <path d="M 460 30 V 14 H 830 V 134" marker-end="url(#ar)"/><text class="lbl" x="836" y="40">book ÷ output</text>
+      <path d="M 120 74 C 150 112, 400 104, 440 134" marker-end="url(#ar)"/><text class="lbl" x="170" y="118">demand pressure</text>
+      <path class="fb" d="M 790 180 C 770 214, 520 214, 490 182" marker-end="url(#arf)"/><text class="lbl" x="640" y="226" text-anchor="middle" style="fill: var(--truth)">runs harder</text>
+      <path class="fb" d="M 850 180 C 850 264, 640 264, 532 264" marker-end="url(#arf)"/><text class="lbl" x="700" y="280" text-anchor="middle" style="fill: var(--truth)">raises margin</text>
+      <path class="fb" d="M 780 136 C 760 92, 330 96, 290 76" marker-end="url(#arf)"/><text class="lbl" x="540" y="88" text-anchor="middle" style="fill: var(--truth)">long lead times: over-ordering</text>
+    </svg>
+    <figcaption>The chain for a factory that makes goods to order. Demand brings orders into the order book; capacity
+    and utilization set output; what falls due is shipped from output and stock. The order book against output gives
+    <b>tightness</b> and the quoted <b>lead time</b>, which feed back (orange, dashed) into next month's utilization,
+    markup and orders. Templates for other kinds of business swap some boxes, for example lost sales in place of
+    overdue orders for airlines.</figcaption>
+  </figure>
+
+  <h2 id="states">Hidden states</h2>
+  <p>The model's state for an entity at the end of a month. None of them is seen directly; observations see them through
+  the equations of the <a href="#obs">observations</a> section.</p>
+  <div class="tablewrap"><table>
+    <tr><th class="sym">symbol</th><th>quantity</th><th>unit</th></tr>
+    <tr><td class="sym">k</td><td>capacity, on the log scale: the most the entity could make or serve in a month</td><td>log physical units per month</td></tr>
+    <tr><td class="sym">z</td><td>utilization, on the logit scale; utilization itself is u = 1 / (1 + e<sup>−z</sup>), between 0 and 1</td><td>–</td></tr>
+    <tr><td class="sym">c</td><td>unit cost, log</td><td>log dollars per unit</td></tr>
+    <tr><td class="sym">m</td><td>markup of price over unit cost, log</td><td>–</td></tr>
+    <tr><td class="sym">B<sup>sched</sup></td><td>scheduled order book: orders accepted, not yet due</td><td>units</td></tr>
+    <tr><td class="sym">B<sup>late</sup></td><td>overdue orders: due, not yet shipped</td><td>units</td></tr>
+    <tr><td class="sym">P</td><td>phantom orders: the part of the order book placed only because lead times were long</td><td>units</td></tr>
+    <tr><td class="sym">G</td><td>finished stock</td><td>units</td></tr>
+    <tr><td class="sym">S</td><td>input inventory (raw materials)</td><td>input units</td></tr>
+    <tr><td class="sym">LT</td><td>lead time quoted for a new order</td><td>months</td></tr>
+    <tr><td class="sym">A, U</td><td>capacity announced, and under construction (pipeline templates)</td><td>units per month</td></tr>
+    <tr><td class="sym">Occ</td><td>capacity in use under lease (occupancy template)</td><td>units</td></tr>
+  </table></div>
+  <p>Quantities worked out from them each month: output <span class="sym">Q = u·e<sup>k</sup></span>; price
+  <span class="sym">p = c + m</span> (log); the order book <span class="sym">B = B<sup>sched</sup> + B<sup>late</sup></span>,
+  which is what filings call backlog; and the order-book position <span class="sym">ob = (B − G) / Q</span>, how many
+  months ahead the entity is booked, net of stock.</p>
+
+  <h2 id="drivers">Drivers</h2>
+  <p>Each sector gets three drivers from the <a href="world_bundle.html">sector input bundle</a>, month by month, as many
+  draws as the forecast has copies of the world: demand <span class="sym">d</span>, price <span class="sym">pr</span> and
+  input cost <span class="sym">π</span>, all on the log scale. Copy number <span class="sym">j</span> of the world uses
+  draw number <span class="sym">j</span>, so the drivers' own uncertainty carries into the forecast's band.</p>
+  <div class="eqcard"><h3>Real demand and demand pressure <span class="tag">L2</span></h3>
+    <div class="eq">D<sub>t</sub> = d<sub>t</sub> − pr<sub>t</sub><span class="c">when demand is in dollars; otherwise D<sub>t</sub> = d<sub>t</sub></span><br>
+      x<sub>t</sub> = D<sub>t</sub> − log K<sub>t−1</sub></div>
+    <p><span class="sym">D</span> is real sector demand: a demand series in dollars rises with prices as well as volume, so
+    it is divided by the price driver. <span class="sym">x</span> is demand pressure, demand against the sector's own
+    capacity <span class="sym">K</span> (the sum over its entities, from last month).</p></div>
+
+  <h2 id="capacity">Capacity</h2>
+  <div class="eqcard"><h3>Capacity drifts, with rare jumps <span class="tag">L1</span><span class="when">most templates</span></h3>
+    <div class="eq">k<sub>t</sub> = k<sub>t−1</sub> + δ + J<sub>t</sub></div>
+    <p>δ is a slow drift per month; <span class="sym">J</span> is a jump that is nearly zero in most months and occasionally
+    large (an expansion, a closure). Announced capacity changes are observations of <span class="sym">k</span>, not forced
+    jumps, because projects slip.</p>
+    <p class="pl">Parameters: δ (per entity); jump tail ν<sub>J</sub> and scale s<sub>J</sub> (per sector).</p></div>
+  <div class="eqcard"><h3>Capacity built through a pipeline <span class="tag">L19–L22</span><span class="when">pipeline producers, contracted capacity</span></h3>
+    <div class="eq">Ann<sub>t</sub> = e<sup>k<sub>t−1</sub></sup> · exp(o<sup>A</sup> + β<sup>A</sup> h<sub>t−1</sub>) · ε<sup>A</sup><sub>t</sub><span class="c">announced (L19)</span><br>
+      A<sub>t</sub> = A<sub>t−1</sub> + Ann<sub>t</sub> − A<sub>t−1</sub>/T<sup>A</sup> − d<sup>A</sup> A<sub>t−1</sub><span class="c">announced, not started (L20)</span><br>
+      U<sub>t</sub> = U<sub>t−1</sub> + A<sub>t−1</sub>/T<sup>A</sup> − U<sub>t−1</sub>/T<sup>U</sup><span class="c">under construction (L21)</span><br>
+      e<sup>k<sub>t</sub></sup> = e<sup>k<sub>t−1</sub></sup> (1 − ret) + U<sub>t−1</sub>/T<sup>U</sup><span class="c">capacity (L22)</span></div>
+    <p>Fabs, wells and data centers are not switched on overnight. Firms announce new capacity in proportion to what they
+    have, more when they are tight (<span class="sym">h</span>, below); projects start after about T<sup>A</sup> months
+    (a share d<sup>A</sup> per month is abandoned), take about T<sup>U</sup> months to build, and old capacity retires at
+    rate ret. The delay is why a capacity shortage can last years.</p>
+    <p class="pl">Parameters: o<sup>A</sup> (per entity); β<sup>A</sup>, T<sup>A</sup>, T<sup>U</sup>, d<sup>A</sup>, ret, σ<sub>A</sub> (per sector).</p></div>
+
+  <h2 id="output">Utilization and output</h2>
+  <div class="eqcard"><h3>Utilization returns to normal, pushed by demand and tightness <span class="tag">L3</span><span class="when">all but contracted capacity</span></h3>
+    <div class="eq">z<sub>t</sub> = α + φ<sub>z</sub> (z<sub>t−1</sub> − α) + β (x<sub>t</sub> − x̄) + β<sup>B</sup> h<sub>t−1</sub> + η<sub>t</sub><br>
+      Q<sub>t</sub> = u<sub>t</sub> · e<sup>k<sub>t</sub></sup></div>
+    <p>α is normal utilization; φ<sub>z</sub> how slowly utilization returns to it. The entity runs harder when sector demand
+    pressure is above its average over the window (x̄), and when it is tight (booked further ahead than normal). η stands
+    for outages, maintenance and strikes. The logit scale keeps output below capacity.</p>
+    <p class="pl">Parameters: α, β (per entity); φ<sub>z</sub>, β<sup>B</sup>, σ<sub>η</sub> (per sector).</p></div>
+  <div class="eqcard"><h3>Occupancy: capacity in use under lease <span class="tag">L18</span><span class="when">contracted capacity (data centers)</span></h3>
+    <div class="eq">Free<sub>t</sub> = e<sup>k<sub>t</sub></sup> − Occ<sub>t−1</sub> (1 − 1/term)<br>
+      Start<sub>t</sub> = min(Due<sub>t</sub>, max(0, Free<sub>t</sub>))<br>
+      Occ<sub>t</sub> = Occ<sub>t−1</sub> (1 − 1/term) + Start<sub>t</sub>;&nbsp;&nbsp; u<sub>t</sub> = Occ<sub>t</sub> / e<sup>k<sub>t</sub></sup>;&nbsp;&nbsp; Q<sub>t</sub> = Occ<sub>t</sub></div>
+    <p>Leases last about <i>term</i> months. A lease that comes due starts if there is free capacity, and otherwise waits
+    as an overdue order. Utilization is not chosen; it is how much is leased.</p>
+    <p class="pl">Parameters: u<sup>norm</sup> (per entity); term (per sector).</p></div>
+
+  <h2 id="price">Cost and price</h2>
+  <div class="eqcard"><h3>Unit cost follows input cost <span class="tag">L4</span></h3>
+    <div class="eq">c<sub>t</sub> = c<sub>t−1</sub> + w Δπ<sub>t</sub> + ν<sub>t</sub></div>
+    <p>A change in the sector's input-cost driver passes through at rate <span class="sym">w</span>, roughly the input's
+    share of cost. ν covers energy, labor and the entity's other cost changes.</p>
+    <p class="pl">Parameters: w (per entity); σ<sub>ν</sub> (per sector).</p></div>
+  <div class="eqcard"><h3>Markup returns to normal, higher when tight <span class="tag">L5</span></h3>
+    <div class="eq">m<sub>t</sub> = μ + φ<sub>m</sub> (m<sub>t−1</sub> − μ) + γ h<sub>t−1</sub> + ζ<sub>t</sub><br>
+      p<sub>t</sub> = c<sub>t</sub> + m<sub>t</sub></div>
+    <p>μ is the normal markup; γ a scarcity premium: an entity booked further ahead than usual (planes fuller, sites more
+    fully leased) raises its margin. That gives price a pattern of its own, which helps separate price from volume in
+    revenue reports.</p>
+    <p class="pl">Parameters: μ (per entity); φ<sub>m</sub>, γ, σ<sub>ζ</sub> (per sector).</p></div>
+
+  <h2 id="orders">Orders and the order book</h2>
+  <div class="eqcard"><h3>New orders <span class="tag">L6</span></h3>
+    <div class="eq">log O<sup>gen</sup><sub>t</sub> = õ + log O<sup>bal</sup> + β<sup>O</sup> (D<sub>t</sub> − D̄) + (k<sub>t−1</sub> − k<sub>0</sub>) − (log K<sub>t−1</sub> − log K<sub>0</sub>) + log ε<sup>O</sup><sub>t</sub><span class="c">genuine orders</span><br>
+      O<sub>t</sub> = O<sup>gen</sup><sub>t</sub> · (1 + ω · max(0, LT<sub>t−1</sub> / LT<sup>norm</sup> − 1))<span class="c">orders placed</span></div>
+    <p>Genuine orders start from the balanced level O<sup>bal</sup> (the entity's normal output at its starting capacity),
+    move with real sector demand against its window average D̄ at elasticity β<sup>O</sup>, and follow the entity's share
+    of sector capacity: an entity that grows faster than its sector wins a larger share of orders, and one that closes a
+    plant loses them. õ is the entity's offset from balance. When the lead time quoted last month is longer than normal,
+    customers over-order to secure supply (<b>order inflation</b>, strength ω); the extra is phantom orders.</p>
+    <p class="pl">Parameters: õ, β<sup>O</sup> (per entity); ω, σ<sub>O</sub> (per sector). The share term is a change from the
+    original design, which let orders ignore the entity's own capacity: an entity that lost capacity for good then kept
+    receiving the same orders, and its order book grew without bound.</p></div>
+  <div class="eqcard"><h3>Cancellations <span class="tag">L7</span><span class="when">where order inflation is on</span></h3>
+    <div class="eq">X<sub>t</sub> = min( B<sup>sched</sup><sub>t−1</sub> (1 − 1/ℓ),&nbsp; P<sub>t−1</sub> · min(1, χ · max(0, log(LT<sub>t−2</sub> / LT<sub>t−1</sub>))) )</div>
+    <p>When lead times fall, customers cancel phantom orders; with χ = 3, a 10% fall cancels about 30% of them.</p>
+    <p class="pl">Parameters: χ (per sector).</p></div>
+  <div class="eqcard"><h3>Orders falling due, and shipments <span class="tag">L8</span></h3>
+    <div class="eq">Due<sub>t</sub> = B<sup>late</sup><sub>t−1</sub> + B<sup>sched</sup><sub>t−1</sub> / ℓ<br>
+      Sh<sub>t</sub> = min(Due<sub>t</sub>, Q<sub>t</sub> + G<sub>t−1</sub>)</div>
+    <p>Scheduled orders fall due at rate 1/ℓ a month, so an order waits ℓ months on average; ℓ is the entity's normal
+    order-book cover. The entity ships what is due, up to what it has made plus its stock.</p>
+    <p class="pl">Parameters: ℓ (per entity).</p></div>
+  <div class="eqcard"><h3>Order book <span class="tag">L9</span></h3>
+    <div class="eq">B<sup>sched</sup><sub>t</sub> = B<sup>sched</sup><sub>t−1</sub> (1 − 1/ℓ) + O<sub>t</sub> − X<sub>t</sub><br>
+      B<sup>late</sup><sub>t</sub> = Due<sub>t</sub> − Sh<sub>t</sub></div>
+    <p>New orders join the scheduled book; what falls due and cannot be shipped becomes overdue.</p></div>
+  <div class="eqcard"><h3>Lost demand in place of overdue orders <span class="tag">L17</span><span class="when">distribution, perishable services</span></h3>
+    <div class="eq">B<sup>late</sup><sub>t</sub> = 0;&nbsp;&nbsp; Lost<sub>t</sub> = Due<sub>t</sub> − Sh<sub>t</sub>;&nbsp;&nbsp; O<sub>t+1</sub> gains r · Lost<sub>t</sub><br>
+      lf<sub>t</sub> = Sh<sub>t</sub> / Q<sub>t</sub><span class="c">load factor</span></div>
+    <p>A flight that is full does not owe its turned-away passengers a seat later: they are lost, and a share
+    <span class="sym">r</span> book again next month. Empty seats (Q − Sh) cannot be stored.</p>
+    <p class="pl">Parameters: lf<sup>norm</sup> (per entity, perishable services); r (per sector).</p></div>
+  <div class="eqcard"><h3>Phantom orders <span class="tag">L10</span><span class="when">where order inflation is on</span></h3>
+    <div class="eq">P<sub>t</sub> = clip( P<sub>t−1</sub> + (O<sub>t</sub> − O<sup>gen</sup><sub>t</sub>) − X<sub>t</sub> − (P<sub>t−1</sub> / B<sub>t−1</sub>) · Sh<sub>t</sub>,&nbsp; 0,&nbsp; B<sub>t</sub> )</div>
+    <p>Phantom orders are cancelled, or shipped in proportion to their share of the book.</p></div>
+
+  <h2 id="stocks">Stocks</h2>
+  <div class="eqcard"><h3>Finished stock <span class="tag">L11</span><span class="when">where output can be stored</span></h3>
+    <div class="eq">G<sub>t</sub> = G<sub>t−1</sub> + Q<sub>t</sub> − Sh<sub>t</sub></div></div>
+  <div class="eqcard"><h3>Input inventory <span class="tag">L12</span><span class="when">where the entity stocks its input</span></h3>
+    <div class="eq">R<sub>t</sub> = max( a Q<sub>t</sub> − S<sub>t−1</sub>,&nbsp; a Q<sub>t−1</sub> + (n a Q<sub>t−1</sub> − S<sub>t−1</sub>) / τ,&nbsp; 0 )<br>
+      S<sub>t</sub> = S<sub>t−1</sub> + R<sub>t</sub> − a Q<sub>t</sub></div>
+    <p><span class="sym">a</span> is input per unit of output (1.1 tonnes of scrap per tonne of steel); the entity aims for
+    <span class="sym">n</span> months of input in stock and closes a gap over τ months. Purchases <span class="sym">R</span>
+    always cover the month's use: inputs can always be bought.</p>
+    <p class="pl">Parameters: a, n, τ (per sector).</p></div>
+
+  <h2 id="leadtime">Lead time and tightness</h2>
+  <div class="eqcard"><h3>Lead time, order-book position and tightness <span class="tag">L13</span></h3>
+    <div class="eq">LT<sub>t</sub> = transit + proc + max(0, B<sub>t</sub> − G<sub>t</sub>) / Q<sub>t</sub> + C<sub>t</sub><br>
+      C<sub>t</sub> = (u<sub>t</sub> / (1 − u<sub>t</sub>)) · ((ca² + cs²) / 2) · proc<span class="c">congestion</span><br>
+      h<sub>t</sub> = ob<sub>t</sub> − (ℓ − g)<span class="c">tightness</span></div>
+    <p>The quoted lead time is shipping time, processing time, the time to work through the order book ahead of a new
+    order (net of stock), and extra waiting that grows sharply as utilization nears 1. <b>Tightness</b>
+    <span class="sym">h</span> is how far the entity is booked beyond normal; it is zero when the order book is ℓ months of
+    output and stock is at its target of <span class="sym">g</span> months. Other templates measure tightness their own
+    way: the load factor above normal (lf − lf<sup>norm</sup>) for airlines and hotels, and capacity in use plus waiting
+    customers above normal occupancy for data centers. Tightness feeds back into L3, L5, L6 and L19.</p>
+    <p class="pl">Parameters: proc, ca² + cs², g (per sector); transit is known from geography.</p></div>
+
+  <h2 id="shocks">Shocks</h2>
+  <p>Every shock is independent across entities, months and equations. Their sizes are sector parameters.</p>
+  <div class="tablewrap"><table>
+    <tr><th>shock</th><th>equation</th><th>distribution</th></tr>
+    <tr><td>capacity jump J</td><td>L1</td><td>Student-t with ν<sub>J</sub> degrees of freedom and scale s<sub>J</sub>: mostly tiny, occasionally large</td></tr>
+    <tr><td>utilization η</td><td>L3</td><td>normal, sd σ<sub>η</sub></td></tr>
+    <tr><td>unit cost ν</td><td>L4</td><td>normal, sd σ<sub>ν</sub></td></tr>
+    <tr><td>markup ζ</td><td>L5</td><td>normal, sd σ<sub>ζ</sub></td></tr>
+    <tr><td>orders ε<sup>O</sup></td><td>L6</td><td>lognormal with mean 1, log sd σ<sub>O</sub></td></tr>
+    <tr><td>announcements ε<sup>A</sup></td><td>L19</td><td>lognormal with mean 1, log sd σ<sub>A</sub></td></tr>
+  </table></div>
+  <p>A representative entity stands for many establishments, so it moves more smoothly than one: its shocks are divided
+  by the square root of the number it stands for, and it has no capacity jumps.</p>
+
+  <h2 id="templates">Templates</h2>
+  <p>A steel mill, an airline and a data center run the same equations with different parts switched on. A
+  <b>template</b> is a named set of switches; each sector has one. A part switched off fixes its states at zero.</p>
+  <div class="tablewrap"><table id="tpl"></table></div>
+
+  <h2 id="params">Parameters</h2>
+  <p>Parameters come in three kinds. <b>Entity parameters</b> differ from entity to entity; the fit estimates each one
+  with an uncertainty, and every copy of the world draws its own value from it. <b>Sector parameters</b> are shared by
+  every entity in a sector. <b>Starting states</b> (capacity, unit cost and markup at the start of the window) are
+  fitted like entity parameters. Some entities also have parameters for their own observations, such as the bias of
+  their quoted lead times.</p>
+  <div class="eqcard"><h3>Entities borrow strength from similar entities <span class="tag">L14</span></h3>
+    <div class="eq">θ<sub>i</sub> ~ N(μ<sub>g(i)</sub>, Σ<sub>s</sub>)</div>
+    <p>Entity <span class="sym">i</span>'s parameters θ<sub>i</sub> are drawn around the average of its group
+    <span class="sym">g</span> (sector × size class × region), with a spread Σ<sub>s</sub> shared by the sector's groups.
+    Group averages are in turn pulled toward the sector's average, more strongly for a group with few entities. An entity
+    with few observations stays near its group's average, which is how the model fills in poorly observed firms. A
+    representative entity uses its group's average throughout, except for its size.</p></div>
+  <div class="tablewrap"><table id="plist"></table></div>
+
+  <h2 id="fitted">Fitted values in this forecast</h2>
+  <p>The sector parameters of the <a href="forecast_overview.html">current fit</a>, beside the value the fit started from
+  (the prior's centre)<span id="truthnote"></span>. Entity parameters are on each entity's page in
+  <a href="entity.html">Forecasts, by entity</a>.</p>
+  <div class="tabs" id="sectabs" role="tablist" aria-label="Sector"></div>
+  <div class="tablewrap"><table id="fit"></table></div>
+
+  <h2 id="obs">Observations</h2>
+  <p>An observation names one subject: an entity, or a grouping such as a company, a site or a whole sector. Its
+  predicted value is worked out from the states of the subject's entities, each at its weight (a company's
+  consolidation share, for instance), and summed over the months the observation covers. The observation is the
+  prediction plus noise, of one of these kinds:</p>
+  <ul>
+    <li><b>Lognormal</b>: log(observed) = log(predicted) + e, e normal with sd σ. Most amounts: revenue, output, the order book.</li>
+    <li><b>Normal</b>, sometimes after taking the log or logit of both sides: prices, shares such as load factor or vacancy, emissions.</li>
+    <li><b>Yes or no</b>: a satellite image shows activity at a site with a probability that rises with utilization.</li>
+  </ul>
+  <p>σ depends on the kind of observation and its source.</p>
+  <div class="tablewrap"><table>
+    <tr><th>observation</th><th>predicted value</th><th>noise</th></tr>
+    <tr><td>revenue over a period</td><td>Σ e<sup>p</sup> · Sh over the period's months and the subject's entities (for leases, Σ e<sup>p</sup> · Occ)</td><td>lognormal</td></tr>
+    <tr><td>production, or capacity offered</td><td>Σ Q</td><td>lognormal</td></tr>
+    <tr><td>stated capacity</td><td>e<sup>k</sup></td><td>lognormal, small</td></tr>
+    <tr><td>traffic sold (passenger-miles, room-nights)</td><td>Σ Sh</td><td>lognormal</td></tr>
+    <tr><td>backlog</td><td>B · e<sup>p</sup>, the order book in dollars</td><td>lognormal</td></tr>
+    <tr><td>quoted lead time</td><td>LT, with the source's own bias</td><td>lognormal</td></tr>
+    <tr><td>observed or list price</td><td>p plus the listing gap</td><td>normal on the log</td></tr>
+    <tr><td>load factor; occupancy or vacancy</td><td>Sh / Q; u or 1 − u</td><td>normal on the logit</td></tr>
+    <tr><td>inventories (input, finished, a sector's at cost)</td><td>S; G; Σ e<sup>c</sup> G</td><td>lognormal</td></tr>
+    <tr><td>reported emissions</td><td>a straight line in log output, per facility</td><td>normal</td></tr>
+    <tr><td>satellite activity</td><td>a curve in utilization, per sensor</td><td>yes/no, or normal</td></tr>
+    <tr><td>capacity announced; under construction</td><td>Ann; U</td><td>lognormal</td></tr>
+    <tr><td>employment of a size class and region (Census)</td><td>labor per unit × output of its representative entity</td><td>lognormal</td></tr>
+  </table></div>
+  <p><a href="world_observations.html?v=kinds">Current World, Observations</a> lists every kind in this world.</p>
+
+  <h2 id="totals">Sector totals</h2>
+  <div class="eqcard"><h3>Tracked plus representative entities <span class="tag">L15</span></h3>
+    <div class="eq">X<sup>total</sup><sub>t</sub> = Σ<sub>tracked</sub> X<sub>t</sub> + Σ<sub>representative</sub> X<sub>t</sub></div>
+    <p>A sector total (capacity, output, the order book, shipments and the rest) is the sum over its entities.
+    <b>Tracked entities</b> are specific mills, fleets and campuses with their own observations. Each
+    <b>representative entity</b> stands for all the other establishments of one size class and region, sized from Census
+    establishment counts, so the two kinds together cover the whole sector.</p></div>
+  <div class="eqcard"><h3>Checked against official sector series <span class="tag">L16</span></h3>
+    <p>The sector input bundle also carries sector statistics, such as industrial production. Where one measures a sector
+    total, the filter treats it as one more observation of that total, with noise equal to the statistic's own
+    uncertainty plus 1%. It corrects states, not parameters, and it mostly moves the representative entities, which have
+    the least other data.</p></div>
+
+  <h2 id="filter">How the forecast is made</h2>
+  <ol>
+    <li><b>Fit the parameters</b> (once per quarter, on an 8-year window). For each sector, alternate: fit each entity's
+    parameters, holding the sector's numbers fixed (L24); update the group averages and spread (L25); update the sector
+    parameters, holding the entities fixed (L26). Score each round by the marginal likelihood and keep the best. An
+    entity's fit maximizes the likelihood of its observations (L23), worked out by running the filter below over the
+    window, plus the pull toward its group (L14).</li>
+    <li><b>Run the filter</b> (every run). Start 100 copies of the world, each with its own draw of the parameters. Each
+    month, step every copy forward through the equations above with its own shocks; predict the month's observations from
+    each copy; then move every copy toward what was actually observed, by how strongly, across copies, each state moved
+    with the predicted observations (an <b>ensemble Kalman filter</b>). Last, apply the sector statistics (L16).</li>
+    <li><b>Run past the data.</b> After the last observed month there is nothing to correct with, so the copies run on
+    the equations and the drivers' draws alone: the nowcast, then the forecast. The spread of the copies gives the 90%
+    band; the published sector bands are then widened by factors from backtests.</li>
+  </ol>
+</main>
+<script src="assets/site.js?v=2646d9c-1794494728"></script>
+<script>
+(async () => {
+  try {
+    const [meta, f] = await Promise.all([M2.load("meta.json"), M2.load("forecast.json")]);
+    M2.header(meta, "forecast_model.html");
+    // template switches (src/firm_model/templates.py)
+    const T = {
+      make_to_order: ["drift + jumps", "flow", "on", "carried as overdue", "on", "on"],
+      make_to_stock: ["drift + jumps", "flow", "on", "carried as overdue", "on", "on"],
+      distribution: ["drift + jumps", "flow", "on", "lost", "off", "off"],
+      perishable_service: ["drift + jumps", "flow", "off", "lost", "off", "off"],
+      contracted_capacity: ["pipeline", "occupancy", "off", "carried as overdue", "off", "on"],
+      pipeline_producer: ["pipeline", "flow", "on", "carried as overdue", "on", "on"],
+    };
+    const cell = (v) => v === "on" ? `<td class="tick">on</td>` : v === "off" ? `<td class="off">off</td>` : `<td>${v}</td>`;
+    const used = (t) => meta.sectors.filter((s) => s.template === t).map((s) => `<a href="sector.html?s=${s.code}">${M2.esc(s.short)}</a>`).join(", ");
+    document.getElementById("tpl").innerHTML = `<tr><th>template</th><th>capacity (L1 / L19–22)</th><th>output (L3 / L18)</th>
+      <th>finished stock (L11)</th><th>unserved demand (L9 / L17)</th><th>input inventory (L12)</th><th>order inflation (L6, L7, L10)</th><th>sectors in this world</th></tr>` +
+      Object.entries(T).map(([t, m]) => `<tr><td>${t.replace(/_/g, " ")}</td>${m.map(cell).join("")}<td>${used(t) || '<span class="muted">none</span>'}</td></tr>`).join("");
+    // parameter list (src/firm_model/params.py)
+    const P = [
+      ["entity", "δ", "capacity drift per month", "L1", "not pipeline templates"],
+      ["entity", "α", "normal utilization (logit)", "L3", "not contracted capacity"],
+      ["entity", "β", "response of utilization to demand pressure", "L3", "not contracted capacity"],
+      ["entity", "w", "pass-through of input cost to unit cost", "L4", ""],
+      ["entity", "μ", "normal markup (log)", "L5", ""],
+      ["entity", "õ", "genuine orders relative to balance (log)", "L6", ""],
+      ["entity", "β<sup>O</sup>", "elasticity of orders to real demand", "L6", ""],
+      ["entity", "ℓ", "normal order-book cover, months", "L8, L9", ""],
+      ["entity", "lf<sup>norm</sup>", "normal load factor", "L17", "perishable services"],
+      ["entity", "u<sup>norm</sup>", "normal occupancy", "L18", "contracted capacity"],
+      ["entity", "o<sup>A</sup>", "announcements per unit of capacity, relative to replacement", "L19", "pipeline templates"],
+      ["sector", "φ<sub>z</sub>, β<sup>B</sup>, σ<sub>η</sub>", "utilization: persistence, response to tightness, shock size", "L3", "not contracted capacity"],
+      ["sector", "φ<sub>m</sub>, γ, σ<sub>ζ</sub>", "markup: persistence, scarcity premium, shock size", "L5", ""],
+      ["sector", "σ<sub>ν</sub>", "unit-cost shock size", "L4", ""],
+      ["sector", "σ<sub>O</sub>", "order shock size", "L6", ""],
+      ["sector", "ω, χ", "order inflation, cancellation speed", "L6, L7", "where order inflation is on"],
+      ["sector", "a, n, τ", "input per unit, target input stock, months to close the gap", "L12", "where input inventory is on"],
+      ["sector", "proc, ca² + cs²", "processing time, variability of arrivals and processing", "L13", "not contracted capacity"],
+      ["sector", "g", "target finished stock, months of output", "L13", "where finished stock is on"],
+      ["sector", "ν<sub>J</sub>, s<sub>J</sub>", "capacity jumps: tail thickness, scale", "L1", "not pipeline templates"],
+      ["sector", "r", "share of lost customers who book again", "L17", "where unserved demand is lost"],
+      ["sector", "term", "average lease, months", "L18", "contracted capacity"],
+      ["sector", "β<sup>A</sup>, T<sup>A</sup>, T<sup>U</sup>, d<sup>A</sup>, ret, σ<sub>A</sub>", "pipeline: response to tightness, months to start, months to build, abandonment, retirement, shock size", "L19–L22", "pipeline templates"],
+      ["sector", "labor/unit", "employees per unit of monthly output, for representative entities", "L29", ""],
+    ];
+    document.getElementById("plist").innerHTML = `<tr><th>kind</th><th class="sym">symbol</th><th>meaning</th><th>equation</th><th>applies to</th></tr>` +
+      P.map(([k, s, d, e, w]) => `<tr><td>${k}</td><td class="sym">${s}</td><td>${d}</td><td>${e}</td><td class="muted">${w || "all"}</td></tr>`).join("");
+    // fitted sector parameters, per sector
+    const synthetic = f.sectors.some((s) => s.params.some((p) => p.truth != null));
+    if (synthetic) document.getElementById("truthnote").innerHTML = `, and the truth that generated this synthetic world.
+      In this world every sector parameter's starting value equals its truth (the simulation set them at the
+      priors' centres), so the table shows how far the fit wandered from the truth, not how far it travelled to find it;
+      red marks a fitted value more than 5% from the truth`;
+    const short = Object.fromEntries(meta.sectors.map((s) => [s.code, s.short]));
+    let sel = M2.param("s") || f.sectors[0].code;
+    const fmt = (v) => v == null ? "–" : Math.abs(v) >= 100 ? v.toFixed(0) : Math.abs(v) >= 1 ? v.toFixed(3) : v.toPrecision(3);
+    const sym = (s) => M2.esc(s).replace(/\^(\w+)/g, "<sup>$1</sup>").replace(/_(\w+)/g, "<sub>$1</sub>");
+    const render = () => {
+      document.getElementById("sectabs").innerHTML = f.sectors.map((s) =>
+        `<button type="button" role="tab" data-s="${s.code}" aria-selected="${s.code === sel}" class="${s.code === sel ? "on" : ""}">${M2.esc(short[s.code] || s.code)}</button>`).join("");
+      const s = f.sectors.find((x) => x.code === sel) || f.sectors[0];
+      const off = (p) => p.truth != null && Math.abs(p.fit - p.truth) > 0.05 * Math.max(Math.abs(p.truth), 1e-3);
+      document.getElementById("fit").innerHTML = `<tr><th class="sym">symbol</th><th>meaning</th><th class="n">fitted</th><th class="n">started from</th>
+        ${synthetic ? '<th class="n">truth</th>' : ""}</tr>` + s.params.map((p) => `<tr><td class="sym">${sym(p.symbol)}</td>
+        <td>${M2.esc(p.description)}</td><td class="n${off(p) ? " bad" : ""}">${fmt(p.fit)}</td><td class="n muted">${fmt(p.prior)}</td>
+        ${synthetic ? `<td class="n">${fmt(p.truth)}</td>` : ""}</tr>`).join("");
+    };
+    document.getElementById("sectabs").addEventListener("click", (e) => {
+      const t = e.target.closest("button[data-s]");
+      if (!t) return;
+      sel = t.dataset.s;
+      history.replaceState(null, "", `?s=${sel}#fitted`);
+      render();
+    });
+    render();
+    if (location.hash) document.getElementById(location.hash.slice(1))?.scrollIntoView();
+  } catch (e) { M2.fail(e); }
+})();
+</script>
+</body>
+</html>

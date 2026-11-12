@@ -75,6 +75,8 @@ svg.chart .gridline { stroke: var(--grid); }
 .tabs a:hover { text-decoration: none; border-color: var(--accent); }
 .tabs a.on { background: var(--accent); border-color: var(--accent); color: var(--panel); }
 .subtabs { margin: 0 0 16px; }
+.viewsw { margin: -6px 0 14px; }
+.viewsw a { border-radius: 4px; }
 .bar { position: relative; height: 16px; min-width: 160px; }
 .bar .pr { position: absolute; top: 5px; height: 6px; background: var(--grid); border-radius: 3px; }
 .bar .ft { position: absolute; top: 3px; height: 10px; background: var(--band); border: 1px solid var(--accent); border-radius: 3px; }

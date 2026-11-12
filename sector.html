@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Sectors · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=0a1bb15-1794420034">
+<link rel="stylesheet" href="assets/site.css?v=2646d9c-1794494728">
 </head>
 <body>
 <main>
@@ -27,9 +27,10 @@
   <div id="leg2"></div>
   <div class="grid" id="split"></div>
 
-  <h2>Check against Model 1</h2>
-  <p class="sub">Model 1 nowcasts an official series for the sector, and Model 2 uses that nowcast as a
-  pseudo-observation of the sector total (L16). Each chart compares the two in the series' units.</p>
+  <h2>Check against official sector series</h2>
+  <p class="sub">The sector input bundle carries official sector statistics, and where one measures a sector total,
+  the filter uses it as one more observation of that total (L16). Each chart compares the bundle's value with Model 2's
+  total, in the statistic's units.</p>
   <div class="grid" id="recon"></div>
 
   <h2>Information from the data</h2>
@@ -41,7 +42,7 @@
   <h2>Entities in this sector</h2>
   <div class="tablewrap"><table id="ents"></table></div>
 </main>
-<script src="assets/site.js?v=0a1bb15-1794420034"></script>
+<script src="assets/site.js?v=2646d9c-1794494728"></script>
 <script>
 (async () => {
   try {
@@ -96,16 +97,16 @@
     document.getElementById("estab").textContent = `This sector: ${e.n_entities_tracked} tracked entities, and ${e.n_entities_representative} representative entities standing for ${e.establishments_represented} establishments.`;
     const recon = document.getElementById("recon");
     const rs = Object.entries(d.reconciliation);
-    if (!rs.length) recon.innerHTML = `<p class="muted">No Model 1 series covers this sector.</p>`;
+    if (!rs.length) recon.innerHTML = `<p class="muted">No official series in the bundle measures a total of this sector.</p>`;
     for (const [name, r] of rs) {
       const el = document.createElement("div");
       el.className = "card";
-      el.innerHTML = `<div class="head"><h3 class="mono">${M2.esc(name)}${M2.info(`Official statistic for this sector that Model 1 nowcasts (FRED series ${name}). Model 2 converts its total into the same units, and the two should agree within the band.`)}</h3></div><p class="desc">Dots: Model 1 mean. Line: Model 2 mean. Band: ±1.645 sd of the gap between them across members.</p><div class="ch"></div>`;
+      el.innerHTML = `<div class="head"><h3 class="mono">${M2.esc(name)}${M2.info(`Official statistic for this sector (FRED series ${name}), from the sector input bundle. Model 2 converts its total into the same units, and the two should agree within the band.`)}</h3></div><p class="desc">Dots: the bundle's value (mean of its draws). Line: Model 2 mean. Band: ±1.645 sd of the gap between them across copies.</p><div class="ch"></div>`;
       recon.appendChild(el);
       M2.chart(el.querySelector(".ch"), {
         bands: [{ month: r.month, q50: r.m2, q05: r.m2.map((v, i) => v - 1.645 * r.sd[i]), q95: r.m2.map((v, i) => v + 1.645 * r.sd[i]), label: "Model 2" }],
-        points: r.month.map((m, i) => ({ month: m, y: r.m1[i], label: `Model 1: ${M2.fmt(r.m1[i])}` })),
-        yLabel: `${name} (Model 1 units)` });
+        points: r.month.map((m, i) => ({ month: m, y: r.m1[i], label: `bundle: ${M2.fmt(r.m1[i])}` })),
+        yLabel: `${name} (series units)` });
     }
     document.getElementById("ident").innerHTML = `<tr><th>quantity</th><th class="n">posterior / prior variance</th><th>prior-dominated</th></tr>` +
       d.identifiability.map((r) => `<tr><td>${M2.SHORT_VAR[r.variable] || r.variable}</td><td class="n">${(+r.posterior_to_prior_variance).toFixed(2)}</td>

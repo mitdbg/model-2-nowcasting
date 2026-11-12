@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Current Forecast · Model 2 (dev)</title>
+<link rel="stylesheet" href="assets/site.css?v=2646d9c-1794494728">
+<style>
+  .wkv { display: grid; grid-template-columns: 200px 1fr; gap: 6px 16px; max-width: 900px; font-size: 14px; }
+  .wkv .k { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; padding-top: 2px; }
+  .wid { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 15px; font-weight: 600; }
+  svg.spark { display: block; }
+  svg.spark polyline { fill: none; stroke: var(--accent); stroke-width: 1.5; }
+  svg.spark circle { fill: var(--truth); }
+  @media (max-width: 760px) { .wkv { grid-template-columns: 1fr; gap: 2px 0; } .wkv .k { padding-top: 8px; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Overview</h1>
+  <p class="sub" id="intro"></p>
+  <h2>This forecast</h2>
+  <div class="wkv" id="run"></div>
+  <h2>The parameter fit it uses</h2>
+  <div class="wkv" id="fit"></div>
+  <h2>The fit, sector by sector</h2>
+  <p class="sub">Each sector is fitted on its own. The fit works in rounds: first every entity's parameters, holding the
+  sector's numbers fixed, then the sector's numbers, holding the entities fixed. After each round it scores the fit as
+  a whole (the marginal likelihood: how probable the data are under the fitted model, allowing for what remains
+  uncertain), and it keeps the best round, not the last. The small chart traces that score round by round; the dot is
+  the round kept.</p>
+  <div class="tablewrap"><table id="secs"></table></div>
+</main>
+<script src="assets/site.js?v=2646d9c-1794494728"></script>
+<script>
+(async () => {
+  try {
+    const [meta, f, w] = await Promise.all([M2.load("meta.json"), M2.load("forecast.json"), M2.load("world.json").catch(() => ({}))]);
+    M2.header(meta, "forecast_overview.html");
+    document.querySelector("h1").textContent = `Overview of the Forecast for ${f.as_of}`;
+    const g = f.time_grid, n = (v) => (v ?? 0).toLocaleString(), fit = f.fit;
+    const when = (u) => u ? `${u.slice(0, 10)} at ${u.slice(11, 16)} UTC` : null;
+    const mins = f.compute ? Math.round(f.compute.wall_seconds / 6) / 10 : null;
+    const short = Object.fromEntries(meta.sectors.map((s) => [s.code, s]));
+    document.getElementById("intro").innerHTML = `A forecast is made in two steps. First a <b>parameter fit</b> sets the
+      model's numbers (how fast each entity's capacity drifts, how strongly its prices follow its costs, and so on) from
+      the observations known on the run date. Then the <b>filter</b> runs every entity forward month by month with those
+      numbers, correcting its hidden states with each month's observations, to the last observed month (history), the
+      months since (nowcast) and a year ahead (forecast). It runs ${f.n_members} copies of the world at once, each with
+      its own random shocks and its own draw of the uncertain parameters; their spread gives the 90% band.
+      <a href="forecast_model.html">Model Structure</a> gives the equations, and <a href="sector.html">Forecasts</a>
+      shows the results.`;
+    const row = (k, v) => v == null || v === "" ? "" : `<span class="k">${k}</span><span>${v}</span>`;
+    const bi = f.band_inflation;
+    document.getElementById("run").innerHTML = [
+      row("Forecast", `<span class="wid">${M2.esc(f.run)}</span>`),
+      row("Run date", `${f.as_of} <span class="muted">(uses only what was published by then)</span>`),
+      row("World", w.id ? `<a href="world_overview.html" class="mono">${M2.esc(w.id)}</a> (${w.kind === "synthetic" ? "synthetic" : "real"})` : null),
+      row("Made", when(f.started_utc) + (mins != null ? `, in ${mins} minutes` : "")),
+      row("Months covered", `history ${g.history_start} to ${g.last_observed}; nowcast to the run date; forecast to ${g.forecast_end}
+        <span class="muted">(${f.forecast_months} months past the last observed month)</span>`),
+      row("Sector input", `the <a href="world_bundle.html">delivery for ${f.bundle_as_of}</a>: drivers and sector statistics,
+        each as ${f.n_members} draws`),
+      row("Copies of the world", `${f.n_members}, each run with its own shocks and parameter draw`),
+      row("Observations used", `${n(f.observations.attached)}, inside the ${f.window_years}-year window
+        <span class="muted">(${n(f.observations.outside_window)} older ones fall outside it; ${n(f.observations.unmatched)}
+        could not be tied to any entity or grouping)</span>`),
+      row("Band widening", bi ? `the published sector bands are widened ${bi.smoothed}× in history, ${bi.nowcast}× in the
+        nowcast and ${bi.forecast}× in the forecast, because the model's own 90% bands held too little of the truth in
+        backtests (see <a href="accuracy.html">Accuracy</a>). Entity bands are not widened.` : "none"),
+      row("Random seed", f.seed),
+    ].join("");
+    document.getElementById("fit").innerHTML = [
+      row("Fit", `<span class="wid">${M2.esc(fit.id)}</span>`),
+      row("Made", when(fit.fitted_utc)),
+      row("Data up to", `${fit.as_of} <span class="muted">(the fit, too, uses only what was published by the run date)</span>`),
+      row("Window", `${f.window_years} years of observations, ${g.history_start} to ${g.last_observed}`),
+      row("What it covers", `${n(fit.entities)} entities in ${n(fit.groups)} groups (sector × size class × region), across
+        ${fit.sectors} sectors`),
+      row("Numbers fitted", `${n(fit.entity_params)} for single entities (each with an uncertainty, which the filter's copies
+        draw from) and ${n(fit.sector_params)} shared by a whole sector; plus each group's average entity`),
+      row("Copies of the world", `${fit.members_estimation} while fitting (fewer than the forecast's ${f.n_members}, to save time)`),
+    ].join("");
+    const spark = (m, best) => {
+      if (!m.length) return "";
+      const W = 120, H = 26, lo = Math.min(...m.slice(1)), hi = Math.max(...m);   // round 0 is the prior start, often far below
+      const x = (i) => 3 + (i * (W - 6)) / Math.max(1, m.length - 1), y = (v) => H - 3 - ((Math.max(v, lo) - lo) * (H - 6)) / Math.max(1e-9, hi - lo);
+      return `<svg class="spark" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Marginal likelihood by round">
+        <polyline points="${m.map((v, i) => `${x(i)},${y(v)}`).join(" ")}"/>${best != null && m[best] != null ? `<circle cx="${x(best)}" cy="${y(m[best])}" r="3"/>` : ""}</svg>`;
+    };
+    document.getElementById("secs").innerHTML = `<tr><th>sector</th><th>template</th><th class="n">entities</th><th class="n">groups</th>
+      <th class="n">rounds</th><th class="n">round kept</th><th>score by round</th><th class="n">sector numbers</th><th>made (UTC)</th></tr>` +
+      f.sectors.map((s) => `<tr><td><a href="sector.html?s=${s.code}">${M2.esc(short[s.code]?.short || s.code)}</a></td>
+        <td class="muted">${s.template.replace(/_/g, " ")}</td><td class="n">${s.entities}</td><td class="n">${s.groups}</td>
+        <td class="n">${s.rounds ?? "–"}</td><td class="n">${s.best_round ?? "–"}</td><td>${spark(s.marginal, s.best_round)}</td>
+        <td class="n"><a href="forecast_model.html?s=${s.code}#fitted">${s.params.length}</a></td>
+        <td class="muted">${(s.fitted_utc || "").slice(0, 16).replace("T", " ")}</td></tr>`).join("");
+  } catch (e) { M2.fail(e); }
+})();
+</script>
+</body>
+</html>
