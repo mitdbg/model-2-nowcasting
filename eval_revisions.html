@@ -3,62 +3,122 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Forecasts against later estimates · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=06b8199-1794513824">
+<link rel="stylesheet" href="assets/site.css?v=cce22cb-1794514660">
 <style>
-  main > p, main > ul { max-width: 80ch; }
-  .tiles2 { display: flex; flex-wrap: wrap; gap: 10px; margin: 8px 0 4px; }
-  .tile { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 14px; min-width: 190px; }
-  .tile .v { font-size: 22px; font-weight: 600; }
-  .tile .l { font-size: 12px; color: var(--muted); }
+  main > p { max-width: 80ch; }
+  .excard { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; max-width: 980px; }
+  .excard .ctl { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+  .excard .ctl select { width: auto; font-size: 13px; padding: 2px 6px; }
+  #exchart { max-width: 760px; }
+  .excard .say { font-size: 13.5px; margin: 6px 0 2px; max-width: 80ch; }
+  .qs { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px; margin: 14px 0; max-width: 980px; }
+  .q { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; }
+  .q h3 { margin: 0 0 6px; font-size: 15px; }
+  .q .big { font-size: 26px; font-weight: 600; margin: 2px 0; }
+  .q p { margin: 4px 0; font-size: 13.5px; }
+  .hz { display: grid; grid-template-columns: 120px 1fr 56px; gap: 4px 8px; align-items: center; font-size: 12.5px; margin-top: 8px; }
+  .hz .bar { height: 10px; background: var(--accent); border-radius: 3px; opacity: 0.75; }
   td.n { font-variant-numeric: tabular-nums; }
   .two { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 18px; }
   .two > div { min-width: 0; }
-  h3 { margin: 10px 0 4px; font-size: 14px; }
+  h3.t { margin: 10px 0 4px; font-size: 14px; }
+  .verdict { font-size: 11.5px; font-weight: 600; padding: 1px 8px; border-radius: 9px; white-space: nowrap; }
+  .verdict.ok { color: var(--good); background: color-mix(in srgb, var(--good) 12%, transparent); }
+  .verdict.narrow { color: var(--bad); background: color-mix(in srgb, var(--bad) 12%, transparent); }
+  .verdict.wide { color: var(--muted); background: var(--chip); }
 </style>
 </head>
 <body>
 <main>
   <h1>Forecasts against later estimates</h1>
-  <p>At each run date of the backtest (<span id="dates"></span>), the model made a nowcast and a year of forecasts. A year
-  later the next run, with a year more observations, estimated the same months again. That later estimate is not the
-  truth, but it is better informed, so a good forecast should land near it: the later estimate should fall inside the
-  earlier 90% band about 90% of the time, and the revision should be small. Bands are as published, after widening.</p>
-  <div class="tiles2" id="revtiles"></div>
-  <div class="two">
-    <div><h3>By sector</h3><div class="tablewrap"><table id="revsec"></table></div></div>
-    <div><h3>By quantity</h3><div class="tablewrap"><table id="revvar"></table></div></div>
+  <p class="sub">A forecast can be checked without knowing the truth: wait, and see what the model says about the same
+  months once more data has come in. At each run date of the backtest the model forecast a year ahead; a year later the
+  next run estimated those months again, with a year more observations. That later estimate is not the truth, only a
+  better-informed guess, but a good forecast should land close to it.</p>
+
+  <div class="excard">
+    <div class="ctl" id="exctl"></div>
+    <div id="exchart"></div>
+    <div id="exleg"></div>
+    <p class="say" id="exsay"></p>
   </div>
 
+  <div class="qs">
+    <div class="q" id="q1"></div>
+    <div class="q" id="q2"></div>
+  </div>
+
+  <h2>Sector by sector</h2>
+  <p>The same two questions for each sector and each quantity. A well-sized range catches about 90 of every 100 later
+  estimates: fewer, and the range is too narrow (the model is overconfident); many more, and it is wider than it needs
+  to be.</p>
+  <div class="two">
+    <div><h3 class="t">By sector</h3><div class="tablewrap"><table id="revsec"></table></div></div>
+    <div><h3 class="t">By quantity</h3><div class="tablewrap"><table id="revvar"></table></div></div>
+  </div>
 </main>
-<script src="assets/site.js?v=06b8199-1794513824"></script>
+<script src="assets/site.js?v=cce22cb-1794514660"></script>
 <script>
 (async () => {
   try {
-    const [meta, q] = await Promise.all([M2.load("meta.json"), M2.load("quality.json")]);
+    const [meta, q, rv] = await Promise.all([M2.load("meta.json"), M2.load("quality.json"), M2.load("revisions.json")]);
     M2.header(meta, "eval_revisions.html");
     const short = Object.fromEntries(meta.sectors.map((s) => [s.code, s.short]));
-    const bySec = (xs) => [...xs].sort((a, b) => (short[a.sector] || a.sector).localeCompare(short[b.sector] || b.sector));
-    const cov = (c, n) => { if (c == null || !(n >= 8)) return ""; const se = Math.sqrt(0.09 / n);
-      return c >= 0.9 - 2 * se ? "good" : c >= 0.9 - 4 * se ? "warn" : "bad"; };
-    const pct = (v, d = 0) => v == null ? "–" : M2.pct(v, d);
-    const tile = (v, l, cls = "") => `<div class="tile"><div class="v ${cls}">${v}</div><div class="l">${l}</div></div>`;
     const name = (v) => (M2.SHORT_VAR[v] || v).replace(/ \(.*\)$/, "");
+    const R = q.revisions;
+    const of100 = (c) => Math.round(100 * c);
+    const gap = (x) => x.err == null ? "–" : x.unit === "pp" ? (100 * x.err).toFixed(1) + " points" : x.unit === "months" ? x.err.toFixed(2) + " months of output" : M2.pct(x.err, 1);
+    // judged against 90 of 100 with the binomial spread of n values
+    const verdict = (c, n) => { const se = Math.sqrt(0.09 / n);
+      return c < 0.9 - 2 * se ? `<span class="verdict narrow">range too narrow</span>` : c > 0.9 + 2 * se ? `<span class="verdict wide">range wider than needed</span>` : `<span class="verdict ok">range about right</span>`; };
 
-    const rv = q.revisions;
-    if (rv) {
-      document.getElementById("dates").textContent = rv.pairs.map((p) => p.replace(" → next", "")).join(", ");
-      const H = { nowcast: "nowcast", "1-6": "forecast, 1–6 months ahead", "7-12": "forecast, 7–12 months ahead" };
-      document.getElementById("revtiles").innerHTML = ["nowcast", "1-6", "7-12"].map((h) => rv.by_horizon.find((x) => x.horizon === h)).filter(Boolean)
-        .map((x) => tile(`${pct(x.inside)} · ${pct(x.err, 1)}`, `${H[x.horizon]}: inside the band · median revision (${x.n.toLocaleString()} values)`, cov(x.inside, x.n))).join("");
-      document.getElementById("revsec").innerHTML = `<tr><th>sector</th><th class="n">inside band</th><th class="n">median revision</th><th class="n">values</th></tr>` +
-        bySec(rv.by_sector).map((x) => `<tr><td>${M2.esc(short[x.sector] || x.sector)}</td><td class="n ${cov(x.inside, x.n)}">${pct(x.inside)}</td>
-          <td class="n">${pct(x.err, 1)}</td><td class="n muted">${x.n}</td></tr>`).join("");
-      const fmtErr = (x) => x.err == null ? "–" : x.unit === "pp" ? (100 * x.err).toFixed(1) + " pp" : x.unit === "months" ? x.err.toFixed(2) + " mo" : pct(x.err, 1);
-      document.getElementById("revvar").innerHTML = `<tr><th>quantity</th><th class="n">inside band</th><th class="n">median revision</th></tr>` +
-        [...rv.by_variable].sort((a, b) => name(a.variable).localeCompare(name(b.variable))).map((x) =>
-          `<tr><td>${M2.esc(name(x.variable))}</td><td class="n ${cov(x.inside, x.n)}">${pct(x.inside)}</td><td class="n">${fmtErr(x)}</td></tr>`).join("");
-    } else document.getElementById("revtiles").innerHTML = `<p class="muted">This workspace has only one run date, so there is nothing to compare yet.</p>`;
+    // the example: one sector total, one run date
+    const secs = Object.keys(rv.series).sort((a, b) => short[a].localeCompare(short[b]));
+    const ex = { s: M2.param("s") || (rv.series.naics_3311_2 ? "naics_3311_2" : secs[0]), v: M2.param("v") || "output", a: M2.param("a") || (rv.pairs[1] || rv.pairs[0]).as_of };
+    const sel = (k, label, opts) => `<label>${label} <select data-k="${k}">${opts.map(([v, t]) => `<option value="${v}"${ex[k] === v ? " selected" : ""}>${M2.esc(t)}</option>`).join("")}</select></label>`;
+    const draw = () => {
+      if (!rv.series[ex.s]?.[ex.v]) ex.v = Object.keys(rv.series[ex.s])[0];
+      const vars = Object.keys(rv.series[ex.s]).sort((a, b) => name(a).localeCompare(name(b)));
+      const pair = rv.pairs.find((p) => p.as_of === ex.a) || rv.pairs[0];
+      document.getElementById("exctl").innerHTML = sel("s", "Sector", secs.map((c) => [c, short[c]])) + sel("v", "Quantity", vars.map((v) => [v, name(v)]))
+        + sel("a", "Forecast made", rv.pairs.map((p) => [p.as_of, `${p.as_of}, checked against ${p.later}`]));
+      const d = rv.series[ex.s][ex.v][pair.as_of];
+      const share = ex.v === "utilization" || ex.v === "load_factor";
+      M2.chart(document.getElementById("exchart"), {
+        bands: [{ month: d.month, q05: d.q05, q50: d.q50, q95: d.q95, label: `forecast made ${pair.as_of}` }],
+        truth: [{ month: d.month, value: d.later, color: "var(--rep)", label: `estimated ${pair.later}` }],
+        status: { month: d.month, status: d.status }, unit: share ? "share" : "", height: 240, yLabel: name(ex.v) });
+      document.getElementById("exleg").innerHTML = M2.legend([["var(--accent)", `forecast made ${pair.as_of}: middle line`], ["var(--band)", "its 90% range"],
+        ["var(--rep)", `the same months as estimated a year later (${pair.later})`, true], ["var(--nowcast)", "nowcast"], ["var(--forecast)", "forecast"]]);
+      const ahead = d.month.map((m, i) => i).filter((i) => d.status[i] !== "smoothed" && d.later[i] != null);
+      const inside = ahead.filter((i) => d.later[i] >= d.q05[i] && d.later[i] <= d.q95[i]).length;
+      document.getElementById("exsay").innerHTML = `The shaded months are what the run of ${pair.as_of} could not see yet. For ${M2.esc(short[ex.s])} ${M2.esc(name(ex.v).toLowerCase())},
+        the later estimate (purple, dashed) stays inside the forecast's range in <b>${inside} of ${ahead.length}</b> of those months.`;
+      history.replaceState(null, "", `?s=${ex.s}&v=${ex.v}&a=${ex.a}`);
+    };
+    document.getElementById("exctl").addEventListener("change", (e) => { const s = e.target.closest("select[data-k]"); if (s) { ex[s.dataset.k] = s.value; draw(); } });
+    draw();
 
+    // the two questions
+    const o = R.overall, se = Math.sqrt(0.09 / o.n);
+    document.getElementById("q1").innerHTML = `<h3>Was the range honest?</h3>
+      <div class="big">${of100(o.inside)} of every 100</div>
+      <p>later estimates fell inside the forecast's 90% range, over ${o.n.toLocaleString()} sector totals and months.</p>
+      <p class="muted">A well-sized 90% range catches about 90. ${o.inside > 0.9 + 2 * se ? "These ranges are a little wider than they need to be." : o.inside < 0.9 - 2 * se ? "These ranges are too narrow: the model is overconfident." : "These ranges are about the right size."}</p>`;
+    const H = [["nowcast", "this month"], ["1-6", "1–6 months ahead"], ["7-12", "7–12 months ahead"]].map(([h, l]) => [l, R.by_horizon.find((x) => x.horizon === h)]).filter(([, x]) => x);
+    const mx = Math.max(...H.map(([, x]) => x.err));
+    document.getElementById("q2").innerHTML = `<h3>How far off was the forecast?</h3>
+      <div class="big">about ${M2.pct(o.err, 1)}</div>
+      <p>typical gap between the forecast's middle line and the later estimate, for quantities measured in amounts (output,
+      prices, orders and so on). It grows the further ahead the forecast looks:</p>
+      <div class="hz">${H.map(([l, x]) => `<span>${l}</span><div class="bar" style="width:${(100 * x.err / mx).toFixed(0)}%"></div><span class="n">${M2.pct(x.err, 1)}</span>`).join("")}</div>`;
+
+    // sector by sector
+    const head = (k) => `<tr><th>${k}</th><th class="n">later value inside the range</th><th class="n">typical gap</th><th></th></tr>`;
+    document.getElementById("revsec").innerHTML = head("sector") + [...R.by_sector].sort((a, b) => short[a.sector].localeCompare(short[b.sector])).map((x) =>
+      `<tr><td><a href="?s=${x.sector}&v=output&a=${ex.a}">${M2.esc(short[x.sector])}</a></td><td class="n">${of100(x.inside)} of 100</td><td class="n">${gap({ ...x, unit: "log" })}</td><td>${verdict(x.inside, x.n)}</td></tr>`).join("");
+    document.getElementById("revvar").innerHTML = head("quantity") + [...R.by_variable].sort((a, b) => name(a.variable).localeCompare(name(b.variable))).map((x) =>
+      `<tr><td>${M2.esc(name(x.variable))}</td><td class="n">${of100(x.inside)} of 100</td><td class="n">${gap(x)}</td><td>${verdict(x.inside, x.n)}</td></tr>`).join("");
   } catch (e) { M2.fail(e); }
 })();
 </script>
