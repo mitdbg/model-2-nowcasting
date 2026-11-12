@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Without Ground Truth · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=cdf23b5-1794511829">
+<link rel="stylesheet" href="assets/site.css?v=f1c1a49-1794512124">
 <style>
   main > p, main > ul { max-width: 80ch; }
   .tiles2 { display: flex; flex-wrap: wrap; gap: 10px; margin: 8px 0 4px; }
@@ -20,15 +20,10 @@
 <main>
   <h1>Without Ground Truth</h1>
   <p class="sub">Measures of quality that need no ground truth, so they work on a real world as well as a synthetic one.
-  Like <a href="eval_observations.html">observations against the model</a>, they check how well the model fits data
+  Like <a href="eval_observations.html">observations against the model</a> and
+  <a href="eval_official.html">sector totals against official statistics</a>, they check how well the model fits data
   it has used, which is a weaker test than <a href="eval_revisions.html">forecasts against later estimates</a>, since a
   model always looks better on data it has seen.</p>
-
-  <h2>Sector totals against official statistics</h2>
-  <p>Where the sector input bundle carries an official statistic that measures a sector total, the model's total
-  (converted into the statistic's units) should agree with it within the band of their gap. The filter uses these
-  statistics too (L16), so a large or persistent gap means the model's entities cannot reproduce the official picture.</p>
-  <div class="tablewrap"><table id="recon"></table></div>
 
   <h2>What the data pin down</h2>
   <p>How much the data narrowed what the model knew before seeing them. For entity parameters, the share whose
@@ -37,7 +32,7 @@
   alone carry them.</p>
   <div class="tablewrap"><table id="pin"></table></div>
 </main>
-<script src="assets/site.js?v=cdf23b5-1794511829"></script>
+<script src="assets/site.js?v=f1c1a49-1794512124"></script>
 <script>
 (async () => {
   try {
@@ -50,10 +45,6 @@
     const pct = (v, d = 0) => v == null ? "–" : M2.pct(v, d);
     const tile = (v, l, cls = "") => `<div class="tile"><div class="v ${cls}">${v}</div><div class="l">${l}</div></div>`;
     const name = (v) => (M2.SHORT_VAR[v] || v).replace(/ \(.*\)$/, "");
-
-    document.getElementById("recon").innerHTML = `<tr><th>sector</th><th>official statistic</th><th class="n">months inside band</th><th class="n">median gap</th><th class="n">months</th></tr>` +
-      bySec(q.recon).map((x) => `<tr><td><a href="sector.html?s=${x.sector}">${M2.esc(short[x.sector] || x.sector)}</a></td><td class="mono">${M2.esc(x.series)}</td>
-        <td class="n ${cov(x.inside, x.n)}">${pct(x.inside)}</td><td class="n">${pct(x.rel, 1)}</td><td class="n muted">${x.n}</td></tr>`).join("");
 
     const par = Object.fromEntries(q.params.map((x) => [x.sector, x]));
     document.getElementById("pin").innerHTML = `<tr><th>sector</th><th class="n">entity parameters informed</th><th class="n">median sd ratio</th><th>sector totals still mostly prior</th></tr>` +
