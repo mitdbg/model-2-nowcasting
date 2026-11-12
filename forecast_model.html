@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Model Structure · Model 2 (dev)</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital@0;1&display=swap">
-<link rel="stylesheet" href="assets/site.css?v=61de395-1794502689">
+<link rel="stylesheet" href="assets/site.css?v=e7ce44b-1794503296">
 <style>
   main > p, main > ul, main > ol { max-width: 78ch; }
   main > .eqcard, main > figure, main > .tablewrap { max-width: 1000px; }
@@ -41,7 +41,6 @@
   figure { margin: 10px 0 18px; position: relative; }
   .fl .node { cursor: pointer; outline: none; }
   .fl .node:hover rect, .fl .node:focus rect { stroke: var(--accent); stroke-width: 2; }
-  .fl .fbl { fill: var(--truth); }
   .fl .lag { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 10px; fill: var(--accent); }
   .eqtip { position: absolute; z-index: 4; background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12); padding: 8px 12px; max-width: min(760px, 92vw); pointer-events: none; }
@@ -60,9 +59,8 @@
   .fl .lbl { fill: var(--muted); font-size: 11px; }
   .fl .box { fill: var(--panel); stroke: var(--line); }
   .fl .drv { fill: var(--band2); stroke: var(--accent); }
-  .fl .fb { stroke: var(--truth); }
   .fl line, .fl path { stroke: var(--muted); fill: none; stroke-width: 1.3; }
-  .fl .fb { stroke: var(--truth); stroke-dasharray: 4 3; }
+  .fl .fb { stroke-dasharray: 4 3; }
   .fl .lagd { stroke-dasharray: 4 3; }
   .tick { color: var(--good); }
   .off { color: var(--muted); }
@@ -103,8 +101,7 @@
   <h2 id="picture">One month at a glance</h2>
   <figure>
     <svg class="fl" viewBox="0 -14 880 434" role="img" aria-label="Demand drives orders into the order book; the order book and capacity set output and shipments; tightness feeds back into utilization, price and order inflation">
-      <defs><marker id="ar" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L8,4 L0,8 z" style="fill: var(--muted); stroke: none"/></marker>
-        <marker id="arf" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L8,4 L0,8 z" style="fill: var(--truth); stroke: none"/></marker></defs>
+      <defs><marker id="ar" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L8,4 L0,8 z" style="fill: var(--muted); stroke: none"/></marker></defs>
       <line x1="150" y1="62" x2="188" y2="62" marker-end="url(#ar)"/>
       <line x1="330" y1="62" x2="368" y2="62" marker-end="url(#ar)"/><text class="lbl" x="349" y="54" text-anchor="middle">placed</text>
       <line class="lagd" x1="510" y1="62" x2="548" y2="62" marker-end="url(#ar)"/><text class="lbl" x="529" y="54" text-anchor="middle">due</text>
@@ -120,9 +117,9 @@
       <path d="M 410 284 V 304 H 80 V 286" marker-end="url(#ar)"/><text class="lbl" x="250" y="298" text-anchor="middle">inputs used</text>
       <line x1="150" y1="362" x2="188" y2="362" marker-end="url(#ar)"/>
       <line x1="330" y1="362" x2="368" y2="362" marker-end="url(#ar)"/>
-      <path class="fb" d="M 830 240 V 12 H 230 V 38" marker-end="url(#arf)"/><text class="lbl fbl" x="530" y="6" text-anchor="middle">long lead times: over-ordering</text>
-      <path class="fb" d="M 760 284 V 318 H 470 V 286" marker-end="url(#arf)"/><text class="lbl fbl" x="615" y="332" text-anchor="middle">runs harder</text>
-      <path class="fb" d="M 840 284 V 410 H 460 V 388" marker-end="url(#arf)"/><text class="lbl fbl" x="650" y="403" text-anchor="middle">raises margin</text>
+      <path class="fb" d="M 830 240 V 12 H 230 V 38" marker-end="url(#ar)"/><text class="lbl" x="530" y="6" text-anchor="middle">feedback: long lead times bring over-ordering</text>
+      <path class="fb" d="M 760 284 V 318 H 470 V 286" marker-end="url(#ar)"/><text class="lbl" x="615" y="332" text-anchor="middle">feedback: runs harder</text>
+      <path class="fb" d="M 840 284 V 410 H 460 V 388" marker-end="url(#ar)"/><text class="lbl" x="650" y="403" text-anchor="middle">feedback: raises margin</text>
       <g class="node" data-eq="L2" tabindex="0" role="button" aria-label="Demand, price: show equation L2"><rect class="drv" x="10" y="40" width="140" height="44" rx="6"/><text x="80" y="60" text-anchor="middle">Demand, price</text><text class="lbl" x="80" y="75" text-anchor="middle">drivers · L2</text></g>
       <g class="node" data-eq="L6" tabindex="0" role="button" aria-label="New orders: show equation L6"><rect class="box" x="190" y="40" width="140" height="44" rx="6"/><text x="260" y="60" text-anchor="middle">New orders</text><text class="lbl" x="260" y="75" text-anchor="middle">L6</text></g>
       <g class="node" data-eq="L9" tabindex="0" role="button" aria-label="Order book: show equation L9"><rect class="box" x="370" y="40" width="140" height="44" rx="6"/><text x="440" y="60" text-anchor="middle">Order book</text><text class="lbl" x="440" y="75" text-anchor="middle">L9</text></g>
@@ -141,27 +138,24 @@
     <figcaption>
       <p class="key"><span><svg width="34" height="10" aria-hidden="true"><line x1="0" y1="5" x2="34" y2="5" style="stroke: var(--muted); stroke-width: 1.5"/></svg>
         a value from this month</span><span><svg width="34" height="10" aria-hidden="true"><line x1="0" y1="5" x2="34" y2="5" style="stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 4 3"/></svg>
-        last month's level, carried forward</span><span><svg width="34" height="10" aria-hidden="true"><line x1="0" y1="5" x2="34" y2="5" style="stroke: var(--truth); stroke-width: 1.5; stroke-dasharray: 4 3"/></svg>
-        a response to last month's tightness or lead time</span></p>
+        last month's level, carried forward</span></p>
       <p class="key"><span><svg width="28" height="16" aria-hidden="true"><rect x="1" y="1" width="26" height="14" rx="3" style="fill: var(--band2); stroke: var(--accent)"/></svg>
         driver, from the sector input bundle</span><span><svg width="28" height="16" aria-hidden="true"><rect x="1" y="1" width="26" height="14" rx="3" style="fill: var(--panel); stroke: var(--line)"/></svg>
         hidden state, or a quantity the model works out from the states</span></p>
       <p>Hover over a box for its equation; click to go to it. Observations are not drawn: they play no part in moving
       the states forward. Each month, after this step, the filter compares the states with that month's observations
       and corrects them (see <a href="#obs">Observations</a> and <a href="#filter">How the forecast is made</a>).</p>
-      <p>Line style says when: solid arrows carry a value worked out this month, dashed arrows a value from last month.
-      Colour says how: grey arrows are bookkeeping, where goods and orders simply add up; orange arrows are behaviour,
-      where the entity or its customers respond to how tight things were, with a strength the fit learns. Each state
+      <p>Solid arrows carry a value worked out this month; dashed arrows carry a value from last month. Each state
       also carries on from its own last value (this month's capacity starts from last month's, and so on); those links
       are left out of the drawing but listed under each equation.</p>
-      <p>The chain for a factory that makes goods to order. The grey arrows are the month's bookkeeping: demand brings orders
+      <p>The chain for a factory that makes goods to order. Down the chain, demand brings orders
       into the order book; capacity and utilization set output; what falls due from last month's order book is shipped
       from this month's output and last month's stock, and what cannot be shipped goes back into the book as overdue
       orders.</p>
       <p>Within a month the equations run in order, and each reads only last month's levels or values already worked out
       this month, so nothing is circular. The order book and shipments show this: shipments (L8) read last month's order
       book, and this month's order book (L9) then reads this month's shipments.</p>
-      <p>The orange arrows close the loop, each through a learned parameter. At the end of each month the entity's <b>tightness</b> is how far it is
+      <p>Three of the dashed arrows, marked "feedback", close loops: they run from the end of the chain back to its start, each through a learned parameter. At the end of each month the entity's <b>tightness</b> is how far it is
       booked beyond normal (its order book net of stock, in months of output, against its normal cover), and its
       <b>lead time</b> is how long a new order would wait. Both act on the next month in three ways:</p>
       <ul>
@@ -472,7 +466,7 @@
     band; the published sector bands are then widened by factors from backtests.</li>
   </ol>
 </main>
-<script src="assets/site.js?v=61de395-1794502689"></script>
+<script src="assets/site.js?v=e7ce44b-1794503296"></script>
 <script>
 (async () => {
   try {
