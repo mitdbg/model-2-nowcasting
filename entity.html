@@ -3,15 +3,17 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Entities · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=9927737-1794510246">
+<link rel="stylesheet" href="assets/site.css?v=d51ed2a-1794510420">
 </head>
 <body>
 <main>
   <div class="layout fx">
     <aside class="side" id="fnav"></aside>
     <div>
-      <h1 id="title">Entity</h1>
-      <p class="sub" id="sub"></p>
+      <div class="ehead">
+        <h1 id="title">Entity</h1>
+        <p class="sub" id="sub"></p>
+      </div>
 
       <h2>Groupings</h2>
       <p class="sub">Groupings are the companies, segments, sites and Census cells that contain this entity. An
@@ -59,7 +61,7 @@
     </div>
   </div>
 </main>
-<script src="assets/site.js?v=9927737-1794510246"></script>
+<script src="assets/site.js?v=d51ed2a-1794510420"></script>
 <script>
 const toT = (tr, v) => (tr === "log" ? Math.log(v) : tr === "logit" ? Math.log(v / (1 - v)) : v);
 (async () => {

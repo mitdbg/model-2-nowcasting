@@ -112,6 +112,14 @@ M2.header = (meta, page) => {
     <header class="top"><div class="in"><a class="brand" href="index.html">Model 2</a><nav>${nav}</nav>
     <a class="run" id="worldtag" href="world_overview.html" hidden></a></div></header>
 `);
+  // heights of the sticky header and sub-tabs, for pages that keep more pinned below them
+  const pin = () => {
+    const r = document.documentElement.style;
+    r.setProperty("--hdr", (document.querySelector("header.top")?.offsetHeight || 0) + "px");
+    r.setProperty("--sub", (document.querySelector("main > .subtabs")?.offsetHeight || 0) + "px");
+  };
+  pin();
+  addEventListener("resize", pin);
   // which world the site shows, top right
   M2.load("world.json").then((w) => {
     const a = document.getElementById("worldtag");
