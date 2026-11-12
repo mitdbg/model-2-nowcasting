@@ -13,7 +13,7 @@ M2.param = (k) => new URLSearchParams(location.search).get(k);
 
 M2.esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
-M2.PAGES = [["index.html", "Overview"], ["world_overview.html", "Current World"], ["forecast_overview.html", "Current Forecast"],
+M2.PAGES = [["index.html", "Overview"], ["world_overview.html", "World Details"], ["forecast_overview.html", "Model and Forecasts"],
             ["eval_revisions.html", "Evaluation"],
             ["https://claude.ai/artifact/GbJQDmoHyttq2W6xiSyJ5w", "Development Dashboard"]];
 // Pages shown as sub-tabs under a top-level tab, chosen near the top of the page.
