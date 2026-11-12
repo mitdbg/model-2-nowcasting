@@ -2,12 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Accuracy · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=9f04403-1794510585">
+<title>With Ground Truth · Model 2 (dev)</title>
+<link rel="stylesheet" href="assets/site.css?v=045bece-1794511146">
 </head>
 <body>
 <main>
-  <h1>Accuracy</h1>
+  <h1>With Ground Truth</h1>
+  <p class="sub" id="real" hidden>No ground truth is available for real worlds.</p>
+  <div id="truthonly">
   <p class="sub">The backtest runs Model 2 at each as-of date on the synthetic world, using only observations published by
   then and re-estimating each time, and scores every sector total against the truth. <span id="widen"></span>
   <span id="src" class="mono"></span></p>
@@ -45,8 +47,9 @@
     <li>Correlation: correlation of fit and truth across entities, which shows whether the fit recovers differences between entities.</li>
   </ul>
   <div class="tablewrap"><table id="recovery"></table></div>
+  </div>
 </main>
-<script src="assets/site.js?v=9f04403-1794510585"></script>
+<script src="assets/site.js?v=045bece-1794511146"></script>
 <script>
 const H = ["smoothed_last12", "nowcast", "h+3", "h+6", "h+12"];
 const HL = { smoothed_last12: "history (last 12 months)", nowcast: "nowcast", "h+3": "forecast, 3 months ahead", "h+6": "forecast, 6 months ahead", "h+12": "forecast, 12 months ahead" };
@@ -58,8 +61,14 @@ const pc = (c) => (c == null ? "–" : M2.pct(c, 0));
 const IN_MONTHS = new Set(["backlog_overdue", "phantom_backlog", "lost_demand", "finished_stock"]);
 (async () => {
   try {
-    const [meta, a] = await Promise.all([M2.load("meta.json"), M2.load("accuracy.json")]);
+    const [meta, w] = await Promise.all([M2.load("meta.json"), M2.load("world.json").catch(() => ({}))]);
     M2.header(meta, "accuracy.html");
+    if (w.kind !== "synthetic") {           // only a synthetic world knows its truth
+      document.getElementById("truthonly").hidden = true;
+      document.getElementById("real").hidden = false;
+      return;
+    }
+    const a = await M2.load("accuracy.json");
     const short = Object.fromEntries(meta.sectors.map((s) => [s.code, s.short]));
     document.getElementById("src").textContent = `Backtest workspace: ${meta.backtest}. As-of dates: ${(a.as_of_dates || []).join(", ")}.`;
     if (!a.overall) { document.getElementById("overall").outerHTML = `<p class="muted">No backtest_scores.csv in the backtest workspace.</p>`; }
