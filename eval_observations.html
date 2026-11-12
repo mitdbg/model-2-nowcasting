@@ -3,56 +3,136 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Observations against the model · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=f46a37f-1794515626">
+<link rel="stylesheet" href="assets/site.css?v=d72495f-1794516099">
 <style>
-  main > p, main > ul { max-width: 80ch; }
-  .tiles2 { display: flex; flex-wrap: wrap; gap: 10px; margin: 8px 0 4px; }
-  .tile { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 14px; min-width: 190px; }
-  .tile .v { font-size: 22px; font-weight: 600; }
-  .tile .l { font-size: 12px; color: var(--muted); }
+  main > p { max-width: 80ch; }
+  .excard { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; max-width: 980px; }
+  .excard .ctl { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+  .excard .ctl select { width: auto; max-width: 280px; font-size: 13px; padding: 2px 6px; }
+  #exchart { max-width: 760px; }
+  .excard .say { font-size: 13.5px; margin: 6px 0 2px; max-width: 80ch; }
+  .qs { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px; margin: 14px 0; max-width: 980px; }
+  .q { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; }
+  .q h3 { margin: 0 0 6px; font-size: 15px; }
+  .q .big { font-size: 26px; font-weight: 600; margin: 2px 0; }
+  .q p { margin: 4px 0; font-size: 13.5px; }
+  .gauge { position: relative; height: 18px; margin: 10px 0 4px; max-width: 360px; }
+  .gauge .track { position: absolute; top: 7px; left: 0; right: 0; height: 4px; background: var(--band); border-radius: 2px; }
+  .gauge .mid { position: absolute; top: 2px; left: 0; width: 2px; height: 14px; background: var(--accent); }
+  .gauge .edge { position: absolute; top: 2px; right: 0; width: 2px; height: 14px; background: var(--muted); }
+  .gauge .at { position: absolute; top: 3px; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background: var(--obs); }
+  .gauge .ideal { position: absolute; top: 0; height: 18px; border-left: 2px dashed var(--good); }
+  .gl { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--muted); max-width: 360px; }
   td.n { font-variant-numeric: tabular-nums; }
-  .two { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 18px; }
+  .two { display: grid; grid-template-columns: repeat(auto-fit, minmax(440px, 1fr)); gap: 18px; }
   .two > div { min-width: 0; }
-  h3 { margin: 10px 0 4px; font-size: 14px; }
+  h3.t { margin: 10px 0 4px; font-size: 14px; }
+  .verdict { font-size: 11.5px; font-weight: 600; padding: 1px 8px; border-radius: 9px; white-space: nowrap; }
+  .verdict.ok { color: var(--good); background: color-mix(in srgb, var(--good) 12%, transparent); }
+  .verdict.miss { color: var(--bad); background: color-mix(in srgb, var(--bad) 12%, transparent); }
+  .verdict.wide { color: var(--muted); background: var(--chip); }
 </style>
 </head>
 <body>
 <main>
   <h1>Observations against the model</h1>
-  <p>Each observation against the model's prediction of it, plus the observation's own noise. About 90% should fall
-  inside the 90% band, and the typical gap, in units of the band's spread (|z|), should be near 0.67. Lower is
-  not better here: the filter has already used these observations, so a very close fit can mean the model chases
-  noise. Yes/no observations (satellite activity) are not scored.</p>
-  <div class="tiles2" id="obstiles"></div>
-  <div class="two">
-    <div><h3>By kind of observation</h3><div class="tablewrap"><table id="obstype"></table></div></div>
-    <div><h3>By sector</h3><div class="tablewrap"><table id="obssec"></table></div></div>
+  <p class="sub">For every observation it uses (a company's revenue, a plant's output, a published price), the model
+  predicts what the observation should read, and gives a range: its own uncertainty plus the observation's noise. A
+  model that describes the data well has most observations inside that range. This is a weaker test than
+  <a href="eval_revisions.html">forecasts against later estimates</a>: the model has already used these observations to
+  correct itself, so it is checked on data it has seen.</p>
+
+  <div class="excard">
+    <div class="ctl" id="exctl"></div>
+    <div id="exchart"></div>
+    <div id="exleg"></div>
+    <p class="say" id="exsay"></p>
   </div>
 
+  <div class="qs">
+    <div class="q" id="q1"></div>
+    <div class="q" id="q2"></div>
+  </div>
+
+  <h2>By kind and by sector</h2>
+  <p>The same two questions for each kind of observation and each sector. Yes/no observations (whether a satellite image
+  shows activity) have no range and are not counted.</p>
+  <div class="two">
+    <div><h3 class="t">By kind of observation</h3><div class="tablewrap"><table id="obstype"></table></div></div>
+    <div><h3 class="t">By sector</h3><div class="tablewrap"><table id="obssec"></table></div></div>
+  </div>
 </main>
-<script src="assets/site.js?v=f46a37f-1794515626"></script>
+<script src="assets/site.js?v=d72495f-1794516099"></script>
 <script>
 (async () => {
   try {
-    const [meta, q] = await Promise.all([M2.load("meta.json"), M2.load("quality.json")]);
+    const [meta, q, ents] = await Promise.all([M2.load("meta.json"), M2.load("quality.json"), M2.load("entities.json")]);
     M2.header(meta, "eval_observations.html");
     const short = Object.fromEntries(meta.sectors.map((s) => [s.code, s.short]));
-    const bySec = (xs) => [...xs].sort((a, b) => (short[a.sector] || a.sector).localeCompare(short[b.sector] || b.sector));
-    const cov = (c, n) => { if (c == null || !(n >= 8)) return ""; const se = Math.sqrt(0.09 / n);
-      return c >= 0.9 - 2 * se ? "good" : c >= 0.9 - 4 * se ? "warn" : "bad"; };
-    const pct = (v, d = 0) => v == null ? "–" : M2.pct(v, d);
-    const tile = (v, l, cls = "") => `<div class="tile"><div class="v ${cls}">${v}</div><div class="l">${l}</div></div>`;
-    const name = (v) => (M2.SHORT_VAR[v] || v).replace(/ \(.*\)$/, "");
+    const kind = (t) => M2.OBS[t]?.[0] || t;
+    const of100 = (c) => Math.round(100 * c);
+    // |z| is in sds of the prediction plus noise; the 90% range reaches 1.645 sds from the middle
+    const toEdge = (z) => z / 1.645;
+    const verdict = (c, n) => { const se = Math.sqrt(0.09 / n);
+      return c < 0.9 - 2 * se ? `<span class="verdict miss">misses too many</span>` : c > 0.9 + 2 * se ? `<span class="verdict wide">range generous</span>` : `<span class="verdict ok">about right</span>`; };
 
-    const oa = q.obs_all;
-    document.getElementById("obstiles").innerHTML = tile(pct(oa.inside, 1), `inside the band (${oa.n.toLocaleString()} observations)`, cov(oa.inside, oa.n)) +
-      tile(oa.abs_z.toFixed(2), "median |z|: typical gap in band spreads");
-    const orow = (label, x) => `<tr><td>${label}</td><td class="n ${cov(x.inside, x.n)}">${pct(x.inside)}</td><td class="n">${x.abs_z?.toFixed(2) ?? "–"}</td><td class="n muted">${x.n.toLocaleString()}</td></tr>`;
-    const ohead = (k) => `<tr><th>${k}</th><th class="n">inside band</th><th class="n">median |z|</th><th class="n">observations</th></tr>`;
-    document.getElementById("obstype").innerHTML = ohead("kind") + [...q.obs_by_type].sort((a, b) => b.n - a.n)
-      .map((x) => orow(`<a href="world_observations.html?type=${encodeURIComponent(x.type)}">${M2.esc(M2.OBS[x.type]?.[0] || x.type)}</a>`, x)).join("");
-    document.getElementById("obssec").innerHTML = ohead("sector") + bySec(q.obs_by_sector).map((x) => orow(M2.esc(short[x.sector] || x.sector), x)).join("");
+    // the example: one tracked entity's observations of one kind
+    const tracked = ents.filter((e) => e.kind === "tracked" && e.n_obs > 0);
+    const secs = [...new Set(tracked.map((e) => e.sector))].sort((a, b) => short[a].localeCompare(short[b]));
+    const ex = { s: M2.param("s") || "naics_3311_2", e: M2.param("e") || "", t: M2.param("t") || "" };
+    const cache = {};
+    const sel = (k, label, opts) => `<label>${label} <select data-k="${k}">${opts.map(([v, t]) => `<option value="${M2.esc(v)}"${ex[k] === v ? " selected" : ""}>${M2.esc(t)}</option>`).join("")}</select></label>`;
+    const draw = async () => {
+      const inSec = tracked.filter((e) => e.sector === ex.s).sort((a, b) => a.name.localeCompare(b.name));
+      if (!inSec.some((e) => e.id === ex.e)) ex.e = (inSec.find((e) => e.id === "op_acme_bham") || [...inSec].sort((a, b) => b.n_obs - a.n_obs)[0]).id;
+      const d = cache[ex.e] ||= await M2.load(`entities/${encodeURIComponent(ex.e)}.json`);
+      const kinds = Object.keys(d.observations).filter((t) => d.observations[t].noise !== "bernoulli")
+        .sort((a, b) => d.observations[b].month.length - d.observations[a].month.length);
+      if (!kinds.includes(ex.t)) ex.t = kinds[0] || "";
+      document.getElementById("exctl").innerHTML = sel("s", "Sector", secs.map((c) => [c, short[c]])) + sel("e", "Entity", inSec.map((e) => [e.id, e.name]))
+        + sel("t", "Observation", kinds.map((t) => [t, `${kind(t)} (${d.observations[t].month.length})`]));
+      const box = document.getElementById("exchart");
+      if (!ex.t) { box.innerHTML = `<p class="muted">This entity has no observations with a range.</p>`; return; }
+      const o = d.observations[ex.t], nat = (y) => M2.natural(o.noise, y);
+      let inside = 0;
+      const pts = o.month.map((m, i) => { const out = o.y[i] < o.obs_q05[i] || o.y[i] > o.obs_q95[i]; if (!out) inside++;
+        return { month: m, y: nat(o.y[i]), out, label: `observed ${M2.fmt(nat(o.y[i]))} · ${M2.esc(o.source[i] || "")}` }; });
+      M2.chart(box, { bands: [{ month: o.month, q50: o.pred_q50.map(nat), q05: o.obs_q05.map(nat), q95: o.obs_q95.map(nat), label: "predicted" }],
+        points: pts, unit: o.noise === "logit" ? "share" : "", height: 240, yLabel: kind(ex.t) });
+      document.getElementById("exleg").innerHTML = M2.legend([["var(--accent)", "the model's prediction"], ["var(--band)", "its range: the model's uncertainty plus the observation's noise (90%)"],
+        ["var(--obs)", "an observation inside the range"], ["var(--bad)", "outside it"]]);
+      const subj = [...new Set(o.subject)].filter(Boolean);
+      document.getElementById("exsay").innerHTML = `${M2.esc(d.name)}: <b>${inside} of ${o.month.length}</b> ${M2.esc(kind(ex.t).toLowerCase())} observations fall inside the range.`
+        + (subj.length && subj.some((x) => x !== d.name) ? ` Some are about ${subj.map(M2.esc).join("; ")}, which covers this entity and others; the model predicts them from all of those entities together.` : "");
+      history.replaceState(null, "", `?s=${ex.s}&e=${encodeURIComponent(ex.e)}&t=${ex.t}`);
+    };
+    document.getElementById("exctl").addEventListener("change", (e) => { const s = e.target.closest("select[data-k]"); if (s) { ex[s.dataset.k] = s.value; if (s.dataset.k === "s") ex.e = ""; draw(); } });
+    await draw();
 
+    // the two questions
+    const a = q.obs_all, se = Math.sqrt(0.09 / a.n);
+    document.getElementById("q1").innerHTML = `<h3>Does the range hold the observations?</h3>
+      <div class="big">${of100(a.inside)} of every 100</div>
+      <p>observations fell inside the model's 90% range, out of ${a.n.toLocaleString()}.</p>
+      <p class="muted">A well-sized 90% range holds about 90. ${a.inside > 0.9 + 2 * se ? "Holding more is expected here, because the model has already used these observations to correct itself." : a.inside < 0.9 - 2 * se ? "Holding fewer means the model misses the data more often than its ranges admit." : "That is about right."}</p>`;
+    const at = Math.min(1, toEdge(a.abs_z)), ideal = toEdge(0.674);
+    document.getElementById("q2").innerHTML = `<h3>How close is the prediction?</h3>
+      <div class="big">${Math.round(100 * at)}% of the way to the edge</div>
+      <p>The typical observation sits that far from the middle of its range toward the edge.</p>
+      <div class="gauge"><span class="track"></span><span class="mid"></span><span class="edge"></span>
+        <span class="ideal" style="left:${(100 * ideal).toFixed(1)}%"></span><span class="at" style="left:${(100 * at).toFixed(1)}%"></span></div>
+      <div class="gl"><span>prediction</span><span>edge of the 90% range</span></div>
+      <p class="muted">With a well-sized range it would be about ${Math.round(100 * ideal)}% (dashed mark). Closer is not better: the model has
+      seen these observations, and a fit much tighter than that can mean it chases their noise.</p>`;
+
+    // by kind and by sector
+    const head = (k) => `<tr><th>${k}</th><th class="n">Does the range hold them?</th><th class="n">How close? <span class="muted">(of the way to the edge)</span></th><th class="n">observations</th><th></th></tr>`;
+    const row = (label, x) => `<tr><td>${label}</td><td class="n">${of100(x.inside)} of 100</td><td class="n">${Math.round(100 * Math.min(1, toEdge(x.abs_z)))}%</td>
+      <td class="n muted">${x.n.toLocaleString()}</td><td>${verdict(x.inside, x.n)}</td></tr>`;
+    document.getElementById("obstype").innerHTML = head("kind") + [...q.obs_by_type].sort((a, b) => kind(a.type).localeCompare(kind(b.type)))
+      .map((x) => row(`<a href="world_observations.html?type=${encodeURIComponent(x.type)}">${M2.esc(kind(x.type))}</a>`, x)).join("");
+    document.getElementById("obssec").innerHTML = head("sector") + [...q.obs_by_sector].sort((a, b) => short[a.sector].localeCompare(short[b.sector]))
+      .map((x) => row(`<a href="?s=${x.sector}">${M2.esc(short[x.sector])}</a>`, x)).join("");
   } catch (e) { M2.fail(e); }
 })();
 </script>
