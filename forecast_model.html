@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Model Structure · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=24e2bf9-1794497844">
+<link rel="stylesheet" href="assets/site.css?v=146cceb-1794499594">
 <style>
   main > p, main > ul, main > ol { max-width: 78ch; }
   main > .eqcard, main > figure, main > .tablewrap { max-width: 1000px; }
@@ -144,10 +144,24 @@
   </ul>
 
   <h2 id="drivers">Drivers</h2>
-  <p>Each sector gets three drivers from the <a href="world_bundle.html">sector input bundle</a>, month by month, as many
-  draws as the forecast has copies of the world: demand <span class="sym">d</span>, price <span class="sym">pr</span> and
-  input cost <span class="sym">π</span>, all on the log scale. Copy number <span class="sym">j</span> of the world uses
-  draw number <span class="sym">j</span>, so the drivers' own uncertainty carries into the forecast's band.</p>
+  <p>A <b>driver</b> is a sector-wide series that pushes the entities but that Model 2 does not model itself: the
+  model takes it as given, from outside, and asks how each entity responds to it. Each sector has three, all on the log
+  scale and the same for every entity in the sector:</p>
+  <ul>
+    <li>demand <span class="sym">d</span>: what buyers want from the sector, such as new orders across the industry</li>
+    <li>price <span class="sym">pr</span>: the sector's price level</li>
+    <li>input cost <span class="sym">π</span>: the cost of what the sector buys to make its output</li>
+  </ul>
+  <p>They arrive in the <a href="world_bundle.html">sector input bundle</a>, month by month: history up to the last
+  month published, then a nowcast and a forecast. Nobody knows those later months exactly, and even history is
+  sometimes revised, so each driver comes not as one series but as 100 <b>draws</b>. A draw is one complete, plausible
+  path of the series over every month, consistent with what was known on the run date. The draws agree where the
+  series is well known and fan out where it is not, so their spread is the driver's uncertainty. Draw number
+  <span class="sym">j</span> of each driver comes from the same scenario, so demand, price and input cost move together
+  as they would in one possible economy.</p>
+  <p>The forecast runs as many copies of the world as there are draws, and copy <span class="sym">j</span> uses draw
+  <span class="sym">j</span>. A copy fed a weak-demand draw sees fewer orders than one fed a strong-demand draw, so the
+  drivers' uncertainty widens the forecast's 90% band along with the model's own shocks.</p>
   <div class="eqcard"><h3>Real demand and demand pressure <span class="tag">L2</span></h3>
     <div class="eq">D<sub>t</sub> = d<sub>t</sub> − pr<sub>t</sub><span class="c">when demand is in dollars; otherwise D<sub>t</sub> = d<sub>t</sub></span><br>
       x<sub>t</sub> = D<sub>t</sub> − log K<sub>t−1</sub></div>
@@ -362,7 +376,7 @@
     band; the published sector bands are then widened by factors from backtests.</li>
   </ol>
 </main>
-<script src="assets/site.js?v=24e2bf9-1794497844"></script>
+<script src="assets/site.js?v=146cceb-1794499594"></script>
 <script>
 (async () => {
   try {
