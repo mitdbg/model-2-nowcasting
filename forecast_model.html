@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Model Structure · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=af37223-1794496814">
+<link rel="stylesheet" href="assets/site.css?v=445a888-1794497372">
 <style>
   main > p, main > ul, main > ol { max-width: 78ch; }
   main > .eqcard, main > figure, main > .tablewrap { max-width: 1000px; }
@@ -21,6 +21,10 @@
   figure { margin: 10px 0 18px; }
   figure svg { max-width: 100%; height: auto; display: block; }
   figcaption { font-size: 13px; color: var(--muted); max-width: 78ch; }
+  figcaption p, figcaption ul { margin: 6px 0; }
+  figcaption li { margin: 3px 0; }
+  figcaption .key { display: flex; flex-wrap: wrap; gap: 4px 18px; }
+  figcaption .key span { display: inline-flex; align-items: center; gap: 6px; }
   .fl text { font-family: "IBM Plex Sans", system-ui, sans-serif; fill: var(--fg); font-size: 12px; }
   .fl .lbl { fill: var(--muted); font-size: 11px; }
   .fl .box { fill: var(--panel); stroke: var(--line); }
@@ -87,11 +91,28 @@
       <path class="fb" d="M 850 180 C 850 264, 640 264, 532 264" marker-end="url(#arf)"/><text class="lbl" x="700" y="280" text-anchor="middle" style="fill: var(--truth)">raises margin</text>
       <path class="fb" d="M 780 136 C 760 92, 330 96, 290 76" marker-end="url(#arf)"/><text class="lbl" x="540" y="88" text-anchor="middle" style="fill: var(--truth)">long lead times: over-ordering</text>
     </svg>
-    <figcaption>The chain for a factory that makes goods to order. Demand brings orders into the order book; capacity
-    and utilization set output; what falls due is shipped from output and stock. The order book against output gives
-    <b>tightness</b> and the quoted <b>lead time</b>, which feed back (orange, dashed) into next month's utilization,
-    markup and orders. Templates for other kinds of business swap some boxes, for example lost sales in place of
-    overdue orders for airlines.</figcaption>
+    <figcaption>
+      <p class="key"><span><svg width="34" height="10" aria-hidden="true"><line x1="0" y1="5" x2="34" y2="5" style="stroke: var(--muted); stroke-width: 1.5"/></svg>
+        within the month</span><span><svg width="34" height="10" aria-hidden="true"><line x1="0" y1="5" x2="34" y2="5" style="stroke: var(--truth); stroke-width: 1.5; stroke-dasharray: 4 3"/></svg>
+        feedback into next month</span></p>
+      <p>The chain for a factory that makes goods to order. The grey arrows are one month's flow: demand brings orders
+      into the order book; capacity and utilization set output; what falls due is shipped from output and stock.</p>
+      <p>The orange arrows close the loop. At the end of each month the entity's <b>tightness</b> is how far it is
+      booked beyond normal (its order book net of stock, in months of output, against its normal cover), and its
+      <b>lead time</b> is how long a new order would wait. Both act on the next month in three ways:</p>
+      <ul>
+        <li><b>Runs harder</b> (L3): booked further ahead than normal, the entity raises utilization, so output catches
+        up with the book; with stock piling up, it slows down.</li>
+        <li><b>Raises margin</b> (L5): a tight entity raises its markup, so prices rise in a shortage and ease after it.</li>
+        <li><b>Over-ordering</b> (L6): when the quoted lead time is longer than normal, customers order extra to secure
+        supply. These phantom orders swell the book and lengthen lead times further, until lead times fall and
+        customers cancel them (L7).</li>
+      </ul>
+      <p>The first loop calms a shortage (more output shrinks the book); the third feeds it (more orders lengthen the
+      book), which is how a shortage can build on itself for a while. Templates for other kinds of business swap some
+      boxes: airlines lose the sales they cannot serve instead of carrying them as overdue orders, and measure
+      tightness by how full their planes are.</p>
+    </figcaption>
   </figure>
 
   <h2 id="states">Hidden states</h2>
@@ -336,7 +357,7 @@
     band; the published sector bands are then widened by factors from backtests.</li>
   </ol>
 </main>
-<script src="assets/site.js?v=af37223-1794496814"></script>
+<script src="assets/site.js?v=445a888-1794497372"></script>
 <script>
 (async () => {
   try {
