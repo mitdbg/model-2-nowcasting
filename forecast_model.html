@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Model Structure · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=445a888-1794497372">
+<link rel="stylesheet" href="assets/site.css?v=a999b57-1794497528">
 <style>
   main > p, main > ul, main > ol { max-width: 78ch; }
   main > .eqcard, main > figure, main > .tablewrap { max-width: 1000px; }
@@ -108,10 +108,12 @@
         supply. These phantom orders swell the book and lengthen lead times further, until lead times fall and
         customers cancel them (L7).</li>
       </ul>
-      <p>The first loop calms a shortage (more output shrinks the book); the third feeds it (more orders lengthen the
-      book), which is how a shortage can build on itself for a while. Templates for other kinds of business swap some
-      boxes: airlines lose the sales they cannot serve instead of carrying them as overdue orders, and measure
-      tightness by how full their planes are.</p>
+      <p>These loops pull in opposite directions. Running harder calms a shortage: more output works off the order book.
+      Over-ordering feeds it: extra orders lengthen the book and the lead time, which brings still more orders. While
+      over-ordering wins, a shortage builds on itself; once output catches up and lead times fall, cancellations unwind it.</p>
+      <p>Other kinds of business run a variant of this chain, set by their <a href="#templates">template</a>. An airline
+      cannot keep a passenger waiting for a full flight: the sale is lost rather than added to an overdue order book.
+      Its tightness is how full its planes are, not how far ahead it is booked, and it has no over-ordering loop.</p>
     </figcaption>
   </figure>
 
@@ -357,7 +359,7 @@
     band; the published sector bands are then widened by factors from backtests.</li>
   </ol>
 </main>
-<script src="assets/site.js?v=445a888-1794497372"></script>
+<script src="assets/site.js?v=a999b57-1794497528"></script>
 <script>
 (async () => {
   try {
