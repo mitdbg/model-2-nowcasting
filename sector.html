@@ -3,11 +3,13 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Sectors · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=012e14e-1794509036">
+<link rel="stylesheet" href="assets/site.css?v=84e7b56-1794509346">
 </head>
 <body>
 <main>
-  <div class="tabs" id="sectabs"></div>
+  <div class="layout fx">
+  <aside class="side" id="fnav"></aside>
+  <div>
   <h1 id="title">Sector</h1>
   <p class="sub" id="sub"></p>
 
@@ -41,17 +43,18 @@
 
   <h2>Entities in this sector</h2>
   <div class="tablewrap"><table id="ents"></table></div>
+  </div>
+  </div>
 </main>
-<script src="assets/site.js?v=012e14e-1794509036"></script>
+<script src="assets/site.js?v=84e7b56-1794509346"></script>
 <script>
 (async () => {
   try {
     const meta = await M2.load("meta.json");
     M2.header(meta, "sector.html");
     const code = M2.param("s") || meta.sectors[0].code;
-    document.getElementById("sectabs").innerHTML = meta.sectors.map((s) =>
-      `<button class="${s.code === code ? "on" : ""}" onclick="location.search='?s=${s.code}'">${M2.esc(s.short)}</button>`).join("");
     const [d, ents] = await Promise.all([M2.load(`sectors/${code}.json`), M2.load("entities.json")]);
+    M2.forecastNav(document.getElementById("fnav"), meta, ents, { total: true, sector: code });
     document.getElementById("title").textContent = d.label;
     document.getElementById("sub").innerHTML = `Template <b>${d.template}</b>; physical unit <b>${d.unit}</b>. Sector code <span class="mono">${code}</span>.`;
     const units = Object.fromEntries(d.variables.map((v) => [v.variable, v]));

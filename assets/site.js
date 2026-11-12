@@ -22,10 +22,66 @@ M2.SUBPAGES = {"index.html": [["index.html", "Introduction"], ["howitworks.html"
   "forecast_overview.html": [["forecast_overview.html", "Introduction"], ["forecast_fit.html", "Fitted Parameters"], ["sector.html", "Forecasts"]]};
 // Pages reached through a sub-tab without being one: they light up that sub-tab.
 M2.SUBALIAS = {"entity.html": "sector.html", "groupings.html": "world_entities.html"};
-// The Forecasts sub-tab's two views, shown as a switch at the top of each.
-M2.forecastViews = (page) => `<nav class="tabs viewsw" aria-label="Forecasts by">` +
-  [["sector.html", "By sector"], ["entity.html", "By entity"]].map(([h, l]) =>
-    `<a href="${h}" class="${h === page ? "on" : ""}"${h === page ? ' aria-current="page"' : ""}>${l}</a>`).join("") + "</nav>";
+// The Forecasts sub-tab's search panel, on the left of sector.html and entity.html: facets narrow one list
+// of sector totals and entities; the facets travel in the address, so they stay set from page to page.
+M2.FNAV = ["q", "fs", "fk", "fz", "fr", "fc"];
+M2.forecastNav = (el, meta, ents, here) => {
+  const F = Object.fromEntries(M2.FNAV.map((k) => [k, M2.param(k) || ""]));
+  const short = Object.fromEntries(meta.sectors.map((s) => [s.code, s.short]));
+  const keep = () => M2.FNAV.filter((k) => F[k]).map((k) => `&${k}=${encodeURIComponent(F[k])}`).join("");
+  const hrefOf = (it) => (it.total ? `sector.html?s=${it.sector}` : `entity.html?e=${encodeURIComponent(it.id)}`) + keep();
+  const items = meta.sectors.flatMap((s) => [{ total: true, sector: s.code, name: `${s.short}: sector total`, kind: "total" },
+    ...["tracked", "representative"].flatMap((k) => ents.filter((x) => x.sector === s.code && x.kind === k)
+      .sort((a, b) => a.name.localeCompare(b.name)))]);
+  const opts = (vals, all) => `<option value="">${all}</option>` + vals.map(([v, l]) => `<option value="${M2.esc(v)}">${M2.esc(l)}</option>`).join("");
+  const uniq = (f) => [...new Set(ents.map(f).filter(Boolean))].sort();
+  el.innerHTML = `<input type="search" id="fq" placeholder="Name contains…" aria-label="Name contains">
+    <div class="filters">
+      <label>Sector <select data-f="fs">${opts(meta.sectors.map((s) => [s.code, s.short]), "all sectors")}</select></label>
+      <label>Show <select data-f="fk">${opts([["total", "sector totals"], ["tracked", "tracked entities"], ["representative", "representative entities"]], "everything")}</select></label>
+      <label>Size <select data-f="fz">${opts(uniq((x) => x.size).map((v) => [v, v]), "any size")}</select></label>
+      <label>Region <select data-f="fr">${opts(uniq((x) => x.region).map((v) => [v, v]), "any region")}</select></label>
+      <label>Company <select data-f="fc">${opts(uniq((x) => x.operator).map((v) => [v, v]), "any company")}</select></label>
+    </div>
+    <div class="fcount"><span id="fcount"></span> <button type="button" id="fclear" class="linkbtn">Clear</button></div>
+    <div id="flist" class="flist"></div>`;
+  const q = el.querySelector("#fq");
+  q.value = F.q;
+  el.querySelectorAll("select[data-f]").forEach((sel) => { sel.value = F[sel.dataset.f]; });
+  const isHere = (it) => (it.total ? here.total && here.sector === it.sector : it.id === here.id);
+  const match = (it) => {
+    if (F.fs && it.sector !== F.fs) return false;
+    if (F.fk && it.kind !== F.fk) return false;
+    if (it.total) return !F.fz && !F.fr && !F.fc && (!F.q || it.name.toLowerCase().includes(F.q.toLowerCase()));
+    return (!F.fz || it.size === F.fz) && (!F.fr || it.region === F.fr) && (!F.fc || it.operator === F.fc) &&
+      (!F.q || (it.name + " " + it.operator + " " + it.id).toLowerCase().includes(F.q.toLowerCase()));
+  };
+  const render = () => {
+    const xs = items.filter(match);
+    let h = "", last = "";
+    for (const it of xs) {
+      const g = `${short[it.sector]}${it.total ? "" : " · " + it.kind}`;
+      if (g !== last) { h += `<div class="grp">${M2.esc(g)}</div>`; last = g; }
+      h += `<a href="${hrefOf(it)}" class="${isHere(it) ? "on" : ""}${it.total ? " total" : ""}">${M2.esc(it.total ? "Sector total" : it.name)}` +
+        (it.kind === "tracked" ? ` <span class="muted">${it.size}, ${it.region}</span>` : "") + "</a>";
+    }
+    el.querySelector("#flist").innerHTML = h || `<p class="muted">Nothing matches these filters.</p>`;
+    const nt = xs.filter((x) => x.total).length, ne = xs.length - nt;
+    el.querySelector("#fcount").textContent = `${nt} sector total${nt === 1 ? "" : "s"}, ${ne} entit${ne === 1 ? "y" : "ies"}`;
+    history.replaceState(null, "", `?${here.total ? "s=" + here.sector : "e=" + encodeURIComponent(here.id)}${keep()}`);
+    return xs;
+  };
+  // a facet that leaves out what is shown moves to the first match, as the entity navigator does
+  const follow = (xs) => { if (xs.length && !xs.some(isHere)) location.href = hrefOf(xs[0]); };
+  el.querySelectorAll("select[data-f]").forEach((sel) => sel.addEventListener("change", () => { F[sel.dataset.f] = sel.value; follow(render()); }));
+  q.addEventListener("input", () => { F.q = q.value; render(); });
+  el.querySelector("#fclear").addEventListener("click", () => { M2.FNAV.forEach((k) => { F[k] = ""; }); q.value = "";
+    el.querySelectorAll("select[data-f]").forEach((sel) => { sel.value = ""; }); render(); });
+  if (F.fs || F.fk || F.fz || F.fr || F.fc) follow(render()); else render();
+  // bring the current item into view inside the list (not the page)
+  const list = el.querySelector("#flist"), on = list.querySelector("a.on");
+  if (on) list.scrollTop = on.offsetTop - list.offsetTop - list.clientHeight / 2;
+};
 
 // Grouping kinds (src/firm_model/registry/groupings.py): label, and how members are found.
 M2.GROUPING_KINDS = {
@@ -47,8 +103,7 @@ M2.header = (meta, page) => {
   const subs = M2.SUBPAGES[top];
   if (subs) {
     document.querySelector("main").insertAdjacentHTML("afterbegin", `<nav class="tabs subtabs" aria-label="${M2.esc(M2.PAGES.find((p) => p[0] === top)?.[1])}">`
-      + subs.map(([h, l]) => `<a href="${h}" class="${h === page ? "on" : ""}"${h === page ? ' aria-current="page"' : ""}>${l}</a>`).join("") + "</nav>"
-      + (page === "sector.html" ? M2.forecastViews(own) : ""));
+      + subs.map(([h, l]) => `<a href="${h}" class="${h === page ? "on" : ""}"${h === page ? ' aria-current="page"' : ""}>${l}</a>`).join("") + "</nav>");
   }
   document.body.insertAdjacentHTML("afterbegin", `
     <header class="top"><div class="in"><a class="brand" href="index.html">Model 2</a><nav>${nav}</nav>

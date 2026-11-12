@@ -24,7 +24,7 @@ Then open http://127.0.0.1:8765/. Pages: under the Overview tab, as sub-tabs (`M
 observation, filterable, from `data/observations.json`, and the kinds of observation) and `world_bundle.html?s=CODE`
 (the input bundle's drivers and sector statistics, from `data/bundle.json`); under Current Forecast,
 `forecast_overview.html` (the run and the fit it uses, from `data/forecast.json`), `forecast_fit.html?s=CODE` (each sector's fitted sector parameters) and, as the Forecasts sub-tab with a
-by sector / by entity switch (`M2.SUBALIAS`), `sector.html?s=CODE` and `entity.html?e=ID`; then
+faceted search panel on the left (`M2.forecastNav`; facets q, fs, fk, fz, fr, fc in the address), `sector.html?s=CODE` and `entity.html?e=ID`; then
 `accuracy.html`, and out of the navigation but kept: `groupings.html?g=ID` (shown under Current World, Entities; entity pages link to it) and `evidence.html`.
 `datamodel.html?t=TABLE` is the data model,
 drawn from `docs/datamodel.json` by `assets/datamodel.js`; edit that file and rebuild to change it. Not part of the Model 1 (KEYNES) site.

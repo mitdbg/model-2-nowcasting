@@ -3,16 +3,12 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Entities · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=012e14e-1794509036">
+<link rel="stylesheet" href="assets/site.css?v=84e7b56-1794509346">
 </head>
 <body>
 <main>
-  <div class="tabs" id="sectabs" role="tablist" aria-label="Sector"></div>
-  <div class="layout">
-    <aside class="side">
-      <input type="search" id="q" placeholder="Filter entities…">
-      <div id="list"></div>
-    </aside>
+  <div class="layout fx">
+    <aside class="side" id="fnav"></aside>
     <div>
       <h1 id="title">Entity</h1>
       <p class="sub" id="sub"></p>
@@ -63,7 +59,7 @@
     </div>
   </div>
 </main>
-<script src="assets/site.js?v=012e14e-1794509036"></script>
+<script src="assets/site.js?v=84e7b56-1794509346"></script>
 <script>
 const toT = (tr, v) => (tr === "log" ? Math.log(v) : tr === "logit" ? Math.log(v / (1 - v)) : v);
 (async () => {
@@ -72,41 +68,7 @@ const toT = (tr, v) => (tr === "log" ? Math.log(v) : tr === "logit" ? Math.log(v
     M2.header(meta, "entity.html");
     const id = M2.param("e") || ents.find((x) => x.kind === "tracked").id;
     const short = Object.fromEntries(meta.sectors.map((s) => [s.code, s.short]));
-    // sector tabs: "s" in the URL, else this entity's sector; "all" lists every sector
-    const own = ents.find((x) => x.id === id)?.sector;
-    let sel = M2.param("s") || own || "all";
-    const link = (eid) => `?e=${encodeURIComponent(eid)}&s=${sel}`;
-    const renderTabs = () => {
-      document.getElementById("sectabs").innerHTML = [...meta.sectors.map((s) => [s.code, s.short]), ["all", "All"]].map(([c, l]) =>
-        `<button type="button" role="tab" aria-selected="${c === sel}" class="${c === sel ? "on" : ""}" data-s="${c}">${M2.esc(l)}</button>`).join("");
-    };
-    document.getElementById("sectabs").addEventListener("click", (ev) => {
-      const b = ev.target.closest("button[data-s]");
-      if (!b) return;
-      sel = b.dataset.s;
-      if (sel !== "all" && sel !== own) {      // show an entity of the chosen sector
-        const first = ents.find((x) => x.sector === sel && x.kind === "tracked") || ents.find((x) => x.sector === sel);
-        if (first) { location.search = link(first.id); return; }
-      }
-      history.replaceState(null, "", link(id));
-      renderTabs(); renderList();
-    });
-    renderTabs();
-    const renderList = () => {
-      const q = document.getElementById("q").value.toLowerCase();
-      let h = "";
-      for (const s of meta.sectors.filter((s) => sel === "all" || s.code === sel)) {
-        for (const kind of ["tracked", "representative"]) {
-          const xs = ents.filter((x) => x.sector === s.code && x.kind === kind && (x.name + x.operator + x.id).toLowerCase().includes(q));
-          if (!xs.length) continue;
-          h += `<div class="grp">${s.short} · ${kind}</div>` + xs.map((x) =>
-            `<a href="${link(x.id)}" class="${x.id === id ? "on" : ""}">${M2.esc(x.name)} <span class="muted">${x.n_obs}</span></a>`).join("");
-        }
-      }
-      document.getElementById("list").innerHTML = h;
-    };
-    document.getElementById("q").addEventListener("input", renderList);
-    renderList();
+    M2.forecastNav(document.getElementById("fnav"), meta, ents, { id, sector: ents.find((x) => x.id === id)?.sector });
     const d = await M2.load(`entities/${encodeURIComponent(id)}.json`);
     const sec = await M2.load(`sectors/${d.sector}.json`);
     const vunit = Object.fromEntries(sec.variables.map((x) => [x.variable, x.unit]));
