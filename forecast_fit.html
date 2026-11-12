@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Fitted Parameters · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=edbe855-1794509670">
+<link rel="stylesheet" href="assets/site.css?v=11344b0-1794509844">
 <style>
   #fit td.n { font-variant-numeric: tabular-nums; }
   td.sym, th.sym { white-space: nowrap; font-style: italic; }
@@ -19,7 +19,7 @@
   <div class="tabs" id="sectabs" role="tablist" aria-label="Sector"></div>
   <div class="tablewrap"><table id="fit"></table></div>
 </main>
-<script src="assets/site.js?v=edbe855-1794509670"></script>
+<script src="assets/site.js?v=11344b0-1794509844"></script>
 <script>
 (async () => {
   try {
@@ -32,11 +32,12 @@
       priors' centres), so the table shows how far the fit wandered from the truth, not how far it travelled to find it;
       red marks a fitted value more than 5% from the truth`;
     const short = Object.fromEntries(meta.sectors.map((s) => [s.code, s.short]));
-    let sel = M2.param("s") || f.sectors[0].code;
+    const bySector = [...f.sectors].sort((a, b) => (short[a.code] || a.code).localeCompare(short[b.code] || b.code));
+    let sel = M2.param("s") || bySector[0].code;
     const fmt = (v) => v == null ? "–" : Math.abs(v) >= 100 ? v.toFixed(0) : Math.abs(v) >= 1 ? v.toFixed(3) : v.toPrecision(3);
     const sym = (s) => M2.esc(s).replace(/\^([\p{L}\w]+)/gu, "<sup>$1</sup>").replace(/_([\p{L}\w]+)/gu, "<sub>$1</sub>");
     const render = () => {
-      document.getElementById("sectabs").innerHTML = f.sectors.map((s) =>
+      document.getElementById("sectabs").innerHTML = bySector.map((s) =>
         `<button type="button" role="tab" data-s="${s.code}" aria-selected="${s.code === sel}" class="${s.code === sel ? "on" : ""}">${M2.esc(short[s.code] || s.code)}</button>`).join("");
       const s = f.sectors.find((x) => x.code === sel) || f.sectors[0];
       const off = (p) => p.truth != null && Math.abs(p.fit - p.truth) > 0.05 * Math.max(Math.abs(p.truth), 1e-3);
