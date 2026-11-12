@@ -19,7 +19,7 @@ M2.PAGES = [["index.html", "Overview"], ["world_overview.html", "Current World"]
 // Pages shown as sub-tabs under a top-level tab, chosen near the top of the page.
 M2.SUBPAGES = {"index.html": [["index.html", "Introduction"], ["howitworks.html", "How It Works"], ["datamodel.html", "Data Model"], ["forecast_model.html", "Model Structure"]],
   "world_overview.html": [["world_overview.html", "Introduction"], ["world_entities.html", "Entities"], ["world_observations.html", "Observations"], ["world_bundle.html", "Sector input bundle"]],
-  "forecast_overview.html": [["forecast_overview.html", "Introduction"], ["forecast_fit.html", "Fitted Parameters"], ["sector.html", "Forecasts"]],
+  "forecast_overview.html": [["forecast_overview.html", "Introduction"], ["forecast_config.html", "Model Configuration"], ["forecast_fit.html", "Fitted Parameters"], ["sector.html", "Forecasts"]],
   "eval_revisions.html": [["eval_revisions.html", "Forecasts against later estimates"], ["eval_observations.html", "Observations against the model"], ["eval_official.html", "Sector totals against official statistics"], ["evaluation.html", "What the data pin down"], ["accuracy.html", "Against ground truth"]]};
 // Pages reached through a sub-tab without being one: they light up that sub-tab.
 M2.SUBALIAS = {"entity.html": "sector.html", "groupings.html": "world_entities.html"};

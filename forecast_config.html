@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Model Configuration · Model 2 (dev)</title>
+<link rel="stylesheet" href="assets/site.css?v=6412150-1794517184">
+<style>
+  main > p, main > ul { max-width: 80ch; }
+  .wkv { display: grid; grid-template-columns: 230px 1fr; gap: 6px 16px; max-width: 980px; font-size: 14px; }
+  .wkv .k { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; padding-top: 2px; }
+  .cmp table { width: auto; font-size: 13px; }
+  .cmp td, .cmp th { padding: 3px 9px; white-space: nowrap; }
+  td.n { font-variant-numeric: tabular-nums; }
+  .sym { font-style: italic; white-space: nowrap; }
+  .c-fix { color: #92651a; }
+  @media (prefers-color-scheme: dark) { .c-fix { color: #e0b866; } }
+  .setby { font-size: 11px; color: var(--muted); }
+  .setby.on { color: var(--accent); font-weight: 600; }
+  .ctl { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; font-size: 13px; color: var(--muted); margin: 6px 0; }
+  .ctl select { width: auto; font-size: 13px; padding: 2px 6px; }
+  @media (max-width: 760px) { .wkv { grid-template-columns: 1fr; gap: 2px 0; } .wkv .k { padding-top: 8px; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Model Configuration</h1>
+  <p class="sub">Everything here is chosen before the model is fitted or run; none of it is learned from the data. Some
+  values are set by hand in the configuration, some come from outside sources (geography, Census counts), and a few
+  are computed once from the data at the start of the fit window and then held fixed. On
+  <a href="forecast_model.html">Model Structure</a> they are the symbols marked <b class="c-fix">Fixed, not learned</b>.</p>
+
+  <h2>Fixed values in the equations</h2>
+  <p>The symbols marked "Fixed, not learned" on Model Structure, sector by sector. Real demand <span class="sym">D</span>
+  and capacity <span class="sym">K</span> are on the log scale; K₀ is shown in the sector's own units per month.</p>
+  <div class="cmp tablewrap"><table id="fixed"></table></div>
+  <ul class="sub">
+    <li><span class="sym c-fix">D̄</span>: average real sector demand over the fit window's first two years (L6). Orders move with demand
+      against this level.</li>
+    <li><span class="sym c-fix">x̄</span>: the sector's demand pressure at the start of the window: that average demand against the starting
+      capacity (L3). Utilization rises when pressure is above it.</li>
+    <li><span class="sym c-fix">K₀</span>: sector capacity at the start of the window (L6). An entity's share of orders follows its
+      share of capacity measured against it.</li>
+    <li><span class="sym c-fix">transit</span>: shipping time in months, from geography (L13), part of every quoted lead time.</li>
+    <li>Congestion (L13), the extra wait as utilization nears full: <b id="kc"></b>.</li>
+  </ul>
+
+  <h2>How the forecast runs</h2>
+  <div class="wkv" id="runkv"></div>
+
+  <h2>How the fit runs</h2>
+  <div class="wkv" id="fitkv"></div>
+
+  <h2>Starting ranges for the parameters</h2>
+  <p>Before fitting, each parameter has a prior: a centre and a 90% range of plausible values. The fit starts from the
+  centre and the range sets how far the data must push to move it (see <a href="evaluation.html">What the data pin down</a>
+  for how far they did). Most come from the model's catalog; some are set for a sector, with a recorded reason. Entity
+  parameters' ranges also bound how much entities in a group may differ.</p>
+  <div class="ctl" id="pctl"></div>
+  <div class="cmp tablewrap"><table id="priors"></table></div>
+  <p class="sub" id="trendnote"></p>
+
+  <h2>Observation noise</h2>
+  <p>How much each kind of observation is expected to wander from the truth, as a fraction of its value (an
+  observation with noise 0.05 is typically within about 5%). These are set, not fitted; the observations' fit to the
+  model (<a href="eval_observations.html">Observations against the model</a>) shows whether they are about right.</p>
+  <div class="cmp tablewrap"><table id="sigma"></table></div>
+
+  <h2>Official statistics</h2>
+  <p>The statistics the model checks its sector totals against as it runs (L16). Each enters with the statistic's own
+  uncertainty plus a floor; where the statistic already contains a tracked company's reports, its uncertainty is
+  widened so the same information is not counted twice.</p>
+  <div class="cmp tablewrap"><table id="recon"></table></div>
+
+  <h2>Representative entities</h2>
+  <p>The capacity of one establishment of each size, by sector: with the Census establishment counts, it sizes the
+  representative entities that stand for untracked establishments.</p>
+  <div class="cmp tablewrap"><table id="estab"></table></div>
+</main>
+<script src="assets/site.js?v=6412150-1794517184"></script>
+<script>
+(async () => {
+  try {
+    const [meta, c] = await Promise.all([M2.load("meta.json"), M2.load("config.json")]);
+    M2.header(meta, "forecast_config.html");
+    const short = Object.fromEntries(meta.sectors.map((s) => [s.code, s.short]));
+    const secs = [...c.sectors].sort((a, b) => short[a.code].localeCompare(short[b.code]));
+    const f = (v, d = 3) => v == null ? "–" : typeof v === "number" ? (Math.abs(v) >= 1000 ? M2.fmt(v) : +v.toPrecision(d) + "") : M2.esc(String(v));
+    const unit = (u) => String(u || "").replace(/_/g, " ");
+    const row = (k, v) => v == null || v === "" ? "" : `<span class="k">${k}</span><span>${v}</span>`;
+    const sym = (s) => M2.esc(s).replace(/\^([\p{L}\w]+)/gu, "<sup>$1</sup>").replace(/_([\p{L}\w]+)/gu, "<sub>$1</sub>");
+
+    document.getElementById("fixed").innerHTML = `<tr><th>sector</th><th>template</th><th class="n"><span class="sym c-fix">D̄</span></th>
+      <th class="n"><span class="sym c-fix">x̄</span></th><th class="n"><span class="sym c-fix">K₀</span></th><th class="n"><span class="sym c-fix">transit</span> (months)</th></tr>` +
+      secs.map((s) => `<tr><td><a href="sector.html?s=${s.code}">${M2.esc(short[s.code])}</a></td><td class="muted">${s.template.replace(/_/g, " ")}</td>
+        <td class="n">${f(s.Dbar)}</td><td class="n">${f(s.xbar)}</td><td class="n">${M2.fmt(s.K0)} <span class="muted">${unit(s.unit)}</span></td>
+        <td class="n">${f(s.transit)}</td></tr>`).join("");
+    const r = c.run, bi = r.band_inflation;
+    document.getElementById("kc").textContent = r.lead_time_congestion === "on" ? "on (κ_C = 1)" : "off (κ_C = 0)";
+    document.getElementById("runkv").innerHTML = [
+      row("Copies of the world", `${r.n_members}, each with its own shocks and parameter draw (${r.parameter_draws === "all" ? "entity, sector and group parameters all drawn" : M2.esc(r.parameter_draws)})`),
+      row("Fit window", `${r.window_years} years of history`),
+      row("Forecast horizon", `${r.forecast_months} months past the last observed month`),
+      row("Random seed", r.seed),
+      row("Orders follow capacity share", r.order_share === "capacity" ? `yes (L6). <span class="muted">Without it, an entity's orders ignore its own capacity, so an entity that loses capacity for good keeps its orders and its order book grows without bound.</span>` : "no: L6 as first written"),
+      row("Starting stocks", `each copy starts its order book, input inventory and project pipeline spread by ${r.initial_stock_sd} (log) around the fitted start`),
+      row("Order level in the filter", `moves with a spread of ${r.order_level_sd} (log) where a sector lets the filter correct it`),
+      row("Sector input bundle", `at most ${r.staleness_days} days older than the run date; an older one stops the run`),
+      row("Band widening", bi ? `published sector bands widened ${bi.smoothed}× in history, ${bi.nowcast}× in the nowcast and ${bi.forecast}× in the forecast. <span class="muted">The model's own 90% bands held too little of the truth in a backtest on this world; these factors bring the published bands to about 90% (see <a href="accuracy.html">Against ground truth</a>).</span>` : "none"),
+      row("Order book in the filter", secs.filter((s) => s.filter_order_book.length).map((s) => `${M2.esc(short[s.code])} (${s.filter_order_book.join(", ")})`).join("; ") || "no sector"),
+    ].join("");
+    const ft = c.fit;
+    const ov = secs.filter((s) => Object.keys(s.fit_overrides).length);
+    document.getElementById("fitkv").innerHTML = [
+      row("Copies of the world", `${ft.n_members} while fitting`),
+      row("Rounds", `up to ${ft.max_rounds}, stopping after ${ft.patience} rounds without improvement or a relative change below ${ft.tol}; the best round is kept`),
+      row("Steps per round", `${ft.lbfgs_iters} optimizer steps per entity, ${ft.sector_iters} for the sector parameters`),
+      row("Pull toward the group", `as strong as ${ft.kappa0} entities' worth of data, before the fit adjusts it (L25)`),
+      row("Capacity growth priors", ft.trend_priors ? "centred on each sector's demand trend" : "from the catalog"),
+      row("Per-sector settings", ov.length ? ov.map((s) => `${M2.esc(short[s.code])}: ${Object.entries(s.fit_overrides).map(([k, v]) => `${k.replace(/_/g, " ")} ${v}`).join(", ")}`).join("; ") : "none"),
+    ].join("");
+
+    // priors, one sector at a time
+    let sel = M2.param("s") || secs[0].code;
+    const KIND = { entity: "entity", start: "starting state", sector: "sector" };
+    const drawPriors = () => {
+      document.getElementById("pctl").innerHTML = `<label>Sector <select id="psel">${secs.map((s) => `<option value="${s.code}"${s.code === sel ? " selected" : ""}>${M2.esc(short[s.code])}</option>`).join("")}</select></label>
+        <span>${secs.find((s) => s.code === sel).priors.filter((p) => p.set).length} set for this sector, the rest from the catalog</span>`;
+      const s = secs.find((x) => x.code === sel);
+      document.getElementById("priors").innerHTML = `<tr><th class="sym">symbol</th><th>meaning</th><th>kind</th><th class="n">centre</th><th class="n">90% range</th><th>set by</th></tr>` +
+        s.priors.map((p) => `<tr><td class="sym">${sym(p.symbol)}</td><td>${M2.esc(M2.PARAM?.[p.name] || p.description)}</td><td class="muted">${KIND[p.kind]}</td>
+          <td class="n">${f(p.centre)}</td><td class="n">${f(p.lo)} to ${f(p.hi)}</td>
+          <td>${p.set ? `<span class="setby on" title="${M2.esc(p.reason)}">this sector: ${M2.esc(p.reason)}</span>` : `<span class="setby">catalog</span>`}</td></tr>`).join("");
+      history.replaceState(null, "", `?s=${sel}`);
+    };
+    document.getElementById("pctl").addEventListener("change", (e) => { if (e.target.id === "psel") { sel = e.target.value; drawPriors(); } });
+    drawPriors();
+    if (c.fit.trend_priors) document.getElementById("trendnote").textContent = "Capacity drift δ is recentred on the sector's demand trend when the fit starts, so its centre here is the catalog's, not the one the fit used.";
+
+    document.getElementById("sigma").innerHTML = `<tr><th>kind of observation</th><th class="n">noise</th></tr>` +
+      Object.entries(c.obs_sigma).filter(([, v]) => v > 0).sort((a, b) => (M2.OBS[a[0]]?.[0] || a[0]).localeCompare(M2.OBS[b[0]]?.[0] || b[0]))
+        .map(([k, v]) => `<tr><td>${M2.esc(M2.OBS[k]?.[0] || k)}</td><td class="n">${v}</td></tr>`).join("") +
+      `<tr><td colspan="2" class="muted">Satellite yes/no readings have no noise size: they are a probability, set by each sensor's curve.</td></tr>`;
+    document.getElementById("recon").innerHTML = `<tr><th>sector</th><th>statistic</th><th class="n">floor</th><th class="n">widened</th></tr>` +
+      secs.flatMap((s) => s.reconciliation.map((x) => `<tr><td>${M2.esc(short[s.code])}</td><td class="mono">${M2.esc(x.series)}</td>
+        <td class="n">${x.floor != null ? M2.pct(x.floor, 0) : "–"}</td><td class="n">${x.contains_tracked ? `${x.inflate}×` : "–"}</td></tr>`)).join("");
+    document.getElementById("estab").innerHTML = `<tr><th>sector</th><th class="n">small</th><th class="n">medium</th><th class="n">large</th><th>unit</th></tr>` +
+      secs.filter((s) => s.capacity_per_establishment).map((s) => `<tr><td>${M2.esc(short[s.code])}</td>${["small", "medium", "large"].map((z) =>
+        `<td class="n">${M2.fmt(s.capacity_per_establishment[z])}</td>`).join("")}<td class="muted">${unit(s.unit)} per month</td></tr>`).join("");
+  } catch (e) { M2.fail(e); }
+})();
+</script>
+</body>
+</html>

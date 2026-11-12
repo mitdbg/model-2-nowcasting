@@ -23,7 +23,7 @@ Then open http://127.0.0.1:8765/. Pages: under the Overview tab, as sub-tabs (`M
 (what the world contains), `world_observations.html?type=…&entity=…&open=ID` (every
 observation, filterable, from `data/observations.json`, and the kinds of observation) and `world_bundle.html?s=CODE`
 (the input bundle's drivers and sector statistics, from `data/bundle.json`); under Current Forecast,
-`forecast_overview.html` (the run and the fit it uses, from `data/forecast.json`), `forecast_fit.html?s=CODE` (each sector's fitted sector parameters) and, as the Forecasts sub-tab with a
+`forecast_overview.html` (the run and the fit it uses, from `data/forecast.json`), `forecast_config.html?s=CODE` (every value chosen before the fit or the forecast, from `data/config.json`), `forecast_fit.html?s=CODE` (each sector's fitted sector parameters) and, as the Forecasts sub-tab with a
 faceted search panel on the left (`M2.forecastNav`; facets q, fs, fk, fz, fr, fc in the address), `sector.html?s=CODE` and `entity.html?e=ID`; then
 under Evaluation, `eval_revisions.html` (each backtest run's nowcast and forecasts against the next run's estimates, with an example chart from `data/revisions.json`), `eval_observations.html` (each observation against the model's prediction), `eval_official.html` (sector totals against the bundle's official statistics), `evaluation.html` (what the data pin down; all four from `data/quality.json`) and `accuracy.html` (against the synthetic truth; on a real world it says none is available); and out of the navigation but kept: `groupings.html?g=ID` (shown under Current World, Entities; entity pages link to it) and `evidence.html`.
 `datamodel.html?t=TABLE` is the data model,
