@@ -286,8 +286,10 @@ M2.chart = (el, o) => {
   svg.querySelector(".hit").addEventListener("mouseleave", () => { tip(null); cur.setAttribute("visibility", "hidden"); });
 };
 
-M2.legend = (items) => `<div class="legend">${items.map(([c, l, dash]) =>
-  `<span><i style="background:${dash ? "transparent" : c};${dash ? `border-top:2px dashed ${c};height:0` : ""}"></i>${l}</span>`).join("")}</div>`;
+// a dashed item is drawn as a short dashed line, like the dashed lines in the charts
+M2.legend = (items) => `<div class="legend">${items.map(([c, l, dash]) => dash
+  ? `<span><svg width="24" height="8" aria-hidden="true" style="vertical-align: middle; margin-right: 4px"><line x1="0" y1="4" x2="24" y2="4" stroke="${c}" stroke-width="1.8" stroke-dasharray="4 2"/></svg>${l}</span>`
+  : `<span><i style="background:${c}"></i>${l}</span>`).join("")}</div>`;
 
 M2.fail = (e) => {
   document.querySelector("main").innerHTML = `<p class="bad">Could not load site data: ${M2.esc(e.message)}.</p>

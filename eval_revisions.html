@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Forecasts against later estimates · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=cce22cb-1794514660">
+<link rel="stylesheet" href="assets/site.css?v=f46a37f-1794515626">
 <style>
   main > p { max-width: 80ch; }
   .excard { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; max-width: 980px; }
@@ -57,7 +57,7 @@
     <div><h3 class="t">By quantity</h3><div class="tablewrap"><table id="revvar"></table></div></div>
   </div>
 </main>
-<script src="assets/site.js?v=cce22cb-1794514660"></script>
+<script src="assets/site.js?v=f46a37f-1794515626"></script>
 <script>
 (async () => {
   try {
@@ -114,7 +114,7 @@
       <div class="hz">${H.map(([l, x]) => `<span>${l}</span><div class="bar" style="width:${(100 * x.err / mx).toFixed(0)}%"></div><span class="n">${M2.pct(x.err, 1)}</span>`).join("")}</div>`;
 
     // sector by sector
-    const head = (k) => `<tr><th>${k}</th><th class="n">later value inside the range</th><th class="n">typical gap</th><th></th></tr>`;
+    const head = (k) => `<tr><th>${k}</th><th class="n">Was the range honest?</th><th class="n">How far off was the forecast?</th><th></th></tr>`;
     document.getElementById("revsec").innerHTML = head("sector") + [...R.by_sector].sort((a, b) => short[a.sector].localeCompare(short[b.sector])).map((x) =>
       `<tr><td><a href="?s=${x.sector}&v=output&a=${ex.a}">${M2.esc(short[x.sector])}</a></td><td class="n">${of100(x.inside)} of 100</td><td class="n">${gap({ ...x, unit: "log" })}</td><td>${verdict(x.inside, x.n)}</td></tr>`).join("");
     document.getElementById("revvar").innerHTML = head("quantity") + [...R.by_variable].sort((a, b) => name(a.variable).localeCompare(name(b.variable))).map((x) =>
