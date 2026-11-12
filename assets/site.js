@@ -30,14 +30,15 @@ M2.forecastNav = (el, meta, ents, here) => {
   const short = Object.fromEntries(meta.sectors.map((s) => [s.code, s.short]));
   const keep = () => M2.FNAV.filter((k) => F[k]).map((k) => `&${k}=${encodeURIComponent(F[k])}`).join("");
   const hrefOf = (it) => (it.total ? `sector.html?s=${it.sector}` : `entity.html?e=${encodeURIComponent(it.id)}`) + keep();
-  const items = meta.sectors.flatMap((s) => [{ total: true, sector: s.code, name: `${s.short}: sector total`, kind: "total" },
+  const secs = [...meta.sectors].sort((a, b) => a.short.localeCompare(b.short));
+  const items = secs.flatMap((s) => [{ total: true, sector: s.code, name: `${s.short}: sector total`, kind: "total" },
     ...["tracked", "representative"].flatMap((k) => ents.filter((x) => x.sector === s.code && x.kind === k)
       .sort((a, b) => a.name.localeCompare(b.name)))]);
   const opts = (vals, all) => `<option value="">${all}</option>` + vals.map(([v, l]) => `<option value="${M2.esc(v)}">${M2.esc(l)}</option>`).join("");
   const uniq = (f) => [...new Set(ents.map(f).filter(Boolean))].sort();
   el.innerHTML = `<input type="search" id="fq" placeholder="Name contains…" aria-label="Name contains">
     <div class="filters">
-      <label>Sector <select data-f="fs">${opts(meta.sectors.map((s) => [s.code, s.short]), "all sectors")}</select></label>
+      <label>Sector <select data-f="fs">${opts(secs.map((s) => [s.code, s.short]), "all sectors")}</select></label>
       <label>Show <select data-f="fk">${opts([["total", "sector totals"], ["tracked", "tracked entities"], ["representative", "representative entities"]], "everything")}</select></label>
       <label>Size <select data-f="fz">${opts(uniq((x) => x.size).map((v) => [v, v]), "any size")}</select></label>
       <label>Region <select data-f="fr">${opts(uniq((x) => x.region).map((v) => [v, v]), "any region")}</select></label>
@@ -68,11 +69,13 @@ M2.forecastNav = (el, meta, ents, here) => {
     el.querySelector("#flist").innerHTML = h || `<p class="muted">Nothing matches these filters.</p>`;
     const nt = xs.filter((x) => x.total).length, ne = xs.length - nt;
     el.querySelector("#fcount").textContent = `${nt} sector total${nt === 1 ? "" : "s"}, ${ne} entit${ne === 1 ? "y" : "ies"}`;
-    history.replaceState(null, "", `?${here.total ? "s=" + here.sector : "e=" + encodeURIComponent(here.id)}${keep()}`);
+    const at = here.total ? "s=" + here.sector : here.id ? "e=" + encodeURIComponent(here.id) : "";
+    history.replaceState(null, "", `?${at}${at ? keep() : keep().slice(1)}`);
     return xs;
   };
   // a facet that leaves out what is shown moves to the first match, as the entity navigator does
-  const follow = (xs) => { if (xs.length && !xs.some(isHere)) location.href = hrefOf(xs[0]); };
+  // (nothing chosen yet: the page stays empty until the user picks from the list)
+  const follow = (xs) => { if ((here.total || here.id) && xs.length && !xs.some(isHere)) location.href = hrefOf(xs[0]); };
   el.querySelectorAll("select[data-f]").forEach((sel) => sel.addEventListener("change", () => { F[sel.dataset.f] = sel.value; follow(render()); }));
   q.addEventListener("input", () => { F.q = q.value; render(); });
   el.querySelector("#fclear").addEventListener("click", () => { M2.FNAV.forEach((k) => { F[k] = ""; }); q.value = "";

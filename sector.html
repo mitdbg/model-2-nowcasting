@@ -3,13 +3,18 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Sectors · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=84e7b56-1794509346">
+<link rel="stylesheet" href="assets/site.css?v=1b09bc7-1794509646">
 </head>
 <body>
 <main>
   <div class="layout fx">
   <aside class="side" id="fnav"></aside>
-  <div>
+  <div class="pick" id="pick" hidden>
+    <h1>Forecasts</h1>
+    <p class="sub">Choose a sector total or an entity from the list on the left to see its history, nowcast and
+    forecast, with the 90% band. The filters above the list narrow it by name, sector, kind, size, region or company.</p>
+  </div>
+  <div id="content">
   <h1 id="title">Sector</h1>
   <p class="sub" id="sub"></p>
 
@@ -46,13 +51,19 @@
   </div>
   </div>
 </main>
-<script src="assets/site.js?v=84e7b56-1794509346"></script>
+<script src="assets/site.js?v=1b09bc7-1794509646"></script>
 <script>
 (async () => {
   try {
     const meta = await M2.load("meta.json");
     M2.header(meta, "sector.html");
-    const code = M2.param("s") || meta.sectors[0].code;
+    const code = M2.param("s");
+    if (!code) {            // nothing chosen yet: the panel, and a word on what to do
+      M2.forecastNav(document.getElementById("fnav"), meta, await M2.load("entities.json"), {});
+      document.getElementById("content").hidden = true;
+      document.getElementById("pick").hidden = false;
+      return;
+    }
     const [d, ents] = await Promise.all([M2.load(`sectors/${code}.json`), M2.load("entities.json")]);
     M2.forecastNav(document.getElementById("fnav"), meta, ents, { total: true, sector: code });
     document.getElementById("title").textContent = d.label;
