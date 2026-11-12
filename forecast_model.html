@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Model Structure · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=9b6d465-1794500218">
+<link rel="stylesheet" href="assets/site.css?v=0489204-1794500446">
 <style>
   main > p, main > ul, main > ol { max-width: 78ch; }
   main > .eqcard, main > figure, main > .tablewrap { max-width: 1000px; }
@@ -110,7 +110,13 @@
     <figcaption>
       <p class="key"><span><svg width="34" height="10" aria-hidden="true"><line x1="0" y1="5" x2="34" y2="5" style="stroke: var(--muted); stroke-width: 1.5"/></svg>
         within the month</span><span><svg width="34" height="10" aria-hidden="true"><line x1="0" y1="5" x2="34" y2="5" style="stroke: var(--truth); stroke-width: 1.5; stroke-dasharray: 4 3"/></svg>
-        feedback into next month</span><span>hover over a box for its equation; click to go to it</span></p>
+        feedback into next month</span></p>
+      <p class="key"><span><svg width="28" height="16" aria-hidden="true"><rect x="1" y="1" width="26" height="14" rx="3" style="fill: var(--band2); stroke: var(--accent)"/></svg>
+        driver, from the sector input bundle</span><span><svg width="28" height="16" aria-hidden="true"><rect x="1" y="1" width="26" height="14" rx="3" style="fill: var(--panel); stroke: var(--line)"/></svg>
+        hidden state, or a quantity the model works out from the states</span></p>
+      <p>Hover over a box for its equation; click to go to it. Observations are not drawn: they play no part in moving
+      the states forward. Each month, after this step, the filter compares the states with that month's observations
+      and corrects them (see <a href="#obs">Observations</a> and <a href="#filter">How the forecast is made</a>).</p>
       <p>The chain for a factory that makes goods to order. The grey arrows are one month's flow: demand brings orders
       into the order book; capacity and utilization set output; what falls due is shipped from output and stock.</p>
       <p>The orange arrows close the loop. At the end of each month the entity's <b>tightness</b> is how far it is
@@ -394,7 +400,7 @@
     band; the published sector bands are then widened by factors from backtests.</li>
   </ol>
 </main>
-<script src="assets/site.js?v=9b6d465-1794500218"></script>
+<script src="assets/site.js?v=0489204-1794500446"></script>
 <script>
 (async () => {
   try {
