@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Model Structure · Model 2 (dev)</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital@0;1&display=swap">
-<link rel="stylesheet" href="assets/site.css?v=1aab2e2-1794504491">
+<link rel="stylesheet" href="assets/site.css?v=875f397-1794505002">
 <style>
   main > p, main > ul, main > ol { max-width: 78ch; }
   main > .eqcard, main > figure, main > .tablewrap { max-width: 1000px; }
@@ -38,7 +38,11 @@
   @media (max-width: 760px) { .src { grid-template-columns: 1fr; } }
   .pl { font-size: 12.5px; color: var(--muted); }
   .eq i, .sym { font-style: italic; }
-  figure { margin: 10px 0 18px; position: relative; }
+  figure { margin: 10px 0 18px; }
+  details.tpl { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 14px; margin: 8px 0; max-width: 1000px; }
+  details.tpl summary { cursor: pointer; }
+  details.tpl summary .mods { display: block; font-size: 12px; color: var(--muted); margin: 2px 0 0 18px; }
+  details.tpl > p { max-width: 78ch; margin: 10px 0 0; }
   .fl .node { cursor: pointer; outline: none; }
   .fl .node:hover rect, .fl .node:focus rect { stroke: var(--accent); stroke-width: 2; }
   .fl .lag { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 10px; fill: var(--accent); }
@@ -100,41 +104,7 @@
 
   <h2 id="picture">One month at a glance</h2>
   <figure>
-    <svg class="fl" viewBox="0 -14 880 434" role="img" aria-label="Demand drives orders into the order book; the order book and capacity set output and shipments; tightness feeds back into utilization, price and order inflation">
-      <defs><marker id="ar" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L8,4 L0,8 z" style="fill: var(--muted); stroke: none"/></marker></defs>
-      <line x1="150" y1="62" x2="188" y2="62" marker-end="url(#ar)"/>
-      <line x1="330" y1="62" x2="368" y2="62" marker-end="url(#ar)"/><text class="lbl" x="349" y="54" text-anchor="middle">placed</text>
-      <line class="lagd" x1="510" y1="62" x2="548" y2="62" marker-end="url(#ar)"/><text class="lbl" x="529" y="54" text-anchor="middle">due</text>
-      <line x1="260" y1="84" x2="260" y2="138" marker-end="url(#ar)"/><text class="lbl" x="266" y="116" text-anchor="start">extra orders</text>
-      <path d="M 330 150 C 400 150, 420 120, 420 86" marker-end="url(#ar)"/><text class="lbl" x="428" y="114" text-anchor="start">cancelled</text>
-      <path d="M 80 84 V 210 H 410 V 238" marker-end="url(#ar)"/><text class="lbl" x="160" y="204" text-anchor="middle">demand pressure</text>
-      <line x1="330" y1="262" x2="368" y2="262" marker-end="url(#ar)"/><text class="lbl" x="349" y="254" text-anchor="middle">limits</text>
-      <line x1="510" y1="262" x2="548" y2="262" marker-end="url(#ar)"/><text class="lbl" x="529" y="254" text-anchor="middle">made</text>
-      <line class="lagd" x1="620" y1="240" x2="620" y2="86" marker-end="url(#ar)"/><text class="lbl" x="614" y="200" text-anchor="end">shipped from</text>
-      <path d="M 590 84 C 590 112, 500 112, 500 86" marker-end="url(#ar)"/><text class="lbl" x="545" y="124" text-anchor="middle">left overdue</text>
-      <line x1="690" y1="262" x2="728" y2="262" marker-end="url(#ar)"/>
-      <path d="M 470 40 V 26 H 770 V 238" marker-end="url(#ar)"/><text class="lbl" x="764" y="150" text-anchor="end">book ÷ output</text>
-      <path d="M 410 284 V 304 H 80 V 286" marker-end="url(#ar)"/><text class="lbl" x="250" y="298" text-anchor="middle">inputs used</text>
-      <line x1="150" y1="362" x2="188" y2="362" marker-end="url(#ar)"/>
-      <line x1="330" y1="362" x2="368" y2="362" marker-end="url(#ar)"/>
-      <path class="fb" d="M 830 240 V 12 H 230 V 38" marker-end="url(#ar)"/><text class="lbl" x="530" y="6" text-anchor="middle">feedback: long lead times bring over-ordering</text>
-      <path class="fb" d="M 760 284 V 318 H 470 V 286" marker-end="url(#ar)"/><text class="lbl" x="615" y="332" text-anchor="middle">feedback: runs harder</text>
-      <path class="fb" d="M 840 284 V 410 H 460 V 388" marker-end="url(#ar)"/><text class="lbl" x="650" y="403" text-anchor="middle">feedback: raises margin</text>
-      <g class="node" data-eq="L2" tabindex="0" role="button" aria-label="Demand, price: show equation L2"><rect class="drv" x="10" y="40" width="140" height="44" rx="6"/><text x="80" y="60" text-anchor="middle">Demand, price</text><text class="lbl" x="80" y="75" text-anchor="middle">drivers · L2</text></g>
-      <g class="node" data-eq="L6" tabindex="0" role="button" aria-label="New orders: show equation L6"><rect class="box" x="190" y="40" width="140" height="44" rx="6"/><text x="260" y="60" text-anchor="middle">New orders</text><text class="lbl" x="260" y="75" text-anchor="middle">L6</text></g>
-      <g class="node" data-eq="L9" tabindex="0" role="button" aria-label="Order book: show equation L9"><rect class="box" x="370" y="40" width="140" height="44" rx="6"/><text x="440" y="60" text-anchor="middle">Order book</text><text class="lbl" x="440" y="75" text-anchor="middle">L9</text></g>
-      <g class="node" data-eq="L8" tabindex="0" role="button" aria-label="Shipments: show equation L8"><rect class="box" x="550" y="40" width="140" height="44" rx="6"/><text x="620" y="60" text-anchor="middle">Shipments</text><text class="lbl" x="620" y="75" text-anchor="middle">L8</text></g>
-      <g class="node" data-eq="L7,L10" tabindex="0" role="button" aria-label="Phantom orders: show equation L7,L10"><rect class="box" x="190" y="140" width="140" height="44" rx="6"/><text x="260" y="160" text-anchor="middle">Phantom orders</text><text class="lbl" x="260" y="175" text-anchor="middle">cancellations · L7, L10</text></g>
-      <g class="node" data-eq="L12" tabindex="0" role="button" aria-label="Input inventory: show equation L12"><rect class="box" x="10" y="240" width="140" height="44" rx="6"/><text x="80" y="260" text-anchor="middle">Input inventory</text><text class="lbl" x="80" y="275" text-anchor="middle">L12</text></g>
-      <g class="node" data-eq="L1" tabindex="0" role="button" aria-label="Capacity: show equation L1"><rect class="box" x="190" y="240" width="140" height="44" rx="6"/><text x="260" y="260" text-anchor="middle">Capacity</text><text class="lbl" x="260" y="275" text-anchor="middle">L1</text></g>
-      <g class="node" data-eq="L3" tabindex="0" role="button" aria-label="Utilization → output: show equation L3"><rect class="box" x="370" y="240" width="140" height="44" rx="6"/><text x="440" y="260" text-anchor="middle">Utilization → output</text><text class="lbl" x="440" y="275" text-anchor="middle">L3</text></g>
-      <g class="node" data-eq="L11" tabindex="0" role="button" aria-label="Finished stock: show equation L11"><rect class="box" x="550" y="240" width="140" height="44" rx="6"/><text x="620" y="260" text-anchor="middle">Finished stock</text><text class="lbl" x="620" y="275" text-anchor="middle">L11</text></g>
-      <g class="node" data-eq="L13" tabindex="0" role="button" aria-label="Tightness, lead time: show equation L13"><rect class="box" x="730" y="240" width="140" height="44" rx="6"/><text x="800" y="260" text-anchor="middle">Tightness, lead time</text><text class="lbl" x="800" y="275" text-anchor="middle">L13</text></g>
-      <g class="node" data-eq="L4" tabindex="0" role="button" aria-label="Input cost: show equation L4"><rect class="drv" x="10" y="340" width="140" height="44" rx="6"/><text x="80" y="360" text-anchor="middle">Input cost</text><text class="lbl" x="80" y="375" text-anchor="middle">driver · L4</text></g>
-      <g class="node" data-eq="L4" tabindex="0" role="button" aria-label="Unit cost: show equation L4"><rect class="box" x="190" y="340" width="140" height="44" rx="6"/><text x="260" y="360" text-anchor="middle">Unit cost</text><text class="lbl" x="260" y="375" text-anchor="middle">L4</text></g>
-      <g class="node" data-eq="L5" tabindex="0" role="button" aria-label="Markup → price: show equation L5"><rect class="box" x="370" y="340" width="140" height="44" rx="6"/><text x="440" y="360" text-anchor="middle">Markup → price</text><text class="lbl" x="440" y="375" text-anchor="middle">L5</text></g>
-    </svg>
-    <div class="eqtip" id="eqtip" hidden></div>
+    <div id="mainchain"></div>
     <figcaption>
       <p class="key"><span><svg width="34" height="10" aria-hidden="true"><line x1="0" y1="5" x2="34" y2="5" style="stroke: var(--muted); stroke-width: 1.5"/></svg>
         a value from this month</span><span><svg width="34" height="10" aria-hidden="true"><line x1="0" y1="5" x2="34" y2="5" style="stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 4 3"/></svg>
@@ -222,17 +192,20 @@
   <div class="eqcard"><h3>Occupancy: capacity in use under lease <span class="tag">L18</span><span class="when">contracted capacity (data centers)</span></h3>
     <div class="eq"><span class="c-out">Free<sub>t</sub></span> = e<sup><span class="c-oth">k<sub>t</sub></span></sup> − <span class="c-oth">Occ<sub>t−1</sub></span> (1 − 1/<span class="c-lrn">term</span>)<br>
       <span class="c-out">Start<sub>t</sub></span> = min(<span class="c-oth">Due<sub>t</sub></span>, max(0, <span class="c-out">Free<sub>t</sub></span>))<br>
-      <span class="c-out">Occ<sub>t</sub></span> = <span class="c-oth">Occ<sub>t−1</sub></span> (1 − 1/<span class="c-lrn">term</span>) + <span class="c-out">Start<sub>t</sub></span>;&nbsp;&nbsp; <span class="c-out">u<sub>t</sub></span> = <span class="c-out">Occ<sub>t</sub></span> / e<sup><span class="c-oth">k<sub>t</sub></span></sup>;&nbsp;&nbsp; <span class="c-out">Q<sub>t</sub></span> = <span class="c-out">Occ<sub>t</sub></span></div>
+      <span class="c-out">Occ<sub>t</sub></span> = <span class="c-oth">Occ<sub>t−1</sub></span> (1 − 1/<span class="c-lrn">term</span>) + <span class="c-out">Start<sub>t</sub></span>;&nbsp;&nbsp; <span class="c-out">u<sub>t</sub></span> = <span class="c-out">Occ<sub>t</sub></span> / e<sup><span class="c-oth">k<sub>t</sub></span></sup>;&nbsp;&nbsp; <span class="c-out">Q<sub>t</sub></span> = <span class="c-out">Occ<sub>t</sub></span><br>
+      <span class="c-out">LT<sub>t</sub></span> = <span class="c-lrn">ℓ</span> + <span class="c-oth">B<sup>late</sup><sub>t</sub></span> / max(<span class="c-out">Start<sub>t</sub></span>, 0.01 · e<sup><span class="c-oth">k<sub>t</sub></span></sup>)<span class="c">lead time</span><br>
+      <span class="c-out">h<sub>t</sub></span> = (<span class="c-out">Occ<sub>t</sub></span> + <span class="c-oth">B<sup>late</sup><sub>t</sub></span>) / e<sup><span class="c-oth">k<sub>t</sub></span></sup> − <span class="c-lrn">u<sup>norm</sup></span><span class="c">tightness</span></div>
     <p>Leases last about <i>term</i> months. A lease that comes due starts if there is free capacity, and otherwise waits
     as an overdue order. Utilization is not chosen; it is how much is leased.</p>
-    <div class="src"><span class="k c-out">Computed here</span><span><span class="c-out">Free<sub>t</sub></span> capacity free for new leases; <span class="c-out">Start<sub>t</sub></span> leases starting; <span class="c-out">Occ<sub>t</sub></span> capacity in use; <span class="c-out">u<sub>t</sub></span> utilization; <span class="c-out">Q<sub>t</sub></span> output</span><span class="k c-lrn">Learned by the fit</span><span><span class="c-lrn">term</span> average lease, months, per sector</span><span class="k c-oth">From other equations</span><span><span class="c-oth">k<sub>t</sub></span> capacity (L22); <span class="c-oth">Occ<sub>t−1</sub></span> last month's capacity in use (L18); <span class="c-oth">Due<sub>t</sub></span> leases coming due (L8)</span></div>
+    <div class="src"><span class="k c-out">Computed here</span><span><span class="c-out">Free<sub>t</sub></span> capacity free for new leases; <span class="c-out">Start<sub>t</sub></span> leases starting; <span class="c-out">Occ<sub>t</sub></span> capacity in use; <span class="c-out">u<sub>t</sub></span> utilization; <span class="c-out">Q<sub>t</sub></span> output; <span class="c-out">LT<sub>t</sub></span> lead time; <span class="c-out">h<sub>t</sub></span> tightness</span><span class="k c-lrn">Learned by the fit</span><span><span class="c-lrn">term</span> average lease, months, per sector; <span class="c-lrn">ℓ</span> normal pre-leasing time, months, per entity; <span class="c-lrn">u<sup>norm</sup></span> normal occupancy, per entity</span><span class="k c-oth">From other equations</span><span><span class="c-oth">k<sub>t</sub></span> capacity (L22); <span class="c-oth">Occ<sub>t−1</sub></span> last month's capacity in use (L18); <span class="c-oth">Due<sub>t</sub></span> leases coming due (L8); <span class="c-oth">B<sup>late</sup><sub>t</sub></span> leases waiting for capacity (L9)</span></div>
   </div>
   <div class="eqcard"><h3>Lost demand in place of overdue orders <span class="tag">L17</span><span class="when">distribution, perishable services</span></h3>
     <div class="eq"><span class="c-out">B<sup>late</sup><sub>t</sub></span> = 0;&nbsp;&nbsp; <span class="c-out">Lost<sub>t</sub></span> = <span class="c-oth">Due<sub>t</sub></span> − <span class="c-oth">Sh<sub>t</sub></span>;&nbsp;&nbsp; <span class="c-out">O<sub>t+1</sub></span> gains <span class="c-lrn">r</span> · <span class="c-out">Lost<sub>t</sub></span><br>
-      <span class="c-out">lf<sub>t</sub></span> = <span class="c-oth">Sh<sub>t</sub></span> / <span class="c-oth">Q<sub>t</sub></span><span class="c">load factor</span></div>
+      <span class="c-out">lf<sub>t</sub></span> = <span class="c-oth">Sh<sub>t</sub></span> / <span class="c-oth">Q<sub>t</sub></span><span class="c">load factor</span><br>
+      <span class="c-out">h<sub>t</sub></span> = <span class="c-out">lf<sub>t</sub></span> − <span class="c-lrn">lf<sup>norm</sup></span><span class="c">tightness</span></div>
     <p>A flight that is full does not owe its turned-away passengers a seat later: they are lost, and a share
     <span class="sym">r</span> book again next month. Empty seats (Q − Sh) cannot be stored.</p>
-    <div class="src"><span class="k c-out">Computed here</span><span><span class="c-out">B<sup>late</sup><sub>t</sub></span> overdue orders, always zero; <span class="c-out">Lost<sub>t</sub></span> demand turned away; <span class="c-out">O<sub>t+1</sub></span> next month's orders (L6); <span class="c-out">lf<sub>t</sub></span> load factor</span><span class="k c-lrn">Learned by the fit</span><span><span class="c-lrn">r</span> share of lost customers who book again, per sector</span><span class="k c-oth">From other equations</span><span><span class="c-oth">Due<sub>t</sub>, Sh<sub>t</sub></span> orders falling due, and shipments (L8); <span class="c-oth">Q<sub>t</sub></span> output (L3)</span></div>
+    <div class="src"><span class="k c-out">Computed here</span><span><span class="c-out">B<sup>late</sup><sub>t</sub></span> overdue orders, always zero; <span class="c-out">Lost<sub>t</sub></span> demand turned away; <span class="c-out">O<sub>t+1</sub></span> next month's orders (L6); <span class="c-out">lf<sub>t</sub></span> load factor; <span class="c-out">h<sub>t</sub></span> tightness</span><span class="k c-lrn">Learned by the fit</span><span><span class="c-lrn">r</span> share of lost customers who book again, per sector; <span class="c-lrn">lf<sup>norm</sup></span> normal load factor, per entity (1 where unsold goods can be stored)</span><span class="k c-oth">From other equations</span><span><span class="c-oth">Due<sub>t</sub>, Sh<sub>t</sub></span> orders falling due, and shipments (L8); <span class="c-oth">Q<sub>t</sub></span> output (L3)</span></div>
   </div>
 
   <!-- the diagram's popups read these; they are not shown on the page -->
@@ -354,8 +327,9 @@
 
   <h2 id="templates">Templates</h2>
   <p>A steel mill, an airline and a data center run the same equations with different parts switched on. A
-  <b>template</b> is a named set of switches; each sector has one. A part switched off fixes its states at zero.</p>
-  <div class="tablewrap"><table id="tpl"></table></div>
+  <b>template</b> is a named set of switches; each sector has one. A part switched off fixes its states at zero. Open a
+  template to see its month as a diagram, drawn like the one above; hover over (or tap) a box for its equation.</p>
+  <div id="tpl"></div>
 
   <h2 id="params">Parameters</h2>
   <p>Parameters come in three kinds. <b>Entity parameters</b> differ from entity to entity; the fit estimates each one
@@ -443,26 +417,94 @@
     band; the published sector bands are then widened by factors from backtests.</li>
   </ol>
 </main>
-<script src="assets/site.js?v=1aab2e2-1794504491"></script>
+<div class="eqtip" id="eqtip" hidden></div>
+<script src="assets/site.js?v=875f397-1794505002"></script>
 <script>
+// One month's chain of equations, drawn for a template's modules (src/firm_model/templates.py):
+// pipeline (capacity built through L19–L22), occ (output is capacity in use, L18), stock (finished stock),
+// lost (unserved demand is lost, L17), inv (input inventory), infl (order inflation).
+const TEMPLATES = {
+  make_to_order: { pipeline: 0, occ: 0, stock: 1, lost: 0, inv: 1, infl: 1 },
+  make_to_stock: { pipeline: 0, occ: 0, stock: 1, lost: 0, inv: 1, infl: 1 },
+  distribution: { pipeline: 0, occ: 0, stock: 1, lost: 1, inv: 0, infl: 0 },
+  perishable_service: { pipeline: 0, occ: 0, stock: 0, lost: 1, inv: 0, infl: 0 },
+  contracted_capacity: { pipeline: 1, occ: 1, stock: 0, lost: 0, inv: 0, infl: 1 },
+  pipeline_producer: { pipeline: 1, occ: 0, stock: 1, lost: 0, inv: 1, infl: 1 },
+};
+function chainSVG(m, label) {
+  const X = [10, 190, 370, 550, 730], Y = [40, 140, 240, 340];
+  const node = (c, r, main, sub, eq, cls = "box") => {
+    const x = X[c], y = Y[r];
+    return `<g class="node" data-eq="${eq}" tabindex="0" role="button" aria-label="${main}: show equation ${eq.replace(",", ", ")}">` +
+      `<rect class="${cls}" x="${x}" y="${y}" width="140" height="44" rx="6"/><text x="${x + 70}" y="${y + 20}" text-anchor="middle">${main}</text>` +
+      `<text class="lbl" x="${x + 70}" y="${y + 35}" text-anchor="middle">${sub}</text></g>`;
+  };
+  const lab = (t, x, y, anchor = "middle") => t ? `<text class="lbl" x="${x}" y="${y}" text-anchor="${anchor}">${t}</text>` : "";
+  const ln = (x1, y1, x2, y2, t, lx, ly, anchor, dash) =>
+    `<line${dash ? ' class="lagd"' : ""} x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" marker-end="url(#ar)"/>` + lab(t, lx, ly, anchor);
+  const path = (d, t, lx, ly, anchor, dash) => `<path${dash ? ' class="lagd"' : ""} d="${d}" marker-end="url(#ar)"/>` + lab(t, lx, ly, anchor);
+  const N = [], E = [];
+  N.push(node(0, 0, "Demand, price", "drivers · L2", "L2", "drv"), node(1, 0, "New orders", "L6", "L6"), node(2, 0, "Order book", "L9", "L9"),
+    m.occ ? node(3, 0, "Leases starting", "L8, L18", "L8,L18") : node(3, 0, "Shipments", "L8", "L8"),
+    m.pipeline ? node(1, 2, "Capacity pipeline", "L19–L22", "L19") : node(1, 2, "Capacity", "L1", "L1"),
+    m.occ ? node(2, 2, "Capacity in use", "L18", "L18") : node(2, 2, "Utilization → output", "L3", "L3"),
+    m.occ ? node(4, 2, "Tightness, lead time", "L18", "L18") : m.lost ? node(4, 2, "Tightness", "load factor · L17", "L17") : node(4, 2, "Tightness, lead time", "L13", "L13"),
+    node(0, 3, "Input cost", "driver · L4", "L4", "drv"), node(1, 3, "Unit cost", "L4", "L4"), node(2, 3, "Markup → price", "L5", "L5"));
+  if (m.infl) N.push(node(1, 1, "Phantom orders", "cancellations · L7, L10", "L7,L10"));
+  if (m.lost) N.push(node(4, 0, "Lost demand", "L17", "L17"));
+  if (m.inv) N.push(node(0, 2, "Input inventory", "L12", "L12"));
+  if (m.stock) N.push(node(3, 2, "Finished stock", "L11", "L11"));
+  // this month's flow
+  E.push(ln(150, 62, 188, 62), ln(330, 62, 368, 62, "placed", 349, 54), ln(510, 62, 548, 62, "due", 529, 54, "middle", 1),
+    ln(330, 262, 368, 262, "limits", 349, 254), ln(150, 362, 188, 362), ln(330, 362, 368, 362));
+  if (!m.lost) E.push(path("M 590 84 C 590 112, 500 112, 500 86", "left overdue", 545, 124));
+  if (m.infl) E.push(ln(260, 84, 260, 138, "extra orders", 266, 116, "start"), path("M 330 150 C 400 150, 420 120, 420 86", "cancelled", 428, 114, "start"));
+  if (!m.occ) E.push(path("M 80 84 V 210 H 410 V 238", "demand pressure", 160, 204));
+  if (m.inv) E.push(path("M 410 284 V 304 H 80 V 286", "inputs used", 140, 298));
+  if (m.stock) E.push(ln(510, 262, 548, 262, "made", 529, 254), ln(620, 240, 620, 86, "shipped from", 614, 200, "end", 1));
+  else if (m.occ) E.push(path("M 620 86 V 262 H 512", "leases start", 626, 200, "start"));
+  else E.push(path("M 510 262 H 620 V 86", "sold from output", 614, 200, "end"));
+  // what tightness is measured from
+  if (m.lost) E.push(ln(690, 56, 728, 56, "turned away", 709, 34), path("M 690 76 H 710 V 262 H 728", "sold ÷ output", 704, 190, "end"));
+  else if (m.occ) E.push(path("M 470 40 V 26 H 770 V 238", "leases waiting", 764, 150, "end"), path("M 480 284 V 300 H 760 V 286", "in use ÷ capacity", 620, 296));
+  else {
+    E.push(path("M 470 40 V 26 H 770 V 238", "book ÷ output", 764, 150, "end"));
+    if (m.stock) E.push(ln(690, 262, 728, 262));
+  }
+  // last month's tightness, lead time and lost customers, back to the start of the chain
+  if (m.infl) E.push(path("M 830 240 V 12 H 230 V 38", "feedback: long lead times bring over-ordering", 530, 6, "middle", 1));
+  if (m.lost) E.push(path("M 800 40 V 12 H 270 V 38", "feedback: a share of lost customers books again", 530, 6, "middle", 1));
+  if (!m.occ) E.push(path("M 760 284 V 318 H 470 V 286", "feedback: runs harder", 615, 313, "middle", 1));
+  if (m.pipeline) E.push(path("M 800 284 V 334 H 280 V 286", "feedback: tight → more capacity announced", 640, 352, "middle", 1));
+  E.push(path("M 840 284 V 410 H 460 V 388", "feedback: raises margin", 650, 403, "middle", 1));
+  return `<svg class="fl" viewBox="0 -14 880 434" role="img" aria-label="${label}">
+    <defs><marker id="ar" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L8,4 L0,8 z" style="fill: var(--muted); stroke: none"/></marker></defs>
+    ${E.join("\n    ")}\n    ${N.join("\n    ")}</svg>`;
+}
+document.getElementById("mainchain").innerHTML = chainSVG(TEMPLATES.make_to_order,
+  "Demand drives orders into the order book; the order book and capacity set output and shipments; tightness feeds back into utilization, price and order inflation");
 (async () => {
   try {
     const [meta, f] = await Promise.all([M2.load("meta.json"), M2.load("forecast.json")]);
     M2.header(meta, "forecast_model.html");
-    // template switches (src/firm_model/templates.py)
-    const T = {
-      make_to_order: ["drift + jumps", "flow", "on", "carried as overdue", "on", "on"],
-      make_to_stock: ["drift + jumps", "flow", "on", "carried as overdue", "on", "on"],
-      distribution: ["drift + jumps", "flow", "on", "lost", "off", "off"],
-      perishable_service: ["drift + jumps", "flow", "off", "lost", "off", "off"],
-      contracted_capacity: ["pipeline", "occupancy", "off", "carried as overdue", "off", "on"],
-      pipeline_producer: ["pipeline", "flow", "on", "carried as overdue", "on", "on"],
+    // one expandable diagram per template
+    const ABOUT = {
+      make_to_order: ["steel, machinery, housing", "The chain drawn above. Goods are made against orders, and the normal order book runs months ahead."],
+      make_to_stock: ["chemicals, food, autos", "The same chain as make to order; only the parameters differ. The normal order book is short (about a month), and most orders ship from finished stock."],
+      distribution: ["retail, wholesale", "Output is goods received for sale, and there is no input inventory or over-ordering. A sale that finds nothing on hand is lost (L17), and a share of those customers come back next month. Tightness is the share of goods received that sells."],
+      perishable_service: ["airlines, hotels, hospitals", "Output cannot be stored: an empty seat or room-night is gone. Customers turned away are lost (L17), and a share book again next month. Tightness is how full the entity is (its load factor) against normal."],
+      contracted_capacity: ["data centers", "Capacity is built through a pipeline (L19–L22), and output is capacity in use under lease (L18). A lease that comes due waits if no capacity is free, so tightness counts waiting customers as well as capacity in use; a tight site announces more capacity."],
+      pipeline_producer: ["oil and gas, semiconductors", "The make-to-order chain, but capacity is built through a pipeline (L19–L22): announcements, then construction, then capacity, so a shortage takes years to close. Tight producers announce more."],
     };
-    const cell = (v) => v === "on" ? `<td class="tick">on</td>` : v === "off" ? `<td class="off">off</td>` : `<td>${v}</td>`;
+    const MOD = (m) => [m.pipeline ? "capacity through a pipeline" : "capacity drifts", m.occ ? "output is capacity in use" : "output is a monthly flow",
+      m.stock ? "finished stock" : "no finished stock", m.lost ? "unserved demand lost" : "unserved demand waits",
+      m.inv ? "input inventory" : "no input inventory", m.infl ? "over-ordering" : "no over-ordering"].join(" · ");
     const used = (t) => meta.sectors.filter((s) => s.template === t).map((s) => `<a href="sector.html?s=${s.code}">${M2.esc(s.short)}</a>`).join(", ");
-    document.getElementById("tpl").innerHTML = `<tr><th>template</th><th>capacity (L1 / L19–22)</th><th>output (L3 / L18)</th>
-      <th>finished stock (L11)</th><th>unserved demand (L9 / L17)</th><th>input inventory (L12)</th><th>order inflation (L6, L7, L10)</th><th>sectors in this world</th></tr>` +
-      Object.entries(T).map(([t, m]) => `<tr><td>${t.replace(/_/g, " ")}</td>${m.map(cell).join("")}<td>${used(t) || '<span class="muted">none</span>'}</td></tr>`).join("");
+    document.getElementById("tpl").innerHTML = Object.entries(TEMPLATES).map(([t, m]) => `<details class="tpl" id="tpl-${t}">
+      <summary><b>${t.replace(/_/g, " ")}</b> <span class="muted">— ${ABOUT[t][0]}; in this world: ${used(t) || "none"}</span>
+        <span class="mods">${MOD(m)}</span></summary>
+      <p>${ABOUT[t][1]}</p>
+      <figure>${chainSVG(m, `One month for the ${t.replace(/_/g, " ")} template`)}</figure></details>`).join("");
     // parameter list (src/firm_model/params.py)
     const P = [
       ["entity", "δ", "capacity drift per month", "L1", "not pipeline templates"],
@@ -531,15 +573,15 @@
       for (const t of tag.split(/[,\s]+/)) cards[t] = { card: c, title, tag, when, eq: eq.innerHTML, desc, from };
       c.id ||= "eq-" + tag.replace(/[^A-Za-z0-9]+/g, "-");
     }
-    const tip = document.getElementById("eqtip"), fig = tip.parentElement;
+    const tip = document.getElementById("eqtip");
     const show = (g) => {
       const hits = g.dataset.eq.split(",").map((t) => cards[t] || cards[Object.keys(cards).find((k) => k.startsWith(t + "–"))]).filter(Boolean);
       if (!hits.length) return;
       tip.innerHTML = hits.map((h) => `<h4>${M2.esc(h.title)} <span>${M2.esc(h.tag)}</span>${h.when ? `<em>${M2.esc(h.when)}</em>` : ""}</h4><div class="eq">${h.eq}</div>${h.desc ? `<p>${h.desc}</p>` : ""}${h.from}`).join("");
       tip.hidden = false;
-      const r = g.getBoundingClientRect(), f = fig.getBoundingClientRect();
-      const left = Math.max(0, Math.min(r.left - f.left, f.width - tip.offsetWidth));
-      const below = r.bottom - f.top + 6, above = r.top - f.top - tip.offsetHeight - 6;
+      const r = g.getBoundingClientRect(), W = document.documentElement.clientWidth;
+      const left = Math.max(8, Math.min(r.left, W - tip.offsetWidth - 8)) + window.scrollX;
+      const below = r.bottom + window.scrollY + 6, above = r.top + window.scrollY - tip.offsetHeight - 6;
       tip.style.left = left + "px";
       // below the box, unless it would run off the bottom of the window and fits above
       const roomBelow = window.innerHeight - r.bottom, roomAbove = r.top;
