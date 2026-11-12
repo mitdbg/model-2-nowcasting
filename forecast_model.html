@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Model Structure · Model 2 (dev)</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital@0;1&display=swap">
-<link rel="stylesheet" href="assets/site.css?v=3099713-1794504272">
+<link rel="stylesheet" href="assets/site.css?v=1aab2e2-1794504491">
 <style>
   main > p, main > ul, main > ol { max-width: 78ch; }
   main > .eqcard, main > figure, main > .tablewrap { max-width: 1000px; }
@@ -142,36 +142,18 @@
       <p class="key"><span><svg width="28" height="16" aria-hidden="true"><rect x="1" y="1" width="26" height="14" rx="3" style="fill: var(--band2); stroke: var(--accent)"/></svg>
         driver, from the sector input bundle</span><span><svg width="28" height="16" aria-hidden="true"><rect x="1" y="1" width="26" height="14" rx="3" style="fill: var(--panel); stroke: var(--line)"/></svg>
         hidden state, or a quantity the model works out from the states</span></p>
-      <p>Hover over (or tap) a box for its equation. Observations are not drawn: they play no part in moving
-      the states forward. Each month, after this step, the filter compares the states with that month's observations
-      and corrects them (see <a href="#obs">Observations</a> and <a href="#filter">How the forecast is made</a>).</p>
-      <p>Solid arrows carry a value worked out this month; dashed arrows carry a value from last month. Each state
-      also carries on from its own last value (this month's capacity starts from last month's, and so on); those links
-      are left out of the drawing but listed under each equation.</p>
-      <p>The chain for a factory that makes goods to order. Down the chain, demand brings orders
-      into the order book; capacity and utilization set output; what falls due from last month's order book is shipped
-      from this month's output and last month's stock, and what cannot be shipped goes back into the book as overdue
-      orders.</p>
-      <p>Within a month the equations run in order, and each reads only last month's levels or values already worked out
-      this month, so nothing is circular. The order book and shipments show this: shipments (L8) read last month's order
-      book, and this month's order book (L9) then reads this month's shipments.</p>
-      <p>Three of the dashed arrows, marked "feedback", close loops: they run from the end of the chain back to its start, each through a learned parameter. At the end of each month the entity's <b>tightness</b> is how far it is
-      booked beyond normal (its order book net of stock, in months of output, against its normal cover), and its
-      <b>lead time</b> is how long a new order would wait. Both act on the next month in three ways:</p>
-      <ul>
-        <li><b>Runs harder</b> (L3, strength <span class="c-lrn">β<sup>B</sup></span>): booked further ahead than normal, the entity raises utilization, so output catches
-        up with the book; with stock piling up, it slows down.</li>
-        <li><b>Raises margin</b> (L5, strength <span class="c-lrn">γ</span>): a tight entity raises its markup, so prices rise in a shortage and ease after it.</li>
-        <li><b>Over-ordering</b> (L6, strength <span class="c-lrn">ω</span>): when the quoted lead time is longer than normal, customers order extra to secure
-        supply. These phantom orders swell the book and lengthen lead times further, until lead times fall and
-        customers cancel them (L7).</li>
-      </ul>
-      <p>These loops pull in opposite directions. Increased utilization mitigates a shortage: more output works off the order book.
-      Over-ordering exacerbates a shortage: extra orders lengthen the book and the lead time, which brings still more orders. When there is
-      sustained over-ordering, a shortage builds on itself; once output catches up and lead times fall, cancellations reduce shortages.</p>
-      <p>Other kinds of business run a variant of this chain, set by their <a href="#templates">template</a>. An airline
-      cannot keep a passenger waiting for a full flight: the sale is lost rather than added to an overdue order book.
-      Its tightness is how full its planes are, not how far ahead it is booked, and it has no over-ordering loop.</p>
+      <p>The chain for a factory that makes goods to order; hover over (or tap) a box for its equation. Demand brings
+      orders into the order book; capacity and utilization set output; orders falling due are shipped from output and
+      stock, and what cannot be shipped stays in the book as overdue. Solid arrows carry this month's values, dashed
+      arrows last month's; each state also builds on its own last value, which the popups list. Observations are not
+      drawn: after this step, the filter corrects the states with the month's observations (see
+      <a href="#filter">How the forecast is made</a>).</p>
+      <p>The three arrows marked "feedback" carry last month's <b>tightness</b> (how far the entity is booked beyond
+      normal) and <b>lead time</b> back to the start of the chain. Increased utilization (L3) mitigates a shortage by
+      working off the book, and a higher markup (L5) raises prices while it lasts. Over-ordering (L6) exacerbates it:
+      extra orders lengthen lead times, which bring still more orders, until lead times fall and cancellations (L7)
+      reduce shortages. Other <a href="#templates">templates</a> vary the chain; an airline, for example, loses the
+      sales it cannot serve and has no over-ordering loop.</p>
     </figcaption>
   </figure>
 
@@ -461,7 +443,7 @@
     band; the published sector bands are then widened by factors from backtests.</li>
   </ol>
 </main>
-<script src="assets/site.js?v=3099713-1794504272"></script>
+<script src="assets/site.js?v=1aab2e2-1794504491"></script>
 <script>
 (async () => {
   try {
