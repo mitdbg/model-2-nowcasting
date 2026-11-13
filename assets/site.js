@@ -150,11 +150,13 @@ M2.header = (meta, page) => {
     btn.title = "Change the world and forecast this site shows";
     wrap.hidden = false;
     const sets = [...idx.sets].sort((a, b) => (b.made_utc || "").localeCompare(a.made_utc || ""));
+    // each entry: the body switches to it on this page; "About this world" switches and opens World Details
     menu.innerHTML = `<div class="sm-head">World and forecast shown</div>` + sets.map((x) =>
-      `<button type="button" class="sm-item${x.id === cur ? " on" : ""}" data-set="${M2.esc(x.id)}" role="option" aria-selected="${x.id === cur}">
+      `<div class="sm-row${x.id === cur ? " on" : ""}">
+        <button type="button" class="sm-item" data-set="${M2.esc(x.id)}" role="option" aria-selected="${x.id === cur}">
         <span class="sm-w">World ${M2.esc(x.world)} <span class="sm-k">(${x.world_kind === "synthetic" ? "synthetic" : "real"})</span></span>
-        <span class="sm-f">Forecast for ${M2.esc(x.as_of)}, made ${M2.esc(day(x.made_utc))}${x.id === idx.default ? " · default" : ""}</span></button>`).join("")
-      + `<a class="sm-about" href="world_overview.html">About this world</a>`;
+        <span class="sm-f">Forecast for ${M2.esc(x.as_of)}, made ${M2.esc(day(x.made_utc))}${x.id === idx.default ? " · default" : ""}</span></button>
+        <a class="sm-about" href="world_overview.html?set=${encodeURIComponent(x.id)}" title="Show this world and forecast, and open World Details">About this world</a></div>`).join("");
     const open = (on) => { menu.hidden = !on; btn.setAttribute("aria-expanded", on); };
     btn.addEventListener("click", (e) => { e.stopPropagation(); open(menu.hidden); });
     document.addEventListener("click", (e) => { if (!wrap.contains(e.target)) open(false); });
