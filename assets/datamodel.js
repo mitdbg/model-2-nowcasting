@@ -24,7 +24,8 @@ const DataModel = (() => {
       const fams = model.families.filter((f) => f.column === c.id);
       const count = (f) => model.tables.filter((t) => t.family === f.id).length;
       const nc = fams.every((f) => count(f) <= 4) ? 1 : 2;
-      const w = 2 * PAD + nc * bw + (nc - 1) * GAP;
+      // at least as wide as the column's title (about 6.2 px a character at the title's size)
+      const w = Math.max(2 * PAD + nc * bw + (nc - 1) * GAP, c.name.length * 6.2 - 2 * PAD);
       let y = top;
       for (const f of fams) {
         const h = fh + Math.max(1, Math.ceil(count(f) / nc)) * (bh + gy) + 4;
@@ -134,7 +135,7 @@ const DataModel = (() => {
     };
 
     function draw() {
-      const cols = model.columns?.length && model.families.every((f) => f.column);
+      const cols = model.columns?.length && model.families.every((f) => f.column != null);   // a phase may be 0
       const slots = cols ? "columns" : root.clientWidth >= 1000 ? 3 : 2;
       if (L && L.slots === slots) return;
       L = { ...(cols ? columnLayout(model) : layout(model, slots)), slots };

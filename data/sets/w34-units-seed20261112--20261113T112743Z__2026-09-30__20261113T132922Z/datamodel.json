@@ -47,6 +47,10 @@
  ],
  "columns": [
   {
+   "id": 0,
+   "name": "0 · Manage Worlds and Forecasts"
+  },
+  {
    "id": 1,
    "name": "1 · Choose a world"
   },
@@ -70,7 +74,7 @@
    "color": 1,
    "column": 1,
    "description": "What exists and who owns what, on any date. Facts are never overwritten: a change adds a new version and closes the old one.",
-   "note": "Every table here also has six history columns: valid_from and valid_to (when the fact was true; valid_to excluded), recorded_at and superseded_at (when it was learned and replaced), source and decided_by."
+   "note": "Every table here also has six history columns: valid_from and valid_to (when the fact was true; valid_to excluded), recorded_at and superseded_at (when it was learned and replaced), source and decided_by. Every table here belongs to one world, by folder: its keys are unique only within that world, so a row's full key is (world_id, its key). Entity and observation ids repeat across synthetic worlds of one generator. The world's id is checked whenever the world is loaded."
   },
   {
    "id": "obs",
@@ -78,7 +82,7 @@
    "color": 2,
    "column": 1,
    "description": "Every published reading, one row per value, plus the catalog of reading types and the census counts.",
-   "note": ""
+   "note": "Every table here belongs to one world, by folder: its keys are unique only within that world, so a row's full key is (world_id, its key). Entity and observation ids repeat across synthetic worlds of one generator. The world's id is checked whenever the world is loaded."
   },
   {
    "id": "bundle",
@@ -86,7 +90,7 @@
    "color": 3,
    "column": 1,
    "description": "Each sector's drivers and statistics as ensemble draws, delivered by an outside source once per run date and never changed afterwards.",
-   "note": "Each delivery carries a manifest listing its tables with their schema versions, row counts and checksums."
+   "note": "Each delivery carries a manifest listing its tables with their schema versions, row counts and checksums. Every table here belongs to one world, by folder: its keys are unique only within that world, so a row's full key is (world_id, its key). Entity and observation ids repeat across synthetic worlds of one generator. The world's id is checked whenever the world is loaded."
   },
   {
    "id": "config",
@@ -110,7 +114,7 @@
    "color": 5,
    "column": 1,
    "description": "The true values behind a synthetic world: hidden states, parameters and drivers. Present only in synthetic worlds; the model never sees them.",
-   "note": ""
+   "note": "Every table here belongs to one world, by folder: its keys are unique only within that world, so a row's full key is (world_id, its key). Entity and observation ids repeat across synthetic worlds of one generator. The world's id is checked whenever the world is loaded."
   },
   {
    "id": "runs",
@@ -132,8 +136,8 @@
    "id": "catalog",
    "name": "Catalog",
    "color": 9,
-   "column": 4,
-   "description": "A lasting record of every world, model, fit and forecast made since 2026-11-12 (and a few earlier ones, recorded after the fact), so that a problem or a fix can name exactly which ones it is about. One record per item; records point to each other by id and say where the files they describe are.",
+   "column": 0,
+   "description": "A lasting record of every world, model version, fit and forecast, spanning all the other phases: worlds are recorded as they are built, fits and forecasts as they are made, and problems and fixes name the ones they are about. One record per item; records point to each other by id and say where the files they describe are.",
    "note": "Every record also has recorded_utc, when the catalog learned of it."
   },
   {
@@ -868,6 +872,12 @@
      "name": "warnings",
      "type": "list",
      "description": ""
+    },
+    {
+     "name": "world",
+     "type": "string",
+     "description": "the world the bundle was accepted into",
+     "references": "catalog_worlds"
     }
    ]
   },
@@ -1300,6 +1310,12 @@
      "type": "",
      "description": "",
      "key": true
+    },
+    {
+     "name": "world",
+     "type": "string",
+     "description": "the world it was fitted on; a run refuses a fit from another world",
+     "references": "catalog_worlds"
     },
     {
      "name": "as_of",
@@ -2245,6 +2261,12 @@
    "unclear": "",
    "columns": [
     {
+     "name": "world",
+     "type": "string",
+     "description": "the world the run used",
+     "references": "catalog_worlds"
+    },
+    {
      "name": "as_of",
      "type": "date",
      "description": ""
@@ -2399,7 +2421,7 @@
    "key": "world_id",
    "description": "One world: synthetic (with its generator, seed and any departure from the model's equations) or real.",
    "constraints": "Recorded when the world is built.",
-   "unclear": "Worlds built before 2026-11-12 are recorded only if added by hand (recorded_later).",
+   "unclear": "Worlds built before 2026-11-12 were recorded after the fact (recorded_later) from their folder names.",
    "columns": [
     {
      "name": "world_id",
@@ -3572,8 +3594,8 @@
    "to": {
     "table": "catalog_worlds"
    },
-   "enforcement": "none",
-   "note": "copied from the world's record when the fit is saved"
+   "enforcement": "checked",
+   "note": "the world's id, which the run checks when it loads the world"
   },
   {
    "from": {
@@ -3627,8 +3649,8 @@
    "to": {
     "table": "catalog_worlds"
    },
-   "enforcement": "none",
-   "note": "copied from the world's record"
+   "enforcement": "checked",
+   "note": "the world's id, which the run checks when it loads the world"
   },
   {
    "from": {
@@ -3739,6 +3761,149 @@
    },
    "enforcement": "together",
    "note": "copied from the problem's record"
+  },
+  {
+   "from": {
+    "table": "companies",
+    "columns": "(its world's folder)"
+   },
+   "to": {
+    "table": "catalog_worlds"
+   },
+   "enforcement": "checked",
+   "note": "by folder: the table sits in the world's folder, whose id is checked when the world is loaded"
+  },
+  {
+   "from": {
+    "table": "entities",
+    "columns": "(its world's folder)"
+   },
+   "to": {
+    "table": "catalog_worlds"
+   },
+   "enforcement": "checked",
+   "note": "by folder: the table sits in the world's folder, whose id is checked when the world is loaded"
+  },
+  {
+   "from": {
+    "table": "sites",
+    "columns": "(its world's folder)"
+   },
+   "to": {
+    "table": "catalog_worlds"
+   },
+   "enforcement": "checked",
+   "note": "by folder: the table sits in the world's folder, whose id is checked when the world is loaded"
+  },
+  {
+   "from": {
+    "table": "groupings",
+    "columns": "(its world's folder)"
+   },
+   "to": {
+    "table": "catalog_worlds"
+   },
+   "enforcement": "checked",
+   "note": "by folder: the table sits in the world's folder, whose id is checked when the world is loaded"
+  },
+  {
+   "from": {
+    "table": "observations",
+    "columns": "(its world's folder)"
+   },
+   "to": {
+    "table": "catalog_worlds"
+   },
+   "enforcement": "checked",
+   "note": "by folder: the table sits in the world's folder, whose id is checked when the world is loaded"
+  },
+  {
+   "from": {
+    "table": "census_counts",
+    "columns": "(its world's folder)"
+   },
+   "to": {
+    "table": "catalog_worlds"
+   },
+   "enforcement": "checked",
+   "note": "by folder: the table sits in the world's folder, whose id is checked when the world is loaded"
+  },
+  {
+   "from": {
+    "table": "manifest",
+    "columns": "(its world's folder)"
+   },
+   "to": {
+    "table": "catalog_worlds"
+   },
+   "enforcement": "checked",
+   "note": "by folder: the table sits in the world's folder, whose id is checked when the world is loaded"
+  },
+  {
+   "from": {
+    "table": "truth_entity_states",
+    "columns": "(its world's folder)"
+   },
+   "to": {
+    "table": "catalog_worlds"
+   },
+   "enforcement": "checked",
+   "note": "by folder: the table sits in the world's folder, whose id is checked when the world is loaded"
+  },
+  {
+   "from": {
+    "table": "truth_entity_params",
+    "columns": "(its world's folder)"
+   },
+   "to": {
+    "table": "catalog_worlds"
+   },
+   "enforcement": "checked",
+   "note": "by folder: the table sits in the world's folder, whose id is checked when the world is loaded"
+  },
+  {
+   "from": {
+    "table": "truth_sector_totals",
+    "columns": "(its world's folder)"
+   },
+   "to": {
+    "table": "catalog_worlds"
+   },
+   "enforcement": "checked",
+   "note": "by folder: the table sits in the world's folder, whose id is checked when the world is loaded"
+  },
+  {
+   "from": {
+    "table": "receipts",
+    "columns": "world"
+   },
+   "to": {
+    "table": "catalog_worlds"
+   },
+   "enforcement": "together",
+   "note": "written into each receipt when the bundle is accepted; bundle names repeat across worlds"
+  },
+  {
+   "from": {
+    "table": "fit_runs",
+    "columns": "world"
+   },
+   "to": {
+    "table": "catalog_worlds"
+   },
+   "enforcement": "checked",
+   "note": "a run refuses to reuse a fit from another world, and an assembled fit refuses sector fits from different worlds"
+  },
+  {
+   "from": {
+    "table": "run_meta",
+    "columns": "world"
+   },
+   "to": {
+    "table": "catalog_worlds"
+   },
+   "enforcement": "together",
+   "note": "recorded by the run"
   }
  ]
 }
