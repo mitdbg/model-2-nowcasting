@@ -28,8 +28,7 @@ M2.param = (k) => new URLSearchParams(location.search).get(k);
 M2.esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
 M2.PAGES = [["index.html", "Overview"], ["world_overview.html", "World Details"], ["forecast_overview.html", "Model and Forecasts"],
-            ["eval_revisions.html", "Evaluation"], ["next_problems.html", "Next Version"],
-            ["https://claude.ai/artifact/GbJQDmoHyttq2W6xiSyJ5w", "Development Dashboard"]];
+            ["eval_revisions.html", "Evaluation"], ["next_problems.html", "Next Version"]];
 // Pages shown as sub-tabs under a top-level tab, chosen near the top of the page.
 M2.SUBPAGES = {"index.html": [["index.html", "Introduction"], ["howitworks.html", "How It Works"], ["datamodel.html", "Data Model"], ["forecast_model.html", "Model Structure"]],
   "world_overview.html": [["world_overview.html", "Introduction"], ["world_entities.html", "Entities"], ["world_observations.html", "Observations"], ["world_bundle.html", "Sector input bundle"]],
@@ -117,7 +116,7 @@ M2.header = (meta, page) => {
   const own = page;
   page = M2.SUBALIAS[page] || page;
   const top = Object.keys(M2.SUBPAGES).find((t) => M2.SUBPAGES[t].some(([h]) => h === page)) || page;
-  // a tab that leaves the site (the development dashboard) opens in a new browser tab
+  // a tab that leaves the site opens in a new browser tab
   const nav = M2.PAGES.map(([h, l]) => `<a href="${h}" class="${h === top ? "on" : ""}"${/^https?:/.test(h) ? ' target="_blank" rel="noopener"' : ""}>${l}</a>`).join("");
   const subs = M2.SUBPAGES[top];
   if (subs) {

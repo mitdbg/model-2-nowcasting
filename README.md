@@ -33,6 +33,11 @@ The site holds several sets, each a world with a forecast made on it, under `dat
 listed in `data/sets.json`. Each build adds one (`--no-default` keeps the current default); the picker at the
 top right of every page switches between them, remembered in the browser, or `?set=ID` in the address.
 
+Under Next Version, `next_problems.html` shows the chosen set's problem summary (`data/problems.json`), written by
+an evaluator that saw only that set's four Evaluation pages that need no ground truth, and kept in
+`docs/next_version/<set id>.md`; `scripts/problems_page.py` (also run by each build) turns it into the set's data.
+A set without one says so. `next_improvements.html` is a placeholder for proposed changes.
+
 `scripts/deploy_site.sh` pushes `site/` with its data to the private repository
 `mitdbg/model-2-nowcasting`, which serves it with GitHub Pages so it can be viewed from other
 devices.
