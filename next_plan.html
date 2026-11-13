@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Improvement Plan · Model 2 (dev)</title>
+<link rel="stylesheet" href="assets/site.css?v=fa47719-1794583424">
+<style> main > p { max-width: 80ch; } </style>
+</head>
+<body>
+<main>
+  <h1>Improvement Plan</h1>
+  <p class="sub">The changes chosen for the next version of the model, in the order they will be made, drawn from the
+  <a href="next_improvements.html">possible improvements</a>. None is planned yet.</p>
+</main>
+<script src="assets/site.js?v=fa47719-1794583424"></script>
+<script>
+(async () => {
+  try {
+    const meta = await M2.load("meta.json");
+    M2.header(meta, "next_plan.html");
+  } catch (e) { M2.fail(e); }
+})();
+</script>
+</body>
+</html>

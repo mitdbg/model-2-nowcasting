@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Current Problems · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=fba09ae-1794583263">
+<link rel="stylesheet" href="assets/site.css?v=fa47719-1794583424">
 <style>
   main > p, main > ol { max-width: 80ch; }
   .how { background: var(--band2); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; max-width: 900px; font-size: 13.5px; }
@@ -26,7 +26,7 @@
   <nav class="toc" id="toc" aria-label="On this page" hidden><a href="#sectors">Weakest sectors</a><a href="#quantities">Weakest hidden quantities</a><a href="#problems">Problems</a></nav>
   <div id="report"></div>
 </main>
-<script src="assets/site.js?v=fba09ae-1794583263"></script>
+<script src="assets/site.js?v=fa47719-1794583424"></script>
 <script>
 (async () => {
   try {
@@ -48,7 +48,7 @@
       Observations against the model, Sector totals against official statistics, What the data pin down), for ${which}.
       It knew nothing of the true values, the model's code or how it was developed, and was asked to describe problems,
       not to propose fixes. Its causes are hypotheses. Proposed fixes belong on
-      <a href="next_improvements.html">Proposed Improvements</a>.`;
+      <a href="next_improvements.html">Possible Improvements</a>.`;
     document.getElementById("report").innerHTML = rep.html;
     document.getElementById("toc").hidden = false;
     if (location.hash) document.querySelector(location.hash)?.scrollIntoView();
