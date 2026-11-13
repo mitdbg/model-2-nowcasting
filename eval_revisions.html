@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Forecasts against later estimates · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=1ad103d-1794543425">
+<link rel="stylesheet" href="assets/site.css?v=4659a39-1794544896">
 <style>
   main > p { max-width: 80ch; }
   .excard { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; max-width: 980px; }
@@ -61,7 +61,7 @@
     <div><h3 class="t">By quantity</h3><div class="tablewrap"><table id="revvar"></table></div></div>
   </div>
 </main>
-<script src="assets/site.js?v=1ad103d-1794543425"></script>
+<script src="assets/site.js?v=4659a39-1794544896"></script>
 <script>
 (async () => {
   try {
@@ -70,6 +70,13 @@
     const short = Object.fromEntries(meta.sectors.map((s) => [s.code, s.short]));
     const name = (v) => (M2.SHORT_VAR[v] || v).replace(/ \(.*\)$/, "");
     const R = q.revisions;
+    if (!R || !rv.pairs?.length) {           // one run date: no later run to compare with
+      document.querySelectorAll("main > :not(h1):not(.subtabs):not(p.sub)").forEach((el) => el.remove());
+      document.querySelector("main").insertAdjacentHTML("beforeend", `<p class="muted">This forecast's world has only one run date
+        (${M2.esc(meta.as_of)}), so there is no later run whose estimates its forecasts could be checked against. Choose a
+        world and forecast with several run dates from the list at the top right.</p>`);
+      return;
+    }
     const of100 = (c) => Math.round(100 * c);
     const gap = (x) => x.err == null ? "–" : x.unit === "pp" ? `${(100 * x.err).toFixed(1)} <span class="muted" title="percentage points">pts</span>` : x.unit === "months" ? `${x.err.toFixed(2)} <span class="muted" title="months of the sector's output">mo</span>` : M2.pct(x.err, 1);
     // judged against 90 of 100 allowing for chance (as on Observations against the model)
