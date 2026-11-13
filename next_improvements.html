@@ -3,12 +3,15 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Possible Improvements · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=071efb4-1794584618">
+<link rel="stylesheet" href="assets/site.css?v=66f7ff8-1794584777">
 <style>
   main > p { max-width: 80ch; }
   .how { background: var(--band2); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; max-width: 900px; font-size: 13.5px; margin-bottom: 14px; }
   table.fixes { font-size: 13px; max-width: 1200px; }
-  table.fixes td.p { width: 22%; }
+  table.fixes td.id { font-weight: 600; white-space: nowrap; }
+  table.fixes tr { scroll-margin-top: calc(var(--hdr, 48px) + 12px); }
+  table.fixes tr:target, table.fixes tr.hit { background: var(--band2); }
+  table.fixes td.p { width: 21%; }
   table.fixes td.f { width: 46%; }
   table.fixes td.n { white-space: nowrap; }
   table.fixes tr.cont td.p a { color: var(--muted); }
@@ -27,11 +30,11 @@
 <main>
   <h1>Possible Improvements</h1>
   <div class="how" id="how"></div>
-  <p class="sorthint" id="hint" hidden>Sort by clicking a blue column heading: by problem (the fixes for each problem
+  <p class="sorthint" id="hint" hidden>Each fix is labeled by its problem's number and a letter (1A, 1B, 2A, ...). Sort by clicking a blue column heading: by problem (the fixes for each problem
   together), by likelihood of success (most likely first), by the time a test would take, or by what it would cost.</p>
   <div class="tablewrap" id="wrap"></div>
 </main>
-<script src="assets/site.js?v=071efb4-1794584618"></script>
+<script src="assets/site.js?v=66f7ff8-1794584777"></script>
 <script>
 (async () => {
   try {
@@ -73,12 +76,12 @@
     const draw = () => {
       const sorted = rows.slice().sort((a, b) => dir * cols[key](a, b));
       let last = null;
-      document.getElementById("wrap").innerHTML = `<table class="fixes"><thead><tr>${head("problem", "Problem")}<th>Possible Fix</th>`
+      document.getElementById("wrap").innerHTML = `<table class="fixes"><thead><tr><th>Fix</th>${head("problem", "Problem")}<th>Possible Fix</th>`
         + `${head("likelihood", "Likelihood of Success")}${head("time", "Estimated Time To Test")}${head("cost", "Estimated Financial Cost To Test")}</tr></thead><tbody>`
         + sorted.map((f) => {
           const cont = key === "problem" && f.problem === last;   // later fixes for the same problem: link muted
           last = f.problem;
-          return `<tr class="${cont ? "cont" : ""}"><td class="p"><a href="next_problems.html#problem-${f.problem}">${f.problem}. ${M2.esc(rep.problems[f.problem])}</a></td>`
+          return `<tr id="fix-${f.id}" class="${cont ? "cont" : ""}"><td class="id">${f.id}</td><td class="p"><a href="next_problems.html#problem-${f.problem}">${f.problem}. ${M2.esc(rep.problems[f.problem])}</a></td>`
             + `<td class="f">${M2.esc(f.fix)}</td><td>${lk(f.likelihood)}</td><td class="n">${M2.esc(f.time)}</td><td class="n">${M2.esc(f.cost)}</td></tr>`;
         }).join("") + "</tbody></table>";
       document.querySelectorAll("th button").forEach((b) => b.addEventListener("click", () => {
@@ -93,6 +96,13 @@
     };
     document.getElementById("hint").hidden = false;
     draw();
+    const go = () => {   // a link to one fix (#fix-3B): mark and scroll to its row
+      document.querySelectorAll("tr.hit").forEach((el) => el.classList.remove("hit"));
+      const el = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)));
+      if (el) { el.classList.add("hit"); el.scrollIntoView(); }
+    };
+    go();
+    addEventListener("hashchange", go);
   } catch (e) { M2.fail(e); }
 })();
 </script>
