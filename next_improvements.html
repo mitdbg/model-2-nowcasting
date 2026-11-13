@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Proposed Improvements · Model 2 (dev)</title>
+<link rel="stylesheet" href="assets/site.css?v=616e719-1794543371">
+<style> main > p { max-width: 80ch; } </style>
+</head>
+<body>
+<main>
+  <h1>Proposed Improvements</h1>
+  <p class="sub">Changes proposed for the next version of the model, each answering one or more of the
+  <a href="next_problems.html">current problems</a>. None is written yet.</p>
+</main>
+<script src="assets/site.js?v=616e719-1794543371"></script>
+<script>
+(async () => {
+  try {
+    const meta = await M2.load("meta.json");
+    M2.header(meta, "next_improvements.html");
+  } catch (e) { M2.fail(e); }
+})();
+</script>
+</body>
+</html>
