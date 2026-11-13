@@ -1,0 +1,16 @@
+{
+ "default": "w34-units-seed20261107__2026-09-30__20261110T040642Z",
+ "sets": [
+  {
+   "id": "w34-units-seed20261107__2026-09-30__20261110T040642Z",
+   "world": "w34-units-seed20261107",
+   "world_catalog_id": null,
+   "world_kind": "synthetic",
+   "as_of": "2026-09-30",
+   "run": "2026-09-30__20261110T040642Z",
+   "made_utc": "2026-11-10T04:06:42Z",
+   "fit": "fit_2026q3:2026-09-30",
+   "built_utc": "2026-11-13T03:50:27Z"
+  }
+ ]
+}

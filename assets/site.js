@@ -3,9 +3,23 @@
 
 const M2 = {};
 
+// The site shows one set at a time: a world and a forecast made on it (data/sets/<id>/), listed in
+// data/sets.json. The set comes from ?set= in the address, else the one last chosen in this
+// browser, else the default; the picker at the top right changes it.
+M2.sets = () => (M2._sets ||= fetch("data/sets.json").then((r) => (r.ok ? r.json() : { default: null, sets: [] })));
+M2.currentSet = async () => {
+  const idx = await M2.sets(), ids = new Set(idx.sets.map((x) => x.id));
+  let saved = null;
+  try { saved = localStorage.getItem("m2.set"); } catch (e) { /* storage blocked: use the default */ }
+  const asked = M2.param("set");
+  if (asked && ids.has(asked)) { try { localStorage.setItem("m2.set", asked); } catch (e) { /* ignore */ } return asked; }
+  return saved && ids.has(saved) ? saved : idx.default;
+};
 M2.load = async (path) => {
-  const r = await fetch(`data/${path}`);
-  if (!r.ok) throw new Error(`data/${path}: ${r.status}`);
+  const set = await M2.currentSet();
+  const url = set ? `data/sets/${encodeURIComponent(set)}/${path}` : `data/${path}`;
+  const r = await fetch(url);
+  if (!r.ok) throw new Error(`${url}: ${r.status}`);
   return r.json();
 };
 
@@ -111,7 +125,8 @@ M2.header = (meta, page) => {
   }
   document.body.insertAdjacentHTML("afterbegin", `
     <header class="top"><div class="in"><a class="brand" href="index.html">Model 2</a><nav>${nav}</nav>
-    <a class="run" id="worldtag" href="world_overview.html" hidden></a></div></header>
+    <span class="setpick" id="setpick" hidden><button type="button" class="run" id="worldtag" aria-haspopup="listbox" aria-expanded="false"></button>
+    <div class="setmenu" id="setmenu" hidden></div></span></div></header>
 `);
   // heights of the sticky header and sub-tabs, for pages that keep more pinned below them
   const pin = () => {
@@ -121,13 +136,33 @@ M2.header = (meta, page) => {
   };
   pin();
   addEventListener("resize", pin);
-  // which world the site shows, top right
-  M2.load("world.json").then((w) => {
-    const a = document.getElementById("worldtag");
-    if (!a || !w.id) return;
-    a.textContent = `World ${w.id} (${w.kind === "synthetic" ? "synthetic" : "real"})`;
-    a.title = "About this world";
-    a.hidden = false;
+  // which world and forecast the site shows, top right; clicking lists the others to switch to
+  Promise.all([M2.sets(), M2.currentSet()]).then(([idx, cur]) => {
+    const wrap = document.getElementById("setpick"), btn = document.getElementById("worldtag"), menu = document.getElementById("setmenu");
+    const c = idx.sets.find((x) => x.id === cur);
+    if (!wrap || !c) return;
+    const day = (t) => (t ? t.slice(0, 10) : "");
+    btn.textContent = `World ${c.world} · Forecast ${c.as_of} ▾`;
+    btn.title = "Change the world and forecast this site shows";
+    wrap.hidden = false;
+    const sets = [...idx.sets].sort((a, b) => (b.made_utc || "").localeCompare(a.made_utc || ""));
+    menu.innerHTML = `<div class="sm-head">World and forecast shown</div>` + sets.map((x) =>
+      `<button type="button" class="sm-item${x.id === cur ? " on" : ""}" data-set="${M2.esc(x.id)}" role="option" aria-selected="${x.id === cur}">
+        <span class="sm-w">World ${M2.esc(x.world)} <span class="sm-k">(${x.world_kind === "synthetic" ? "synthetic" : "real"})</span></span>
+        <span class="sm-f">Forecast for ${M2.esc(x.as_of)}, made ${M2.esc(day(x.made_utc))}${x.id === idx.default ? " · default" : ""}</span></button>`).join("")
+      + `<a class="sm-about" href="world_overview.html">About this world</a>`;
+    const open = (on) => { menu.hidden = !on; btn.setAttribute("aria-expanded", on); };
+    btn.addEventListener("click", (e) => { e.stopPropagation(); open(menu.hidden); });
+    document.addEventListener("click", (e) => { if (!wrap.contains(e.target)) open(false); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") open(false); });
+    menu.addEventListener("click", (e) => {
+      const it = e.target.closest("button[data-set]");
+      if (!it) return;
+      try { localStorage.setItem("m2.set", it.dataset.set); } catch (err) { /* storage blocked: the address carries it */ }
+      const q = new URLSearchParams(location.search);
+      q.set("set", it.dataset.set);
+      location.search = q.toString();
+    });
   }).catch(() => {});
   const sub = page === "sector.html" ? (own === "entity.html" ? "Forecasts by entity" : "Forecasts by sector") : subs?.find((p) => p[0] === page)?.[1];
   document.title = `${sub && page !== top ? sub : M2.PAGES.find((p) => p[0] === top)?.[1] ?? "Model 2"} · Model 2 (dev)`;
