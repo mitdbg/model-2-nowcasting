@@ -2625,8 +2625,8 @@
    "columns": [
     {
      "name": "problem_id",
-     "type": "string",
-     "description": "P0001, P0002, ...; never changes",
+     "type": "uuid",
+     "description": "a random UUID, assigned once; never changes",
      "key": true
     },
     {
@@ -2706,8 +2706,8 @@
    "columns": [
     {
      "name": "fix_id",
-     "type": "string",
-     "description": "F0001, F0002, ...; never changes",
+     "type": "uuid",
+     "description": "a random UUID, assigned once; never changes",
      "key": true
     },
     {

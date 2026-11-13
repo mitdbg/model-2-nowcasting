@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Possible Improvements · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=ae6cb95-1794596436">
+<link rel="stylesheet" href="assets/site.css?v=ae6cb95-1794596493">
 <style>
   main > p { max-width: 80ch; }
   .how { background: var(--band2); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; max-width: 900px; font-size: 13.5px; margin-bottom: 14px; }
@@ -39,12 +39,13 @@
 <main>
   <h1>Possible Improvements</h1>
   <div class="how" id="how"></div>
-  <p class="sorthint" id="hint" hidden>Each fix is labeled by its problem's number and a letter (1A, 1B, 2A, ...); below the label is its lasting id
-  (F0001, ...), and below each problem the problem's (P0001, ...), which never change and are unique across worlds. Sort by clicking a blue column heading: by problem (the fixes for each problem
+  <p class="sorthint" id="hint" hidden>Each fix is labeled by its problem's number and a letter (1A, 1B, 2A, ...); below the label is the start of its lasting
+  id, and below each problem the start of the problem's (point at one for the whole id). Lasting ids never change and
+  are unique across all worlds and forecasts. Sort by clicking a blue column heading: by problem (the fixes for each problem
   together), by likelihood of success (most likely first), by the time a test would take, or by what it would cost.</p>
   <div class="tablewrap" id="wrap"></div>
 </main>
-<script src="assets/site.js?v=ae6cb95-1794596436"></script>
+<script src="assets/site.js?v=ae6cb95-1794596493"></script>
 <script>
 (async () => {
   try {
@@ -91,9 +92,9 @@
         + sorted.map((f) => {
           const cont = key === "problem" && f.problem === last;   // later fixes for the same problem: link muted
           last = f.problem;
-          return `<tr id="fix-${f.label}" class="${cont ? "cont" : ""}"><td class="id">${f.label}<span class="pid" title="This fix's lasting id">${M2.esc(f.id)}</span></td>`
+          return `<tr id="fix-${f.label}" class="${cont ? "cont" : ""}"><td class="id">${f.label}<span class="pid" title="This fix's lasting id: ${M2.esc(f.id)}">${M2.esc(f.id.slice(0, 8))}</span></td>`
             + `<td class="p"><a href="next_problems.html#problem-${f.problem}">${f.problem}. ${M2.esc(rep.problems[f.problem])}</a>`
-            + `<span class="pid" title="The problem's lasting id">${M2.esc(f.problem_id)}</span></td>`
+            + `<span class="pid" title="The problem's lasting id: ${M2.esc(f.problem_id)}">${M2.esc(f.problem_id.slice(0, 8))}</span></td>`
             + `<td class="f">${M2.esc(f.fix)}</td><td>${lk(f.likelihood)}</td><td class="n">${M2.esc(f.time)}</td><td class="n">${M2.esc(f.cost)}</td></tr>`;
         }).join("") + "</tbody></table>";
       document.querySelectorAll("th button").forEach((b) => b.addEventListener("click", () => {
