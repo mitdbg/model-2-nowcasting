@@ -6,7 +6,10 @@ const M2 = {};
 // The site shows one set at a time: a world and a forecast made on it (data/sets/<id>/), listed in
 // data/sets.json. The set comes from ?set= in the address, else the one last chosen in this
 // browser, else the default; the picker at the top right changes it.
-M2.sets = () => (M2._sets ||= fetch("data/sets.json").then((r) => (r.ok ? r.json() : { default: null, sets: [] })));
+// data files are always revalidated with the server (an unchanged one comes back "not modified"):
+// Pages lets browsers reuse them for 10 minutes, which would pair a new page with old data
+M2.fetch = (url) => fetch(url, { cache: "no-cache" });
+M2.sets = () => (M2._sets ||= M2.fetch("data/sets.json").then((r) => (r.ok ? r.json() : { default: null, sets: [] })));
 M2.currentSet = async () => {
   const idx = await M2.sets(), ids = new Set(idx.sets.map((x) => x.id));
   let saved = null;
@@ -18,7 +21,7 @@ M2.currentSet = async () => {
 M2.load = async (path) => {
   const set = await M2.currentSet();
   const url = set ? `data/sets/${encodeURIComponent(set)}/${path}` : `data/${path}`;
-  const r = await fetch(url);
+  const r = await M2.fetch(url);
   if (!r.ok) throw new Error(`${url}: ${r.status}`);
   return r.json();
 };
