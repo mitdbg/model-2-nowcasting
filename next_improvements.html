@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Possible Improvements · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=19f7eb1-1794584364">
+<link rel="stylesheet" href="assets/site.css?v=071efb4-1794584618">
 <style>
   main > p { max-width: 80ch; }
   .how { background: var(--band2); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; max-width: 900px; font-size: 13.5px; margin-bottom: 14px; }
@@ -28,10 +28,10 @@
   <h1>Possible Improvements</h1>
   <div class="how" id="how"></div>
   <p class="sorthint" id="hint" hidden>Sort by clicking a blue column heading: by problem (the fixes for each problem
-  together), by the time a test would take, or by what it would cost.</p>
+  together), by likelihood of success (most likely first), by the time a test would take, or by what it would cost.</p>
   <div class="tablewrap" id="wrap"></div>
 </main>
-<script src="assets/site.js?v=19f7eb1-1794584364"></script>
+<script src="assets/site.js?v=071efb4-1794584618"></script>
 <script>
 (async () => {
   try {
@@ -56,6 +56,7 @@
     const L = rep.likelihood;
     const rows = rep.fixes.map((f, i) => ({ ...f, order: i }));
     const cols = { problem: (a, b) => a.problem - b.problem || a.order - b.order,
+                   likelihood: (a, b) => L.indexOf(a.likelihood) - L.indexOf(b.likelihood) || a.problem - b.problem || a.order - b.order,
                    time: (a, b) => a.time_hours - b.time_hours || a.problem - b.problem || a.order - b.order,
                    cost: (a, b) => a.cost_usd - b.cost_usd || a.problem - b.problem || a.order - b.order };
     let key = cols[M2.param("sort")] ? M2.param("sort") : "problem", dir = M2.param("dir") === "desc" ? -1 : 1;
@@ -73,7 +74,7 @@
       const sorted = rows.slice().sort((a, b) => dir * cols[key](a, b));
       let last = null;
       document.getElementById("wrap").innerHTML = `<table class="fixes"><thead><tr>${head("problem", "Problem")}<th>Possible Fix</th>`
-        + `<th>Likelihood of Success</th>${head("time", "Estimated Time To Test")}${head("cost", "Estimated Financial Cost To Test")}</tr></thead><tbody>`
+        + `${head("likelihood", "Likelihood of Success")}${head("time", "Estimated Time To Test")}${head("cost", "Estimated Financial Cost To Test")}</tr></thead><tbody>`
         + sorted.map((f) => {
           const cont = key === "problem" && f.problem === last;   // later fixes for the same problem: link muted
           last = f.problem;
