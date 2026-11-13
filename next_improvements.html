@@ -3,12 +3,21 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Possible Improvements · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=ae6cb95-1794584865">
+<link rel="stylesheet" href="assets/site.css?v=ae6cb95-1794596311">
 <style>
   main > p { max-width: 80ch; }
   .how { background: var(--band2); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; max-width: 900px; font-size: 13.5px; margin-bottom: 14px; }
   table.fixes { font-size: 13px; max-width: 1200px; }
+  /* the column headings stay in view below the site header while rows remain; that needs the table
+     outside a sideways-scrolling box, so on narrow screens (where it must scroll sideways) they scroll away */
+  @media (min-width: 900px) {
+    #wrap.tablewrap { overflow: visible; }
+    table.fixes thead th { position: sticky; top: var(--hdr, 43px); z-index: 2; background: var(--bg);
+      box-shadow: inset 0 -1px 0 var(--line); }
+    table.fixes tr { scroll-margin-top: calc(var(--hdr, 43px) + 44px); }
+  }
   table.fixes td.id { font-weight: 600; white-space: nowrap; }
+  .pid { display: block; font-weight: 400; font-size: 11px; color: var(--muted); font-family: "IBM Plex Mono", ui-monospace, monospace; }
   table.fixes tr { scroll-margin-top: calc(var(--hdr, 48px) + 12px); }
   table.fixes tr:target, table.fixes tr.hit { background: var(--band2); }
   table.fixes td.p { width: 21%; }
@@ -30,11 +39,12 @@
 <main>
   <h1>Possible Improvements</h1>
   <div class="how" id="how"></div>
-  <p class="sorthint" id="hint" hidden>Each fix is labeled by its problem's number and a letter (1A, 1B, 2A, ...). Sort by clicking a blue column heading: by problem (the fixes for each problem
+  <p class="sorthint" id="hint" hidden>Each fix is labeled by its problem's number and a letter (1A, 1B, 2A, ...); below the label is its lasting id
+  (F0001, ...), and below each problem the problem's (P0001, ...), which never change and are unique across worlds. Sort by clicking a blue column heading: by problem (the fixes for each problem
   together), by likelihood of success (most likely first), by the time a test would take, or by what it would cost.</p>
   <div class="tablewrap" id="wrap"></div>
 </main>
-<script src="assets/site.js?v=ae6cb95-1794584865"></script>
+<script src="assets/site.js?v=ae6cb95-1794596311"></script>
 <script>
 (async () => {
   try {
@@ -81,7 +91,9 @@
         + sorted.map((f) => {
           const cont = key === "problem" && f.problem === last;   // later fixes for the same problem: link muted
           last = f.problem;
-          return `<tr id="fix-${f.id}" class="${cont ? "cont" : ""}"><td class="id">${f.id}</td><td class="p"><a href="next_problems.html#problem-${f.problem}">${f.problem}. ${M2.esc(rep.problems[f.problem])}</a></td>`
+          return `<tr id="fix-${f.label}" class="${cont ? "cont" : ""}"><td class="id">${f.label}<span class="pid" title="This fix's lasting id">${M2.esc(f.id)}</span></td>`
+            + `<td class="p"><a href="next_problems.html#problem-${f.problem}">${f.problem}. ${M2.esc(rep.problems[f.problem])}</a>`
+            + `<span class="pid" title="The problem's lasting id">${M2.esc(f.problem_id)}</span></td>`
             + `<td class="f">${M2.esc(f.fix)}</td><td>${lk(f.likelihood)}</td><td class="n">${M2.esc(f.time)}</td><td class="n">${M2.esc(f.cost)}</td></tr>`;
         }).join("") + "</tbody></table>";
       document.querySelectorAll("th button").forEach((b) => b.addEventListener("click", () => {

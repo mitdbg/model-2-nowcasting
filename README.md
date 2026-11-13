@@ -18,7 +18,7 @@ backtest (its runs export entity detail). Build with the model code that ran it,
 `PYTHONPATH=../model-2-compute/src python scripts/build_site_data.py WS`, so the observation types match.
 
 Then open http://127.0.0.1:8765/. Pages: under the Overview tab, as sub-tabs (`M2.SUBPAGES` in site.js),
-`index.html` (introduction), `howitworks.html` (the three stages, a static page), `datamodel.html` (below) and `forecast_model.html?s=CODE` (Model Structure: the equations, drawn per template, and the parameters); under World Details, `world_overview.html` (the world's identity from the workspace's
+`index.html` (introduction), `howitworks.html` (the four stages, a static page), `datamodel.html` (below) and `forecast_model.html?s=CODE` (Model Structure: the equations, drawn per template, and the parameters); under World Details, `world_overview.html` (the world's identity from the workspace's
 `world.json`, written when the world is built, and its counts), `world_entities.html?e=ID`
 (what the world contains), `world_observations.html?type=…&entity=…&open=ID` (every
 observation, filterable, from `data/observations.json`, and the kinds of observation) and `world_bundle.html?s=CODE`

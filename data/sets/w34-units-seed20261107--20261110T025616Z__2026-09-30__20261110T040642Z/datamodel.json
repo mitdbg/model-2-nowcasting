@@ -1,0 +1,3744 @@
+{
+ "format": "descriptive-datamodel/1",
+ "name": "Model 2",
+ "description": "Model 2's data as notional relational tables.",
+ "generated": "2026-11-13",
+ "sources": [
+  "Claude Doc 'Model 2: Data Schema' rev 15",
+  "model-2-compute src/firm_model"
+ ],
+ "enforcement_levels": [
+  {
+   "id": "checked",
+   "label": "checked when loaded",
+   "severity": "ok",
+   "description": "Checked whenever the data are loaded."
+  },
+  {
+   "id": "together",
+   "label": "produced together in one run",
+   "severity": "ok",
+   "description": "Both sides are produced by the same step, so they agree by construction."
+  },
+  {
+   "id": "tests",
+   "label": "check exists, only tests run it",
+   "severity": "warn",
+   "description": "A check exists, but only the test suite runs it; production never does."
+  },
+  {
+   "id": "runtime",
+   "label": "resolved at run time; misses skipped",
+   "severity": "warn",
+   "description": "Resolved when the data are used; rows that miss are counted and skipped."
+  },
+  {
+   "id": "none",
+   "label": "not checked (by name or order)",
+   "severity": "bad",
+   "description": "Nothing checks it; the join is by name, by order, or not at all."
+  },
+  {
+   "id": "unstated",
+   "label": "implied by columns, not listed",
+   "severity": "unknown",
+   "description": "Implied by the columns; the description does not list it as a join."
+  }
+ ],
+ "columns": [
+  {
+   "id": 1,
+   "name": "1 · Choose a world"
+  },
+  {
+   "id": 2,
+   "name": "2 · Run the world forward"
+  },
+  {
+   "id": 3,
+   "name": "3 · Score the results"
+  },
+  {
+   "id": 4,
+   "name": "4 · Improving the system"
+  }
+ ],
+ "families": [
+  {
+   "id": "registry",
+   "name": "Entity registry",
+   "color": 1,
+   "column": 1,
+   "description": "What exists and who owns what, on any date. Facts are never overwritten: a change adds a new version and closes the old one.",
+   "note": "Every table here also has six history columns: valid_from and valid_to (when the fact was true; valid_to excluded), recorded_at and superseded_at (when it was learned and replaced), source and decided_by."
+  },
+  {
+   "id": "obs",
+   "name": "Observations",
+   "color": 2,
+   "column": 1,
+   "description": "Every published reading, one row per value, plus the catalog of reading types and the census counts.",
+   "note": ""
+  },
+  {
+   "id": "bundle",
+   "name": "Sector input bundle",
+   "color": 3,
+   "column": 1,
+   "description": "Each sector's drivers and statistics as ensemble draws, delivered by an outside source once per run date and never changed afterwards.",
+   "note": "Each delivery carries a manifest listing its tables with their schema versions, row counts and checksums."
+  },
+  {
+   "id": "config",
+   "name": "Configuration",
+   "color": 8,
+   "column": 2,
+   "description": "The settings people choose to steer the model: run and estimation settings, observation noise and calibrations, sector settings, priors and series mappings.",
+   "note": ""
+  },
+  {
+   "id": "fitting",
+   "name": "Parameter fitting",
+   "color": 4,
+   "column": 2,
+   "description": "The parameters estimated for each sector and quarter, with a record of each fit.",
+   "note": "Estimated once a quarter for each sector; every run in that quarter reuses them."
+  },
+  {
+   "id": "truth",
+   "name": "Synthetic truth",
+   "color": 5,
+   "column": 1,
+   "description": "The true values behind a synthetic world: hidden states, parameters and drivers. Present only in synthetic worlds; the model never sees them.",
+   "note": ""
+  },
+  {
+   "id": "runs",
+   "name": "Run outputs",
+   "color": 7,
+   "column": 2,
+   "description": "What each run produces for its run date. Tables marked published are delivered to users; the rest are kept for diagnosis.",
+   "note": ""
+  },
+  {
+   "id": "scores",
+   "name": "Scores",
+   "color": 6,
+   "column": 3,
+   "description": "How close each run came: errors and band coverage for every scored value, a record of each backtest, and one summary per backtest.",
+   "note": "In a synthetic world the scores compare runs with the synthetic truth; scoring a real world against later publications is not built yet."
+  },
+  {
+   "id": "catalog",
+   "name": "Catalog",
+   "color": 9,
+   "column": 4,
+   "description": "A lasting record of every world, model, fit and forecast made since 2026-11-12 (and a few earlier ones, recorded after the fact), so that a problem or a fix can name exactly which ones it is about. One record per item; records point to each other by id and say where the files they describe are.",
+   "note": "Every record also has recorded_utc, when the catalog learned of it."
+  },
+  {
+   "id": "improving",
+   "name": "Problems and fixes",
+   "color": 10,
+   "column": 4,
+   "description": "What the evaluation of a forecast found wrong, and the possible fixes for it. Each problem and fix has an id that never changes and names the world, fit and forecast it is about. Later: the fixes actually tested and their results, and the ones good enough to deploy.",
+   "note": "Every record also has recorded_utc, when it was first registered, and updated_utc, when its text last changed; the id never changes."
+  }
+ ],
+ "tables": [
+  {
+   "id": "companies",
+   "name": "companies",
+   "family": "registry",
+   "location": "registry/companies.csv",
+   "key": "company_id",
+   "description": "Legal entities: operating and holding companies, subsidiaries, joint ventures, governments.",
+   "constraints": "",
+   "unclear": "Registry checks are not run: a set of consistency checks exists, but only the test suite runs them. A listed key identifies a fact, not a version; a version is the key plus its valid and recorded times.",
+   "columns": [
+    {
+     "name": "company_id",
+     "type": "string",
+     "description": "",
+     "key": true
+    },
+    {
+     "name": "name",
+     "type": "string",
+     "description": ""
+    },
+    {
+     "name": "country",
+     "type": "string",
+     "description": ""
+    },
+    {
+     "name": "kind",
+     "type": "code",
+     "description": "operating_company, holding_company, subsidiary, joint_venture, government, other"
+    }
+   ]
+  },
+  {
+   "id": "ownership",
+   "name": "ownership",
+   "family": "registry",
+   "location": "registry/ownership.csv",
+   "key": "(owner_id, owned_id)",
+   "description": "Company owns company.",
+   "constraints": "Shares of one owned company sum to at most 1 on every date. The ownership graph must have no cycles on any date.",
+   "unclear": "Registry checks are not run: a set of consistency checks exists, but only the test suite runs them. A listed key identifies a fact, not a version; a version is the key plus its valid and recorded times.",
+   "columns": [
+    {
+     "name": "owner_id",
+     "type": "string",
+     "description": "",
+     "references": "companies",
+     "key": true
+    },
+    {
+     "name": "owned_id",
+     "type": "string",
+     "description": "",
+     "references": "companies",
+     "key": true
+    },
+    {
+     "name": "share",
+     "type": "float",
+     "description": "in [0, 1]"
+    },
+    {
+     "name": "controls",
+     "type": "bool",
+     "description": "whether the owner consolidates the owned company"
+    }
+   ]
+  },
+  {
+   "id": "company_entities",
+   "name": "company_entities",
+   "family": "registry",
+   "location": "registry/company_entities.csv",
+   "key": "(company_id, entity_id)",
+   "description": "Company owns or operates entity.",
+   "constraints": "Owning shares of one entity sum to at most 1 on every date. A pure operator holds no share.",
+   "unclear": "Registry checks are not run: a set of consistency checks exists, but only the test suite runs them. A listed key identifies a fact, not a version; a version is the key plus its valid and recorded times.",
+   "columns": [
+    {
+     "name": "company_id",
+     "type": "string",
+     "description": "",
+     "references": "companies",
+     "key": true
+    },
+    {
+     "name": "entity_id",
+     "type": "string",
+     "description": "",
+     "references": "entities",
+     "key": true
+    },
+    {
+     "name": "share",
+     "type": "float",
+     "description": "in [0, 1]"
+    },
+    {
+     "name": "role",
+     "type": "code",
+     "description": "owner, operator or owner_operator"
+    }
+   ]
+  },
+  {
+   "id": "groupings",
+   "name": "groupings",
+   "family": "registry",
+   "location": "registry/groupings.csv",
+   "key": "grouping_id (kind:id)",
+   "description": "Groupings whose membership is entered by hand: business segments and custom groupings.",
+   "constraints": "Only segments and custom groupings are listed here. Company, site, sector, census cell and region groupings follow on each date from the other tables.",
+   "unclear": "Grouping ids have two spellings: kind:id here, but two columns (subject_kind, subject_id) in observations.",
+   "columns": [
+    {
+     "name": "grouping_id",
+     "type": "string",
+     "description": "kind:id, e.g. segment:le_keystone/flat_rolled",
+     "key": true
+    },
+    {
+     "name": "kind",
+     "type": "code",
+     "description": "segment or custom"
+    },
+    {
+     "name": "name",
+     "type": "string",
+     "description": ""
+    },
+    {
+     "name": "company_id",
+     "type": "string",
+     "description": "for a segment",
+     "references": "companies"
+    },
+    {
+     "name": "sector",
+     "type": "string",
+     "description": ""
+    }
+   ]
+  },
+  {
+   "id": "entities",
+   "name": "entities",
+   "family": "registry",
+   "location": "registry/entities.csv",
+   "key": "entity_id",
+   "description": "The units Model 2 models.",
+   "constraints": "Tracked entities need a sector, a market that fits the sector's template, and at least one site.",
+   "unclear": "Registry checks are not run: a set of consistency checks exists, but only the test suite runs them. A listed key identifies a fact, not a version; a version is the key plus its valid and recorded times.",
+   "columns": [
+    {
+     "name": "entity_id",
+     "type": "string",
+     "description": "e.g. op_acme_gary",
+     "key": true
+    },
+    {
+     "name": "kind",
+     "type": "code",
+     "description": "tracked or representative"
+    },
+    {
+     "name": "name",
+     "type": "string",
+     "description": ""
+    },
+    {
+     "name": "sector",
+     "type": "string",
+     "description": "required for tracked entities",
+     "references": "sectors"
+    },
+    {
+     "name": "market",
+     "type": "string",
+     "description": "required for tracked; must fit the sector's template"
+    },
+    {
+     "name": "status",
+     "type": "code",
+     "description": "planned, under_construction, active, idle, closed"
+    },
+    {
+     "name": "size_class",
+     "type": "code",
+     "description": "small, medium, large"
+    },
+    {
+     "name": "region",
+     "type": "code",
+     "description": "northeast, midwest, south, west; else from the primary site's state"
+    },
+    {
+     "name": "group_id",
+     "type": "string",
+     "description": "sector__size_class__region; required for representatives",
+     "references": "census_counts"
+    },
+    {
+     "name": "n_establishments",
+     "type": "int",
+     "description": "1 for tracked"
+    }
+   ]
+  },
+  {
+   "id": "grouping_members",
+   "name": "grouping_members",
+   "family": "registry",
+   "location": "registry/grouping_members.csv",
+   "key": "(grouping_id, entity_id)",
+   "description": "Entered membership of segments and custom groupings.",
+   "constraints": "grouping_id may also name a company grouping, to override its derived weights. Weight 0 removes the entity.",
+   "unclear": "Registry checks are not run: a set of consistency checks exists, but only the test suite runs them. A listed key identifies a fact, not a version; a version is the key plus its valid and recorded times.",
+   "columns": [
+    {
+     "name": "grouping_id",
+     "type": "string",
+     "description": "or a company grouping, to override derived weights",
+     "references": "groupings",
+     "key": true
+    },
+    {
+     "name": "entity_id",
+     "type": "string",
+     "description": "",
+     "references": "entities",
+     "key": true
+    },
+    {
+     "name": "weight",
+     "type": "float",
+     "description": "in [0, 1]; 0 removes the entity"
+    }
+   ]
+  },
+  {
+   "id": "entity_sites",
+   "name": "entity_sites",
+   "family": "registry",
+   "location": "registry/entity_sites.csv",
+   "key": "(entity_id, site_id)",
+   "description": "Which entity operates at which site.",
+   "constraints": "Every tracked entity must have at least one site.",
+   "unclear": "Registry checks are not run: a set of consistency checks exists, but only the test suite runs them. A listed key identifies a fact, not a version; a version is the key plus its valid and recorded times.",
+   "columns": [
+    {
+     "name": "entity_id",
+     "type": "string",
+     "description": "",
+     "references": "entities",
+     "key": true
+    },
+    {
+     "name": "site_id",
+     "type": "string",
+     "description": "",
+     "references": "sites",
+     "key": true
+    },
+    {
+     "name": "role",
+     "type": "code",
+     "description": "primary or secondary"
+    },
+    {
+     "name": "capacity_share",
+     "type": "float",
+     "description": "share of the entity's capacity at this site"
+    }
+   ]
+  },
+  {
+   "id": "identifiers",
+   "name": "identifiers",
+   "family": "registry",
+   "location": "registry/identifiers.csv",
+   "key": "(object_type, object_id, scheme, value)",
+   "description": "Outside ids (SEC CIK, LEI, EPA facility id and so on).",
+   "constraints": "",
+   "unclear": "Registry checks are not run: a set of consistency checks exists, but only the test suite runs them. A listed key identifies a fact, not a version; a version is the key plus its valid and recorded times.",
+   "columns": [
+    {
+     "name": "object_type",
+     "type": "code",
+     "description": "entity, site or company",
+     "key": true
+    },
+    {
+     "name": "object_id",
+     "type": "string",
+     "description": "→ the table named by object_type",
+     "references": "entities",
+     "key": true
+    },
+    {
+     "name": "scheme",
+     "type": "string",
+     "description": "e.g. sec_cik",
+     "key": true
+    },
+    {
+     "name": "value",
+     "type": "string",
+     "description": "the id in that scheme",
+     "key": true
+    }
+   ]
+  },
+  {
+   "id": "sites",
+   "name": "sites",
+   "family": "registry",
+   "location": "registry/sites.csv",
+   "key": "site_id",
+   "description": "Physical locations.",
+   "constraints": "",
+   "unclear": "Registry checks are not run: a set of consistency checks exists, but only the test suite runs them. A listed key identifies a fact, not a version; a version is the key plus its valid and recorded times.",
+   "columns": [
+    {
+     "name": "site_id",
+     "type": "string",
+     "description": "",
+     "key": true
+    },
+    {
+     "name": "name",
+     "type": "string",
+     "description": ""
+    },
+    {
+     "name": "latitude",
+     "type": "float",
+     "description": ""
+    },
+    {
+     "name": "longitude",
+     "type": "float",
+     "description": ""
+    },
+    {
+     "name": "address",
+     "type": "string",
+     "description": ""
+    },
+    {
+     "name": "country",
+     "type": "string",
+     "description": ""
+    },
+    {
+     "name": "state",
+     "type": "string",
+     "description": ""
+    },
+    {
+     "name": "county",
+     "type": "string",
+     "description": ""
+    },
+    {
+     "name": "site_type",
+     "type": "code",
+     "description": "plant, airport, campus, warehouse, mine, terminal, port, office, other"
+    }
+   ]
+  },
+  {
+   "id": "match_decisions",
+   "name": "match_decisions",
+   "family": "registry",
+   "location": "registry/match_decisions.csv",
+   "key": "mention_id",
+   "description": "How a name found in a source (a mention) was matched to a registry object.",
+   "constraints": "Automatic above score 0.95; human review from 0.5 to 0.95.",
+   "unclear": "Registry checks are not run: a set of consistency checks exists, but only the test suite runs them. A listed key identifies a fact, not a version; a version is the key plus its valid and recorded times.",
+   "columns": [
+    {
+     "name": "mention_id",
+     "type": "string",
+     "description": "referenced by observations",
+     "key": true
+    },
+    {
+     "name": "mention_text",
+     "type": "string",
+     "description": "the name as found"
+    },
+    {
+     "name": "matched_object_type",
+     "type": "string",
+     "description": "empty when unmatched or in review"
+    },
+    {
+     "name": "matched_object_id",
+     "type": "string",
+     "description": "",
+     "references": "entities"
+    },
+    {
+     "name": "score",
+     "type": "float",
+     "description": "automatic above 0.95, review 0.5–0.95"
+    },
+    {
+     "name": "outcome",
+     "type": "code",
+     "description": "exact_identifier, auto_match, new_object, unmatched, review, reviewed"
+    },
+    {
+     "name": "reason",
+     "type": "string",
+     "description": ""
+    }
+   ]
+  },
+  {
+   "id": "observations",
+   "name": "observations",
+   "family": "obs",
+   "location": "data/observations/*.csv",
+   "key": "obs_id",
+   "description": "Every published reading, one row per value, from any number of sources.",
+   "constraints": "Subject resolved in order: (subject_kind, subject_id); else the outside id through identifiers on the period's last day; else the mention through match_decisions. Rows that resolve to nothing are counted and skipped. A run as of T uses only rows with published ≤ T.",
+   "unclear": "No declared schema: types, codes and the key are not checked, so obs_id may repeat. 21% of synthetic rows name their subject only by an outside id or a mention.",
+   "columns": [
+    {
+     "name": "obs_id",
+     "type": "string",
+     "description": "meant to be unique (unchecked)",
+     "key": true
+    },
+    {
+     "name": "source",
+     "type": "string",
+     "description": "e.g. sec_10q; kept, not used by the model"
+    },
+    {
+     "name": "obs_type",
+     "type": "code",
+     "description": "",
+     "references": "observation_types"
+    },
+    {
+     "name": "subject_kind",
+     "type": "code",
+     "description": "entity or a grouping kind"
+    },
+    {
+     "name": "subject_id",
+     "type": "string",
+     "description": "the entity id or the grouping's id",
+     "references": "entities"
+    },
+    {
+     "name": "scheme, identifier",
+     "type": "string",
+     "description": "used when subject_id is empty",
+     "references": "identifiers"
+    },
+    {
+     "name": "mention_id",
+     "type": "string",
+     "description": "used when both of the above are empty",
+     "references": "match_decisions"
+    },
+    {
+     "name": "period_start, period_end",
+     "type": "month",
+     "description": "one month, or three for a quarter"
+    },
+    {
+     "name": "value",
+     "type": "float",
+     "description": "in the type's unit, before any transform"
+    },
+    {
+     "name": "published",
+     "type": "date",
+     "description": "a run as of T uses rows with published ≤ T"
+    },
+    {
+     "name": "sensor",
+     "type": "string",
+     "description": "selects a satellite calibration",
+     "references": "observation_settings"
+    },
+    {
+     "name": "confidence",
+     "type": "string",
+     "description": "kept, not used by the model"
+    }
+   ]
+  },
+  {
+   "id": "observation_types",
+   "name": "observation_types",
+   "family": "obs",
+   "location": "defined in code",
+   "key": "obs_type",
+   "description": "The catalog of the 29 kinds of reading Model 2 can predict.",
+   "constraints": "Each run keeps a copy.",
+   "unclear": "",
+   "columns": [
+    {
+     "name": "obs_type",
+     "type": "code",
+     "description": "e.g. revenue, production, backlog, load_factor",
+     "key": true
+    },
+    {
+     "name": "subjects",
+     "type": "",
+     "description": "subject kinds the type may name"
+    },
+    {
+     "name": "members",
+     "type": "",
+     "description": "all, only tracked or only representative"
+    },
+    {
+     "name": "requires",
+     "type": "",
+     "description": "the equation module the template must have"
+    },
+    {
+     "name": "combine",
+     "type": "",
+     "description": "sum, weighted mean, end-of-period value"
+    },
+    {
+     "name": "period",
+     "type": "",
+     "description": "flow or stock"
+    },
+    {
+     "name": "unit",
+     "type": "",
+     "description": "USD, physical units, share"
+    },
+    {
+     "name": "noise",
+     "type": "",
+     "description": "lognormal, gaussian, logit, bernoulli"
+    },
+    {
+     "name": "definition, formula",
+     "type": "",
+     "description": "what it means and how it is predicted"
+    }
+   ]
+  },
+  {
+   "id": "census_counts",
+   "name": "census_counts",
+   "family": "obs",
+   "location": "data/census/cbp.csv",
+   "key": "(sector, size_class, region, year)",
+   "description": "County Business Patterns counts that size the representative entities.",
+   "constraints": "A row's (sector, size_class, region) is one census cell, the same triple as entities.group_id.",
+   "unclear": "",
+   "columns": [
+    {
+     "name": "sector",
+     "type": "string",
+     "description": "",
+     "references": "sectors",
+     "key": true
+    },
+    {
+     "name": "size_class",
+     "type": "code",
+     "description": "",
+     "key": true
+    },
+    {
+     "name": "region",
+     "type": "code",
+     "description": "",
+     "key": true
+    },
+    {
+     "name": "year",
+     "type": "int",
+     "description": "",
+     "key": true
+    },
+    {
+     "name": "establishments",
+     "type": "int",
+     "description": ""
+    },
+    {
+     "name": "employment",
+     "type": "int",
+     "description": ""
+    },
+    {
+     "name": "payroll",
+     "type": "float",
+     "description": ""
+    }
+   ]
+  },
+  {
+   "id": "manifest",
+   "name": "manifest",
+   "family": "bundle",
+   "location": "manifest.json",
+   "key": "bundle_name (one per bundle)",
+   "description": "One row per delivery: who produced it, for which date, and what it contains.",
+   "constraints": "A delivery is complete only when it carries checksums for every table and a completion mark.",
+   "unclear": "",
+   "columns": [
+    {
+     "name": "protocol_version",
+     "type": "",
+     "description": ""
+    },
+    {
+     "name": "bundle_name",
+     "type": "",
+     "description": "",
+     "key": true
+    },
+    {
+     "name": "producer, consumer",
+     "type": "",
+     "description": "who made it and for whom"
+    },
+    {
+     "name": "as_of",
+     "type": "date",
+     "description": ""
+    },
+    {
+     "name": "run_started_utc, run_finished_utc",
+     "type": "timestamp",
+     "description": ""
+    },
+    {
+     "name": "mode",
+     "type": "code",
+     "description": "production or backtest"
+    },
+    {
+     "name": "backtest_id",
+     "type": "",
+     "description": ""
+    },
+    {
+     "name": "producer_version",
+     "type": "",
+     "description": "which version of the producer made it"
+    },
+    {
+     "name": "inputs",
+     "type": "",
+     "description": ""
+    },
+    {
+     "name": "time_grid",
+     "type": "",
+     "description": "frequency, history_start, last_observed, forecast_end"
+    },
+    {
+     "name": "ensemble",
+     "type": "",
+     "description": "n_members, seed, member_kind"
+    },
+    {
+     "name": "tables",
+     "type": "",
+     "description": "name, schema, schema_version, rows, checksum for each"
+    }
+   ]
+  },
+  {
+   "id": "receipts",
+   "name": "receipts",
+   "family": "bundle",
+   "location": "receipts/<bundle>.json",
+   "key": "bundle_name",
+   "description": "Model 2's verdict on each bundle it has checked.",
+   "constraints": "A run uses the latest accepted bundle as of its date, unless the configuration pins another or lists it as known bad.",
+   "unclear": "",
+   "columns": [
+    {
+     "name": "bundle_name",
+     "type": "string",
+     "description": "",
+     "references": "manifest",
+     "key": true
+    },
+    {
+     "name": "status",
+     "type": "code",
+     "description": "accepted or rejected"
+    },
+    {
+     "name": "checked_utc",
+     "type": "timestamp",
+     "description": ""
+    },
+    {
+     "name": "manifest_sha256",
+     "type": "string",
+     "description": ""
+    },
+    {
+     "name": "problems",
+     "type": "list",
+     "description": ""
+    },
+    {
+     "name": "warnings",
+     "type": "list",
+     "description": ""
+    }
+   ]
+  },
+  {
+   "id": "sectors",
+   "name": "sectors",
+   "family": "bundle",
+   "location": "data/sectors.csv",
+   "key": "sector",
+   "description": "The sector list.",
+   "constraints": "The template set here decides which equations a sector uses; the configuration can only override individual modules.",
+   "unclear": "No master list of sectors: this table is the only one and it changes with every bundle. Registry, configuration, census counts and truth carry sector codes that nothing checks against one list.",
+   "columns": [
+    {
+     "name": "sector",
+     "type": "string",
+     "description": "e.g. naics_3311_2",
+     "key": true
+    },
+    {
+     "name": "label",
+     "type": "string",
+     "description": ""
+    },
+    {
+     "name": "naics, io_code",
+     "type": "string",
+     "description": "industry and input-output codes"
+    },
+    {
+     "name": "has_driver_block",
+     "type": "bool",
+     "description": "whether the bundle carries drivers for this sector"
+    },
+    {
+     "name": "physical_unit",
+     "type": "string",
+     "description": "e.g. tonnes, boe, seat-miles, MW"
+    },
+    {
+     "name": "template",
+     "type": "code",
+     "description": "one of six templates, or pass_through for the economy-wide row"
+    }
+   ]
+  },
+  {
+   "id": "series_catalog",
+   "name": "series_catalog",
+   "family": "bundle",
+   "location": "data/series_catalog.csv",
+   "key": "(sector, name)",
+   "description": "What each series is.",
+   "constraints": "",
+   "unclear": "",
+   "columns": [
+    {
+     "name": "sector",
+     "type": "string",
+     "description": "",
+     "references": "sectors",
+     "key": true
+    },
+    {
+     "name": "name",
+     "type": "string",
+     "description": "demand, input_cost, price for drivers; e.g. CAPUTLG211S",
+     "key": true
+    },
+    {
+     "name": "kind",
+     "type": "code",
+     "description": "driver or sector_series"
+    },
+    {
+     "name": "description, definition, source_series",
+     "type": "string",
+     "description": ""
+    },
+    {
+     "name": "unit",
+     "type": "string",
+     "description": "a dollar demand driver is deflated by the price driver"
+    }
+   ]
+  },
+  {
+   "id": "drivers",
+   "name": "drivers",
+   "family": "bundle",
+   "location": "data/drivers.csv",
+   "key": "(sector, name, month, member)",
+   "description": "The three monthly drivers per sector, every draw.",
+   "constraints": "Every month from history_start to forecast_end with no gaps; every member present.",
+   "unclear": "Status vocabulary differs: drivers use smoothed/nowcast/forecast, sector series observed/nowcast/forecast.",
+   "columns": [
+    {
+     "name": "sector, name",
+     "type": "string",
+     "description": "kind driver",
+     "references": "series_catalog",
+     "key": true
+    },
+    {
+     "name": "month",
+     "type": "month",
+     "description": "history_start to forecast_end, no gaps",
+     "key": true
+    },
+    {
+     "name": "member",
+     "type": "int",
+     "description": "0 … n_members − 1, every one present",
+     "references": "manifest",
+     "key": true
+    },
+    {
+     "name": "value",
+     "type": "float",
+     "description": "in logs"
+    },
+    {
+     "name": "status",
+     "type": "code",
+     "description": "smoothed, nowcast, forecast"
+    }
+   ]
+  },
+  {
+   "id": "sector_series",
+   "name": "sector_series",
+   "family": "bundle",
+   "location": "data/sector_series.csv",
+   "key": "(sector, name, month, member)",
+   "description": "Sector statistics and their nowcasts, every draw.",
+   "constraints": "An observed value must be the same in every draw.",
+   "unclear": "Status vocabulary differs: drivers use smoothed/nowcast/forecast, sector series observed/nowcast/forecast.",
+   "columns": [
+    {
+     "name": "sector, name",
+     "type": "string",
+     "description": "kind sector_series",
+     "references": "series_catalog",
+     "key": true
+    },
+    {
+     "name": "month",
+     "type": "month",
+     "description": "",
+     "key": true
+    },
+    {
+     "name": "member",
+     "type": "int",
+     "description": "every one present",
+     "references": "manifest",
+     "key": true
+    },
+    {
+     "name": "value",
+     "type": "float",
+     "description": ""
+    },
+    {
+     "name": "status",
+     "type": "code",
+     "description": "observed, nowcast, forecast; observed equal in every draw"
+    }
+   ]
+  },
+  {
+   "id": "series_summary",
+   "name": "series_summary",
+   "family": "bundle",
+   "location": "data/series_summary.csv",
+   "key": "(sector, name, month)",
+   "description": "Mean, sd and quantiles of each driver and series by month.",
+   "constraints": "Part of every delivery, but not used by Model 2.",
+   "unclear": "",
+   "columns": [
+    {
+     "name": "sector, name",
+     "type": "string",
+     "description": "",
+     "references": "series_catalog",
+     "key": true
+    },
+    {
+     "name": "month",
+     "type": "month",
+     "description": "",
+     "key": true
+    },
+    {
+     "name": "mean, sd",
+     "type": "float",
+     "description": ""
+    },
+    {
+     "name": "q05, q16, q50, q84, q95",
+     "type": "float",
+     "description": ""
+    }
+   ]
+  },
+  {
+   "id": "input_diagnostics",
+   "name": "input_diagnostics",
+   "family": "bundle",
+   "location": "meta/diagnostics.csv",
+   "key": "metric",
+   "description": "Metric and value pairs from the producer.",
+   "constraints": "Model 2 uses one: converged must be true.",
+   "unclear": "",
+   "columns": [
+    {
+     "name": "metric",
+     "type": "string",
+     "description": "Model 2 uses converged",
+     "key": true
+    },
+    {
+     "name": "value",
+     "type": "",
+     "description": ""
+    }
+   ]
+  },
+  {
+   "id": "run_settings",
+   "name": "run_settings",
+   "family": "config",
+   "location": "config/m2.yaml",
+   "key": "(setting)",
+   "description": "Members, forecast horizon, seed, order-share and congestion switches.",
+   "constraints": "",
+   "unclear": "",
+   "columns": [
+    {
+     "name": "setting",
+     "type": "",
+     "description": "members, forecast horizon, seed, order-share and congestion switches",
+     "key": true
+    }
+   ]
+  },
+  {
+   "id": "estimation_settings",
+   "name": "estimation_settings",
+   "family": "config",
+   "location": "config/m2.yaml",
+   "key": "(setting), per-sector overrides",
+   "description": "Rounds, L-BFGS and sector steps, batch size, Monte Carlo sets, which sectors use the representative scale step.",
+   "constraints": "",
+   "unclear": "",
+   "columns": [
+    {
+     "name": "setting",
+     "type": "",
+     "description": "rounds, L-BFGS and sector steps, batch size, Monte Carlo sets",
+     "key": true
+    },
+    {
+     "name": "sector",
+     "type": "",
+     "description": "per-sector overrides",
+     "references": "sectors"
+    }
+   ]
+  },
+  {
+   "id": "observation_settings",
+   "name": "observation_settings",
+   "family": "config",
+   "location": "config/m2.yaml",
+   "key": "obs_type",
+   "description": "Noise sd per type, sensor calibrations (a, b), match threshold and inflation.",
+   "constraints": "",
+   "unclear": "",
+   "columns": [
+    {
+     "name": "obs_type",
+     "type": "code",
+     "description": "noise sd per type",
+     "references": "observation_types",
+     "key": true
+    },
+    {
+     "name": "sensor",
+     "type": "",
+     "description": "calibration (a, b)"
+    },
+    {
+     "name": "match threshold, inflation",
+     "type": "",
+     "description": ""
+    }
+   ]
+  },
+  {
+   "id": "sector_settings",
+   "name": "sector_settings",
+   "family": "config",
+   "location": "config/m2.yaml",
+   "key": "sector",
+   "description": "Required drivers, capacity per establishment by size class, transit months, default starting cost.",
+   "constraints": "",
+   "unclear": "",
+   "columns": [
+    {
+     "name": "sector",
+     "type": "",
+     "description": "",
+     "references": "sectors",
+     "key": true
+    },
+    {
+     "name": "required drivers",
+     "type": "",
+     "description": ""
+    },
+    {
+     "name": "capacity per establishment",
+     "type": "",
+     "description": "by size class"
+    },
+    {
+     "name": "transit months",
+     "type": "",
+     "description": ""
+    },
+    {
+     "name": "default starting cost",
+     "type": "",
+     "description": ""
+    }
+   ]
+  },
+  {
+   "id": "series_mappings",
+   "name": "series_mappings",
+   "family": "config",
+   "location": "config/m2.yaml",
+   "key": "(sector, series)",
+   "description": "The sector quantity each input series measures, its unit transform, noise floor and inflation.",
+   "constraints": "",
+   "unclear": "",
+   "columns": [
+    {
+     "name": "sector, series",
+     "type": "",
+     "description": "",
+     "references": "series_catalog",
+     "key": true
+    },
+    {
+     "name": "quantity",
+     "type": "code",
+     "description": "log_output, log_capacity, logit_utilization, log_shipments, … logit_load_factor"
+    },
+    {
+     "name": "transform",
+     "type": "",
+     "description": "log + offset, or percent"
+    },
+    {
+     "name": "noise floor",
+     "type": "",
+     "description": ""
+    },
+    {
+     "name": "includes tracked",
+     "type": "bool",
+     "description": ""
+    },
+    {
+     "name": "inflation",
+     "type": "",
+     "description": ""
+    }
+   ]
+  },
+  {
+   "id": "sector_priors",
+   "name": "sector_priors",
+   "family": "config",
+   "location": "config/m2.yaml",
+   "key": "(sector, parameter)",
+   "description": "Prior mean and sd per sector parameter, with a required reason.",
+   "constraints": "",
+   "unclear": "",
+   "columns": [
+    {
+     "name": "sector",
+     "type": "",
+     "description": "",
+     "references": "sectors",
+     "key": true
+    },
+    {
+     "name": "parameter",
+     "type": "",
+     "description": "",
+     "key": true
+    },
+    {
+     "name": "mean, sd",
+     "type": "float",
+     "description": ""
+    },
+    {
+     "name": "reason",
+     "type": "string",
+     "description": "required"
+    }
+   ]
+  },
+  {
+   "id": "fit_runs",
+   "name": "fit_runs",
+   "family": "fitting",
+   "location": "state/fits/fit_<YYYY>q<Q>__<sector>.json",
+   "key": "(quarter, sector)",
+   "description": "One estimation of one sector for one quarter: its date, the input delivery used, normalising constants, how the fit converged.",
+   "constraints": "A run reuses the fit for its quarter if one exists.",
+   "unclear": "A fit is reused for every run in its quarter without checking whether the input delivery or the settings have changed since.",
+   "columns": [
+    {
+     "name": "quarter, sector",
+     "type": "",
+     "description": "",
+     "key": true
+    },
+    {
+     "name": "as_of",
+     "type": "date",
+     "description": ""
+    },
+    {
+     "name": "input bundle",
+     "type": "",
+     "description": "",
+     "references": "manifest"
+    },
+    {
+     "name": "entity, group and sector lists",
+     "type": "list",
+     "description": "the order the parameter tables follow"
+    },
+    {
+     "name": "normalising constants",
+     "type": "",
+     "description": ""
+    },
+    {
+     "name": "likelihood history, best round",
+     "type": "",
+     "description": ""
+    },
+    {
+     "name": "fitted_at",
+     "type": "timestamp",
+     "description": ""
+    }
+   ]
+  },
+  {
+   "id": "sector_params",
+   "name": "sector_params",
+   "family": "fitting",
+   "location": "state/fits/…npz",
+   "key": "(quarter, sector, parameter)",
+   "description": "Sector-shared parameters ψ̂ (27) and covariance; sector means μ_s, spread Σ_s, pooling strengths κ.",
+   "constraints": "",
+   "unclear": "These parameters carry no entity, group or parameter names; they line up with fit_runs only by order.",
+   "columns": [
+    {
+     "name": "quarter, sector",
+     "type": "",
+     "description": "the fit these belong to",
+     "references": "fit_runs",
+     "key": true
+    },
+    {
+     "name": "parameter",
+     "type": "",
+     "description": "position in the fixed parameter order",
+     "key": true
+    },
+    {
+     "name": "ψ̂",
+     "type": "float",
+     "description": "27 sector-shared parameters"
+    },
+    {
+     "name": "covariance",
+     "type": "float",
+     "description": ""
+    },
+    {
+     "name": "μ_s, Σ_s, κ",
+     "type": "float",
+     "description": "sector means, spread, pooling strengths"
+    }
+   ]
+  },
+  {
+   "id": "entity_params",
+   "name": "entity_params",
+   "family": "fitting",
+   "location": "state/fits/…npz",
+   "key": "(quarter, entity, parameter)",
+   "description": "θ̂ (23 per entity, on transformed scales) and its Laplace covariance V.",
+   "constraints": "",
+   "unclear": "These parameters carry no entity or parameter names; each row lines up with fit_runs' entity list by order, each column with a fixed parameter order.",
+   "columns": [
+    {
+     "name": "quarter",
+     "type": "",
+     "description": "the fit these belong to",
+     "references": "fit_runs",
+     "key": true
+    },
+    {
+     "name": "entity",
+     "type": "",
+     "description": "matched to entities by order",
+     "key": true
+    },
+    {
+     "name": "parameter",
+     "type": "",
+     "description": "position in the fixed parameter order",
+     "key": true
+    },
+    {
+     "name": "θ̂",
+     "type": "float",
+     "description": "23 per entity, on transformed scales"
+    },
+    {
+     "name": "V",
+     "type": "float",
+     "description": "Laplace covariance"
+    }
+   ]
+  },
+  {
+   "id": "group_params",
+   "name": "group_params",
+   "family": "fitting",
+   "location": "state/fits/…npz",
+   "key": "(quarter, group, parameter)",
+   "description": "Group means μ_g.",
+   "constraints": "",
+   "unclear": "These parameters carry no entity, group or parameter names; they line up with fit_runs only by order.",
+   "columns": [
+    {
+     "name": "quarter",
+     "type": "",
+     "description": "the fit these belong to",
+     "references": "fit_runs",
+     "key": true
+    },
+    {
+     "name": "group",
+     "type": "",
+     "description": "matched to groups by order",
+     "key": true
+    },
+    {
+     "name": "parameter",
+     "type": "",
+     "description": "position in the fixed parameter order",
+     "key": true
+    },
+    {
+     "name": "μ_g",
+     "type": "float",
+     "description": "group means"
+    }
+   ]
+  },
+  {
+   "id": "representative_scale",
+   "name": "representative_scale",
+   "family": "fitting",
+   "location": "state/fits/…npz",
+   "key": "(quarter, entity)",
+   "description": "Variance of the starting level; the 2×2 covariance of scale and labor per unit.",
+   "constraints": "",
+   "unclear": "These parameters carry no entity, group or parameter names; they line up with fit_runs only by order.",
+   "columns": [
+    {
+     "name": "quarter",
+     "type": "",
+     "description": "the fit these belong to",
+     "references": "fit_runs",
+     "key": true
+    },
+    {
+     "name": "entity",
+     "type": "",
+     "description": "matched to entities by order",
+     "key": true
+    },
+    {
+     "name": "starting-level variance",
+     "type": "float",
+     "description": ""
+    },
+    {
+     "name": "scale × labor covariance",
+     "type": "float",
+     "description": "2×2"
+    }
+   ]
+  },
+  {
+   "id": "truth_sector_totals",
+   "name": "truth_sector_totals",
+   "family": "truth",
+   "location": "truth/",
+   "key": "(sector, variable, month)",
+   "description": "True sector totals.",
+   "constraints": "",
+   "unclear": "",
+   "columns": [
+    {
+     "name": "sector, variable, month",
+     "type": "",
+     "description": "",
+     "references": "sector_aggregates",
+     "key": true
+    },
+    {
+     "name": "value",
+     "type": "float",
+     "description": ""
+    }
+   ]
+  },
+  {
+   "id": "truth_sector_components",
+   "name": "truth_sector_components",
+   "family": "truth",
+   "location": "truth/",
+   "key": "(sector, variable, component, month)",
+   "description": "True tracked and representative parts.",
+   "constraints": "",
+   "unclear": "",
+   "columns": [
+    {
+     "name": "sector, variable, component, month",
+     "type": "",
+     "description": "",
+     "references": "sector_aggregates",
+     "key": true
+    },
+    {
+     "name": "value",
+     "type": "float",
+     "description": ""
+    }
+   ]
+  },
+  {
+   "id": "truth_entity_states",
+   "name": "truth_entity_states",
+   "family": "truth",
+   "location": "truth/",
+   "key": "(entity_id, variable, month)",
+   "description": "True entity states.",
+   "constraints": "",
+   "unclear": "variable is the model's internal symbol (k, z, Bs …), not the output name (capacity, utilization, backlog).",
+   "columns": [
+    {
+     "name": "entity_id",
+     "type": "string",
+     "description": "",
+     "references": "entities",
+     "key": true
+    },
+    {
+     "name": "variable",
+     "type": "code",
+     "description": "internal symbol: k, z, Bs …",
+     "key": true
+    },
+    {
+     "name": "month",
+     "type": "month",
+     "description": "",
+     "key": true
+    },
+    {
+     "name": "value",
+     "type": "float",
+     "description": ""
+    }
+   ]
+  },
+  {
+   "id": "truth_entity_params",
+   "name": "truth_entity_params",
+   "family": "truth",
+   "location": "truth/",
+   "key": "(entity_id, param)",
+   "description": "True entity parameters.",
+   "constraints": "",
+   "unclear": "",
+   "columns": [
+    {
+     "name": "entity_id",
+     "type": "string",
+     "description": "",
+     "references": "entities",
+     "key": true
+    },
+    {
+     "name": "param",
+     "type": "",
+     "description": "in the model's fixed parameter order",
+     "key": true
+    },
+    {
+     "name": "value_transformed, value",
+     "type": "float",
+     "description": ""
+    }
+   ]
+  },
+  {
+   "id": "truth_sector_params",
+   "name": "truth_sector_params",
+   "family": "truth",
+   "location": "truth/",
+   "key": "(sector, param)",
+   "description": "True sector parameters.",
+   "constraints": "",
+   "unclear": "",
+   "columns": [
+    {
+     "name": "sector",
+     "type": "",
+     "description": "",
+     "references": "sectors",
+     "key": true
+    },
+    {
+     "name": "param",
+     "type": "",
+     "description": "",
+     "key": true
+    },
+    {
+     "name": "value_transformed",
+     "type": "float",
+     "description": ""
+    }
+   ]
+  },
+  {
+   "id": "truth_drivers",
+   "name": "truth_drivers",
+   "family": "truth",
+   "location": "truth/",
+   "key": "(sector, month)",
+   "description": "The true demand, price and input-cost change.",
+   "constraints": "",
+   "unclear": "",
+   "columns": [
+    {
+     "name": "sector",
+     "type": "",
+     "description": "",
+     "references": "sectors",
+     "key": true
+    },
+    {
+     "name": "month",
+     "type": "month",
+     "description": "",
+     "key": true
+    },
+    {
+     "name": "d, pr, dπ",
+     "type": "float",
+     "description": "true demand, price, input-cost change"
+    }
+   ]
+  },
+  {
+   "id": "truth_normalization",
+   "name": "truth_normalization",
+   "family": "truth",
+   "location": "truth/",
+   "key": "sector",
+   "description": "The constants used to center demand and capacity.",
+   "constraints": "",
+   "unclear": "",
+   "columns": [
+    {
+     "name": "sector",
+     "type": "",
+     "description": "",
+     "references": "sectors",
+     "key": true
+    },
+    {
+     "name": "constants",
+     "type": "",
+     "description": "center demand and capacity"
+    }
+   ]
+  },
+  {
+   "id": "sector_aggregates",
+   "name": "sector_aggregates",
+   "family": "runs",
+   "location": "sector_aggregates.csv (published)",
+   "key": "(sector, variable, component, month, member)",
+   "description": "The main product: every sector quantity, month and draw.",
+   "constraints": "One run date has about 5.8 million rows.",
+   "unclear": "Holds every draw; medians and 90% bands are not included, so every user computes them.",
+   "columns": [
+    {
+     "name": "sector",
+     "type": "string",
+     "description": "",
+     "references": "sectors_run",
+     "key": true
+    },
+    {
+     "name": "variable",
+     "type": "code",
+     "description": "one of 18: capacity, output, utilization, backlog, …",
+     "references": "variables",
+     "key": true
+    },
+    {
+     "name": "component",
+     "type": "code",
+     "description": "tracked, representative or total",
+     "key": true
+    },
+    {
+     "name": "month",
+     "type": "month",
+     "description": "the window plus 12 months ahead",
+     "key": true
+    },
+    {
+     "name": "member",
+     "type": "int",
+     "description": "0 … 99",
+     "references": "member_map",
+     "key": true
+    },
+    {
+     "name": "value",
+     "type": "float",
+     "description": "in the unit given by variables"
+    },
+    {
+     "name": "status",
+     "type": "code",
+     "description": "smoothed, nowcast, forecast"
+    }
+   ]
+  },
+  {
+   "id": "member_map",
+   "name": "member_map",
+   "family": "runs",
+   "location": "member_map.csv (published)",
+   "key": "member",
+   "description": "Which input draw each output draw used.",
+   "constraints": "",
+   "unclear": "",
+   "columns": [
+    {
+     "name": "member",
+     "type": "int",
+     "description": "",
+     "key": true
+    },
+    {
+     "name": "input_member",
+     "type": "int",
+     "description": "member mod the input's n_members",
+     "references": "drivers"
+    }
+   ]
+  },
+  {
+   "id": "variables",
+   "name": "variables",
+   "family": "runs",
+   "location": "variables.csv (published)",
+   "key": "(sector, variable)",
+   "description": "What each sector quantity means.",
+   "constraints": "Only the quantities a sector's template produces are listed.",
+   "unclear": "",
+   "columns": [
+    {
+     "name": "sector, variable",
+     "type": "",
+     "description": "",
+     "references": "sectors_run",
+     "key": true
+    },
+    {
+     "name": "unit",
+     "type": "string",
+     "description": ""
+    },
+    {
+     "name": "kind",
+     "type": "code",
+     "description": "flow, stock, ratio, price"
+    },
+    {
+     "name": "description",
+     "type": "string",
+     "description": ""
+    }
+   ]
+  },
+  {
+   "id": "coverage",
+   "name": "coverage",
+   "family": "runs",
+   "location": "coverage.csv (published)",
+   "key": "(sector, month)",
+   "description": "How much of each sector the tracked entities cover.",
+   "constraints": "",
+   "unclear": "",
+   "columns": [
+    {
+     "name": "sector",
+     "type": "",
+     "description": "",
+     "references": "sectors_run",
+     "key": true
+    },
+    {
+     "name": "month",
+     "type": "month",
+     "description": "",
+     "key": true
+    },
+    {
+     "name": "n_entities_tracked",
+     "type": "int",
+     "description": ""
+    },
+    {
+     "name": "n_entities_representative",
+     "type": "int",
+     "description": ""
+    },
+    {
+     "name": "establishments_represented",
+     "type": "int",
+     "description": ""
+    },
+    {
+     "name": "tracked_share_mean",
+     "type": "float",
+     "description": "0–1"
+    },
+    {
+     "name": "representative_count_source",
+     "type": "string",
+     "description": "e.g. census_cbp_2025"
+    }
+   ]
+  },
+  {
+   "id": "reconciliation",
+   "name": "reconciliation",
+   "family": "runs",
+   "location": "reconciliation.csv (published)",
+   "key": "(sector, series, month)",
+   "description": "Where sector totals and the input sector series disagree.",
+   "constraints": "All values in the series' own units.",
+   "unclear": "",
+   "columns": [
+    {
+     "name": "sector, series",
+     "type": "",
+     "description": "",
+     "references": "series_catalog",
+     "key": true
+    },
+    {
+     "name": "month",
+     "type": "month",
+     "description": "",
+     "key": true
+    },
+    {
+     "name": "input_value_mean",
+     "type": "float",
+     "description": ""
+    },
+    {
+     "name": "model_value_mean",
+     "type": "float",
+     "description": ""
+    },
+    {
+     "name": "residual, residual_sd",
+     "type": "float",
+     "description": ""
+    },
+    {
+     "name": "constraint_sigma",
+     "type": "float",
+     "description": ""
+    }
+   ]
+  },
+  {
+   "id": "identifiability",
+   "name": "identifiability",
+   "family": "runs",
+   "location": "identifiability.csv (published)",
+   "key": "(sector, variable)",
+   "description": "How far the data moved each sector quantity from its prior.",
+   "constraints": "",
+   "unclear": "",
+   "columns": [
+    {
+     "name": "sector, variable",
+     "type": "",
+     "description": "",
+     "references": "variables",
+     "key": true
+    },
+    {
+     "name": "posterior_to_prior_variance",
+     "type": "float",
+     "description": ""
+    },
+    {
+     "name": "prior_dominated",
+     "type": "bool",
+     "description": "true above 0.8"
+    }
+   ]
+  },
+  {
+   "id": "run_diagnostics",
+   "name": "run_diagnostics",
+   "family": "runs",
+   "location": "meta/diagnostics.csv (published)",
+   "key": "metric",
+   "description": "Ensemble spread, observation counts, timings.",
+   "constraints": "",
+   "unclear": "",
+   "columns": [
+    {
+     "name": "metric",
+     "type": "string",
+     "description": "",
+     "key": true
+    },
+    {
+     "name": "value",
+     "type": "",
+     "description": ""
+    }
+   ]
+  },
+  {
+   "id": "run_config",
+   "name": "run_config",
+   "family": "runs",
+   "location": "meta/run_config.yaml (published)",
+   "key": "(one per run)",
+   "description": "The configuration as the run used it.",
+   "constraints": "",
+   "unclear": "",
+   "columns": [
+    {
+     "name": "(configuration)",
+     "type": "yaml",
+     "description": "as the run used it"
+    }
+   ]
+  },
+  {
+   "id": "entities_out",
+   "name": "entities (output)",
+   "family": "runs",
+   "location": "entities.csv (published if export_entities)",
+   "key": "entity_id",
+   "description": "A snapshot of the registry's entities at the run date.",
+   "constraints": "Off by default.",
+   "unclear": "firm_id is the first company linked to the entity on the run date, whatever its role; it may be an operator rather than the controlling owner.",
+   "columns": [
+    {
+     "name": "entity_id",
+     "type": "string",
+     "description": "",
+     "references": "entities",
+     "key": true
+    },
+    {
+     "name": "kind",
+     "type": "code",
+     "description": ""
+    },
+    {
+     "name": "name",
+     "type": "string",
+     "description": ""
+    },
+    {
+     "name": "sector",
+     "type": "string",
+     "description": ""
+    },
+    {
+     "name": "region",
+     "type": "code",
+     "description": ""
+    },
+    {
+     "name": "size_class",
+     "type": "code",
+     "description": ""
+    },
+    {
+     "name": "firm_id",
+     "type": "string",
+     "description": "first linked company, any role",
+     "references": "companies"
+    },
+    {
+     "name": "n_establishments",
+     "type": "int",
+     "description": ""
+    }
+   ]
+  },
+  {
+   "id": "entity_states",
+   "name": "entity_states",
+   "family": "runs",
+   "location": "entity_states.csv (published if export_entities)",
+   "key": "(sector, variable, entity_id, month, member)",
+   "description": "Every entity's quantities by month and draw.",
+   "constraints": "",
+   "unclear": "",
+   "columns": [
+    {
+     "name": "sector, variable",
+     "type": "",
+     "description": "",
+     "key": true
+    },
+    {
+     "name": "entity_id",
+     "type": "string",
+     "description": "",
+     "references": "entities_out",
+     "key": true
+    },
+    {
+     "name": "month",
+     "type": "month",
+     "description": "",
+     "key": true
+    },
+    {
+     "name": "member",
+     "type": "int",
+     "description": "",
+     "references": "member_map",
+     "key": true
+    },
+    {
+     "name": "value",
+     "type": "float",
+     "description": ""
+    },
+    {
+     "name": "status",
+     "type": "code",
+     "description": ""
+    }
+   ]
+  },
+  {
+   "id": "entity_detail",
+   "name": "entity_detail",
+   "family": "runs",
+   "location": "run directory only",
+   "key": "(entity_id, variable, month)",
+   "description": "Each entity's 5%, 50% and 95% values and status; what the site shows for entities.",
+   "constraints": "",
+   "unclear": "",
+   "columns": [
+    {
+     "name": "entity_id",
+     "type": "string",
+     "description": "",
+     "references": "entities_out",
+     "key": true
+    },
+    {
+     "name": "variable",
+     "type": "code",
+     "description": "",
+     "key": true
+    },
+    {
+     "name": "month",
+     "type": "month",
+     "description": "",
+     "key": true
+    },
+    {
+     "name": "p05, p50, p95",
+     "type": "float",
+     "description": ""
+    },
+    {
+     "name": "status",
+     "type": "code",
+     "description": ""
+    }
+   ]
+  },
+  {
+   "id": "grouping_spans",
+   "name": "grouping_spans",
+   "family": "runs",
+   "location": "run directory only",
+   "key": "(grouping_id, entity_id, first)",
+   "description": "Every grouping's members, with weights and the dates of each span.",
+   "constraints": "",
+   "unclear": "The only record of the derived groupings; between runs there is nothing to join against.",
+   "columns": [
+    {
+     "name": "grouping_id",
+     "type": "string",
+     "description": "",
+     "references": "groupings",
+     "key": true
+    },
+    {
+     "name": "entity_id",
+     "type": "string",
+     "description": "",
+     "references": "entities",
+     "key": true
+    },
+    {
+     "name": "kind, name",
+     "type": "",
+     "description": ""
+    },
+    {
+     "name": "weight",
+     "type": "float",
+     "description": "and what the weight means"
+    },
+    {
+     "name": "first",
+     "type": "date",
+     "description": "start of the span",
+     "key": true
+    },
+    {
+     "name": "last",
+     "type": "date",
+     "description": "end of the span"
+    }
+   ]
+  },
+  {
+   "id": "observation_fit",
+   "name": "observation_fit",
+   "family": "runs",
+   "location": "run directory only",
+   "key": "obs_id",
+   "description": "Each observation used: subject, entities covered, transformed value, noise, predicted 5/50/95%.",
+   "constraints": "",
+   "unclear": "",
+   "columns": [
+    {
+     "name": "obs_id",
+     "type": "string",
+     "description": "",
+     "references": "observations",
+     "key": true
+    },
+    {
+     "name": "month, subject",
+     "type": "",
+     "description": ""
+    },
+    {
+     "name": "entities covered",
+     "type": "",
+     "description": ""
+    },
+    {
+     "name": "transformed value, sd, noise",
+     "type": "",
+     "description": ""
+    },
+    {
+     "name": "predicted 5/50/95%",
+     "type": "float",
+     "description": ""
+    },
+    {
+     "name": "reading band",
+     "type": "",
+     "description": ""
+    }
+   ]
+  },
+  {
+   "id": "obs_types_run",
+   "name": "run observation_types",
+   "family": "runs",
+   "location": "run directory only",
+   "key": "obs_type",
+   "description": "The observation-type catalog as the run used it.",
+   "constraints": "",
+   "unclear": "",
+   "columns": [
+    {
+     "name": "obs_type",
+     "type": "code",
+     "description": "and the other columns of observation_types",
+     "references": "observation_types",
+     "key": true
+    }
+   ]
+  },
+  {
+   "id": "sectors_run",
+   "name": "run sectors",
+   "family": "runs",
+   "location": "run directory only",
+   "key": "sector",
+   "description": "The bundle's sector list as the run used it.",
+   "constraints": "",
+   "unclear": "",
+   "columns": [
+    {
+     "name": "sector",
+     "type": "string",
+     "description": "and the other columns of sectors",
+     "references": "sectors",
+     "key": true
+    }
+   ]
+  },
+  {
+   "id": "run_meta",
+   "name": "run_meta",
+   "family": "runs",
+   "location": "run directory only",
+   "key": "(one per run)",
+   "description": "Run times, the input bundle used, time grid, members, seed, the fit used.",
+   "constraints": "",
+   "unclear": "",
+   "columns": [
+    {
+     "name": "as_of",
+     "type": "date",
+     "description": ""
+    },
+    {
+     "name": "start, end",
+     "type": "timestamp",
+     "description": ""
+    },
+    {
+     "name": "input delivery and its checksum",
+     "type": "",
+     "description": "",
+     "references": "receipts"
+    },
+    {
+     "name": "time grid, members, seed",
+     "type": "",
+     "description": ""
+    },
+    {
+     "name": "fit used",
+     "type": "",
+     "description": "",
+     "references": "fit_runs"
+    }
+   ]
+  },
+  {
+   "id": "backtest_scores",
+   "name": "backtest_scores",
+   "family": "scores",
+   "location": "backtest_scores.csv",
+   "key": "(as_of, sector, variable, horizon, month)",
+   "description": "One row per scored value.",
+   "constraints": "",
+   "unclear": "Backtest records are kept in two places, linked only by the run's name as text.",
+   "columns": [
+    {
+     "name": "as_of",
+     "type": "date",
+     "description": "the run date scored",
+     "references": "run_meta",
+     "key": true
+    },
+    {
+     "name": "sector, variable",
+     "type": "",
+     "description": "",
+     "references": "sector_aggregates",
+     "key": true
+    },
+    {
+     "name": "horizon",
+     "type": "code",
+     "description": "smoothed_last12, nowcast, h+3, h+6, h+12",
+     "key": true
+    },
+    {
+     "name": "month",
+     "type": "month",
+     "description": "",
+     "key": true
+    },
+    {
+     "name": "abs_err",
+     "type": "float",
+     "description": "|log(median / truth)|, or absolute for fractions"
+    },
+    {
+     "name": "covered",
+     "type": "bool",
+     "description": "truth inside the published 90% band"
+    }
+   ]
+  },
+  {
+   "id": "backtest_source",
+   "name": "backtest_source",
+   "family": "scores",
+   "location": "source.json",
+   "key": "(one per backtest)",
+   "description": "Which model version ran, when it started, which run dates, which estimation settings.",
+   "constraints": "",
+   "unclear": "",
+   "columns": [
+    {
+     "name": "model version",
+     "type": "",
+     "description": ""
+    },
+    {
+     "name": "launch time",
+     "type": "timestamp",
+     "description": ""
+    },
+    {
+     "name": "run dates",
+     "type": "",
+     "description": ""
+    },
+    {
+     "name": "estimation settings",
+     "type": "",
+     "description": ""
+    }
+   ]
+  },
+  {
+   "id": "accuracy_checkpoints",
+   "name": "accuracy_checkpoints",
+   "family": "scores",
+   "location": "progress/accuracy.jsonl (code repository)",
+   "key": "(one per scored backtest)",
+   "description": "One summary per scored backtest: time, label, model version, run, mean error, coverage, error by sector.",
+   "constraints": "",
+   "unclear": "Backtest records are kept in two places, linked only by the run's name as text.",
+   "columns": [
+    {
+     "name": "time, label, model version",
+     "type": "",
+     "description": ""
+    },
+    {
+     "name": "run",
+     "type": "",
+     "description": "the run's name",
+     "references": "run_meta"
+    },
+    {
+     "name": "sectors, cells",
+     "type": "int",
+     "description": ""
+    },
+    {
+     "name": "mean error, coverage",
+     "type": "float",
+     "description": ""
+    },
+    {
+     "name": "error by sector",
+     "type": "",
+     "description": ""
+    }
+   ]
+  },
+  {
+   "id": "catalog_worlds",
+   "name": "catalog_worlds",
+   "family": "catalog",
+   "location": "catalog/worlds/<id>.json (code repository; on Modal, the volume's catalog/)",
+   "key": "world_id",
+   "description": "One world: synthetic (with its generator, seed and any departure from the model's equations) or real.",
+   "constraints": "Recorded when the world is built.",
+   "unclear": "Worlds built before 2026-11-12 are recorded only if added by hand (recorded_later).",
+   "columns": [
+    {
+     "name": "world_id",
+     "type": "string",
+     "description": "name and creation time",
+     "key": true
+    },
+    {
+     "name": "name",
+     "type": "string",
+     "description": ""
+    },
+    {
+     "name": "kind",
+     "type": "code",
+     "description": "synthetic or real"
+    },
+    {
+     "name": "generator, seed, misspecification",
+     "type": "",
+     "description": ""
+    },
+    {
+     "name": "as_of",
+     "type": "list",
+     "description": "the run dates it has input bundles for"
+    },
+    {
+     "name": "created_utc",
+     "type": "timestamp",
+     "description": ""
+    },
+    {
+     "name": "location",
+     "type": "string",
+     "description": "where its files are"
+    },
+    {
+     "name": "code",
+     "type": "",
+     "description": "commit and whether the code was clean"
+    },
+    {
+     "name": "recorded_later",
+     "type": "bool",
+     "description": "added after the fact"
+    }
+   ]
+  },
+  {
+   "id": "catalog_models",
+   "name": "catalog_models",
+   "family": "catalog",
+   "location": "catalog/models/<id>.json (code repository; on Modal, the volume's catalog/)",
+   "key": "model_id",
+   "description": "One version of the model: the code's commit together with a fingerprint of the configuration that shapes fits and forecasts.",
+   "constraints": "Settings that only say where files are or how a job runs are left out of the fingerprint.",
+   "unclear": "",
+   "columns": [
+    {
+     "name": "model_id",
+     "type": "string",
+     "description": "commit and configuration fingerprint",
+     "key": true
+    },
+    {
+     "name": "code",
+     "type": "",
+     "description": "commit and whether the code was clean"
+    },
+    {
+     "name": "config_fingerprint",
+     "type": "string",
+     "description": ""
+    },
+    {
+     "name": "config",
+     "type": "",
+     "description": "the configuration fingerprinted"
+    },
+    {
+     "name": "first_seen_utc",
+     "type": "timestamp",
+     "description": ""
+    }
+   ]
+  },
+  {
+   "id": "catalog_fits",
+   "name": "catalog_fits",
+   "family": "catalog",
+   "location": "catalog/fits/<id>.json (code repository; on Modal, the volume's catalog/)",
+   "key": "fit_id",
+   "description": "One saved parameter estimate: one sector's, or the assembled fit for every sector.",
+   "constraints": "A fit saved where an earlier one was (a rerun) marks the earlier one superseded.",
+   "unclear": "",
+   "columns": [
+    {
+     "name": "fit_id",
+     "type": "string",
+     "description": "",
+     "key": true
+    },
+    {
+     "name": "world_id",
+     "type": "string",
+     "description": "",
+     "references": "catalog_worlds"
+    },
+    {
+     "name": "model_id",
+     "type": "string",
+     "description": "",
+     "references": "catalog_models"
+    },
+    {
+     "name": "as_of",
+     "type": "date",
+     "description": ""
+    },
+    {
+     "name": "sector",
+     "type": "string",
+     "description": "empty for an assembled fit",
+     "references": "sectors"
+    },
+    {
+     "name": "rounds, best_round, marginal",
+     "type": "",
+     "description": "how the fit converged"
+    },
+    {
+     "name": "assembled_from",
+     "type": "list",
+     "description": "the sector fits an assembled fit was built from",
+     "references": "catalog_fits"
+    },
+    {
+     "name": "superseded_by",
+     "type": "string",
+     "description": "a later fit that replaced this one's file",
+     "references": "catalog_fits"
+    },
+    {
+     "name": "fitted_utc",
+     "type": "timestamp",
+     "description": ""
+    },
+    {
+     "name": "location",
+     "type": "string",
+     "description": "",
+     "references": "fit_runs"
+    }
+   ]
+  },
+  {
+   "id": "catalog_forecasts",
+   "name": "catalog_forecasts",
+   "family": "catalog",
+   "location": "catalog/forecasts/<id>.json (code repository; on Modal, the volume's catalog/)",
+   "key": "forecast_id",
+   "description": "One run: the fit it used, its run date and where its outputs are.",
+   "constraints": "Recorded when the run finishes.",
+   "unclear": "",
+   "columns": [
+    {
+     "name": "forecast_id",
+     "type": "string",
+     "description": "",
+     "key": true
+    },
+    {
+     "name": "world_id",
+     "type": "string",
+     "description": "",
+     "references": "catalog_worlds"
+    },
+    {
+     "name": "model_id",
+     "type": "string",
+     "description": "",
+     "references": "catalog_models"
+    },
+    {
+     "name": "fit_id",
+     "type": "string",
+     "description": "",
+     "references": "catalog_fits"
+    },
+    {
+     "name": "as_of",
+     "type": "date",
+     "description": ""
+    },
+    {
+     "name": "n_members",
+     "type": "int",
+     "description": ""
+    },
+    {
+     "name": "started_utc, finished_utc",
+     "type": "timestamp",
+     "description": ""
+    },
+    {
+     "name": "location",
+     "type": "string",
+     "description": "the run's folder",
+     "references": "run_meta"
+    }
+   ]
+  },
+  {
+   "id": "problems",
+   "name": "problems",
+   "family": "improving",
+   "location": "catalog/problems/<id>.json (code repository; on Modal, the volume's catalog/); written as a report in docs/next_version/<set>.md",
+   "key": "problem_id",
+   "description": "One problem found in one forecast by an evaluator that saw only the Evaluation pages that need no ground truth.",
+   "constraints": "A problem is identified by its forecast and its number in the report; registering it again updates its text and keeps its id.",
+   "unclear": "A problem dropped from a later version of its report keeps its record.",
+   "columns": [
+    {
+     "name": "problem_id",
+     "type": "string",
+     "description": "P0001, P0002, ...; never changes",
+     "key": true
+    },
+    {
+     "name": "world_id",
+     "type": "string",
+     "description": "",
+     "references": "catalog_worlds"
+    },
+    {
+     "name": "fit_id",
+     "type": "string",
+     "description": "",
+     "references": "catalog_fits"
+    },
+    {
+     "name": "forecast_id",
+     "type": "string",
+     "description": "",
+     "references": "catalog_forecasts"
+    },
+    {
+     "name": "number",
+     "type": "int",
+     "description": "its place in the report, weakest first"
+    },
+    {
+     "name": "title",
+     "type": "string",
+     "description": ""
+    },
+    {
+     "name": "evidence",
+     "type": "text",
+     "description": "numbers from the Evaluation pages"
+    },
+    {
+     "name": "why_it_matters",
+     "type": "text",
+     "description": ""
+    },
+    {
+     "name": "likely_causes",
+     "type": "text",
+     "description": "hypotheses"
+    },
+    {
+     "name": "confidence",
+     "type": "text",
+     "description": ""
+    },
+    {
+     "name": "report",
+     "type": "string",
+     "description": "the report it comes from"
+    },
+    {
+     "name": "written_by",
+     "type": "string",
+     "description": ""
+    },
+    {
+     "name": "updated_utc",
+     "type": "timestamp",
+     "description": ""
+    }
+   ]
+  },
+  {
+   "id": "possible_fixes",
+   "name": "possible_fixes",
+   "family": "improving",
+   "location": "catalog/fixes/<id>.json (code repository; on Modal, the volume's catalog/); written as a list in docs/next_version/<set>.improvements.json",
+   "key": "fix_id",
+   "description": "One possible fix for one problem, untested, with the reviewer's odds of success and the time and cloud cost to test it.",
+   "constraints": "A fix is identified by its problem and its label; registering it again updates its text and keeps its id.",
+   "unclear": "Odds, time and cost are one reviewer's estimates.",
+   "columns": [
+    {
+     "name": "fix_id",
+     "type": "string",
+     "description": "F0001, F0002, ...; never changes",
+     "key": true
+    },
+    {
+     "name": "problem_id",
+     "type": "string",
+     "description": "",
+     "references": "problems"
+    },
+    {
+     "name": "world_id",
+     "type": "string",
+     "description": "",
+     "references": "catalog_worlds"
+    },
+    {
+     "name": "fit_id",
+     "type": "string",
+     "description": "",
+     "references": "catalog_fits"
+    },
+    {
+     "name": "forecast_id",
+     "type": "string",
+     "description": "",
+     "references": "catalog_forecasts"
+    },
+    {
+     "name": "label",
+     "type": "string",
+     "description": "its problem's number and a letter: 1A, 1B, 2A, ..."
+    },
+    {
+     "name": "fix",
+     "type": "text",
+     "description": "2-3 sentences"
+    },
+    {
+     "name": "likelihood",
+     "type": "code",
+     "description": "Likely, More Likely Than Not, Coin Flip, Less Likely Than Not, Unlikely"
+    },
+    {
+     "name": "time_hours, time",
+     "type": "",
+     "description": "estimated wall-clock time to test"
+    },
+    {
+     "name": "cost_usd, cost",
+     "type": "",
+     "description": "estimated cloud cost to test"
+    },
+    {
+     "name": "test",
+     "type": "text",
+     "description": "what run would show whether it worked"
+    },
+    {
+     "name": "source",
+     "type": "string",
+     "description": ""
+    },
+    {
+     "name": "written_by",
+     "type": "string",
+     "description": ""
+    },
+    {
+     "name": "updated_utc",
+     "type": "timestamp",
+     "description": ""
+    }
+   ]
+  }
+ ],
+ "relationships": [
+  {
+   "from": {
+    "table": "entities",
+    "columns": "sector"
+   },
+   "to": {
+    "table": "sectors"
+   },
+   "enforcement": "tests",
+   "note": "registry validation"
+  },
+  {
+   "from": {
+    "table": "entities",
+    "columns": "group_id"
+   },
+   "to": {
+    "table": "census_counts"
+   },
+   "enforcement": "none",
+   "note": "presence only, for representatives"
+  },
+  {
+   "from": {
+    "table": "entity_sites",
+    "columns": "entity_id"
+   },
+   "to": {
+    "table": "entities"
+   },
+   "enforcement": "none",
+   "note": "validation only checks each tracked entity has a site"
+  },
+  {
+   "from": {
+    "table": "entity_sites",
+    "columns": "site_id"
+   },
+   "to": {
+    "table": "sites"
+   },
+   "enforcement": "none",
+   "note": ""
+  },
+  {
+   "from": {
+    "table": "company_entities",
+    "columns": "company_id"
+   },
+   "to": {
+    "table": "companies"
+   },
+   "enforcement": "none",
+   "note": ""
+  },
+  {
+   "from": {
+    "table": "company_entities",
+    "columns": "entity_id"
+   },
+   "to": {
+    "table": "entities"
+   },
+   "enforcement": "none",
+   "note": "owning shares ≤ 1 checked by validation"
+  },
+  {
+   "from": {
+    "table": "ownership",
+    "columns": "owner_id, owned_id"
+   },
+   "to": {
+    "table": "companies"
+   },
+   "enforcement": "none",
+   "note": "ids unchecked; no cycles and shares ≤ 1 by validation"
+  },
+  {
+   "from": {
+    "table": "identifiers",
+    "columns": "object_type, object_id"
+   },
+   "to": {
+    "table": "entities"
+   },
+   "enforcement": "none",
+   "note": "object_type code only"
+  },
+  {
+   "from": {
+    "table": "identifiers",
+    "columns": "object_type, object_id"
+   },
+   "to": {
+    "table": "sites"
+   },
+   "enforcement": "none",
+   "note": "object_type code only"
+  },
+  {
+   "from": {
+    "table": "identifiers",
+    "columns": "object_type, object_id"
+   },
+   "to": {
+    "table": "companies"
+   },
+   "enforcement": "none",
+   "note": "object_type code only"
+  },
+  {
+   "from": {
+    "table": "groupings",
+    "columns": "company_id"
+   },
+   "to": {
+    "table": "companies"
+   },
+   "enforcement": "tests",
+   "note": "for segments"
+  },
+  {
+   "from": {
+    "table": "grouping_members",
+    "columns": "grouping_id"
+   },
+   "to": {
+    "table": "groupings"
+   },
+   "enforcement": "tests",
+   "note": "or a company grouping"
+  },
+  {
+   "from": {
+    "table": "grouping_members",
+    "columns": "entity_id"
+   },
+   "to": {
+    "table": "entities"
+   },
+   "enforcement": "tests",
+   "note": ""
+  },
+  {
+   "from": {
+    "table": "match_decisions",
+    "columns": "matched_object_type, matched_object_id"
+   },
+   "to": {
+    "table": "entities"
+   },
+   "enforcement": "none",
+   "note": ""
+  },
+  {
+   "from": {
+    "table": "match_decisions",
+    "columns": "matched_object_type, matched_object_id"
+   },
+   "to": {
+    "table": "sites"
+   },
+   "enforcement": "none",
+   "note": ""
+  },
+  {
+   "from": {
+    "table": "match_decisions",
+    "columns": "matched_object_type, matched_object_id"
+   },
+   "to": {
+    "table": "companies"
+   },
+   "enforcement": "none",
+   "note": ""
+  },
+  {
+   "from": {
+    "table": "observations",
+    "columns": "subject_kind, subject_id"
+   },
+   "to": {
+    "table": "entities"
+   },
+   "enforcement": "runtime",
+   "note": "an entity subject"
+  },
+  {
+   "from": {
+    "table": "observations",
+    "columns": "subject_kind, subject_id"
+   },
+   "to": {
+    "table": "groupings"
+   },
+   "enforcement": "runtime",
+   "note": "a grouping subject, members on the period's last day"
+  },
+  {
+   "from": {
+    "table": "observations",
+    "columns": "scheme, identifier"
+   },
+   "to": {
+    "table": "identifiers"
+   },
+   "enforcement": "runtime",
+   "note": "(scheme, value), on the period's last day"
+  },
+  {
+   "from": {
+    "table": "observations",
+    "columns": "mention_id"
+   },
+   "to": {
+    "table": "match_decisions"
+   },
+   "enforcement": "runtime",
+   "note": ""
+  },
+  {
+   "from": {
+    "table": "observations",
+    "columns": "obs_type"
+   },
+   "to": {
+    "table": "observation_types"
+   },
+   "enforcement": "runtime",
+   "note": "unknown types counted and skipped"
+  },
+  {
+   "from": {
+    "table": "observations",
+    "columns": "sensor"
+   },
+   "to": {
+    "table": "observation_settings"
+   },
+   "enforcement": "runtime",
+   "note": "falls back to the default calibration"
+  },
+  {
+   "from": {
+    "table": "census_counts",
+    "columns": "sector"
+   },
+   "to": {
+    "table": "sectors"
+   },
+   "enforcement": "none",
+   "note": ""
+  },
+  {
+   "from": {
+    "table": "series_catalog",
+    "columns": "sector"
+   },
+   "to": {
+    "table": "sectors"
+   },
+   "enforcement": "checked",
+   "note": "when the bundle is checked"
+  },
+  {
+   "from": {
+    "table": "drivers",
+    "columns": "sector, name"
+   },
+   "to": {
+    "table": "series_catalog"
+   },
+   "enforcement": "none",
+   "note": "sector checked against sectors; (sector, name) not"
+  },
+  {
+   "from": {
+    "table": "sector_series",
+    "columns": "sector, name"
+   },
+   "to": {
+    "table": "series_catalog"
+   },
+   "enforcement": "none",
+   "note": "sector checked against sectors; (sector, name) not"
+  },
+  {
+   "from": {
+    "table": "drivers",
+    "columns": "member"
+   },
+   "to": {
+    "table": "manifest"
+   },
+   "enforcement": "checked",
+   "note": "every member 0 … n_members − 1 present"
+  },
+  {
+   "from": {
+    "table": "sector_series",
+    "columns": "member"
+   },
+   "to": {
+    "table": "manifest"
+   },
+   "enforcement": "checked",
+   "note": "every member present"
+  },
+  {
+   "from": {
+    "table": "receipts",
+    "columns": "bundle_name, manifest_sha256"
+   },
+   "to": {
+    "table": "manifest"
+   },
+   "enforcement": "checked",
+   "note": ""
+  },
+  {
+   "from": {
+    "table": "series_summary",
+    "columns": "sector, name"
+   },
+   "to": {
+    "table": "series_catalog"
+   },
+   "enforcement": "unstated",
+   "note": ""
+  },
+  {
+   "from": {
+    "table": "sector_priors",
+    "columns": "sector"
+   },
+   "to": {
+    "table": "sectors"
+   },
+   "enforcement": "checked",
+   "note": "the sector must be in the bundle"
+  },
+  {
+   "from": {
+    "table": "sector_settings",
+    "columns": "sector"
+   },
+   "to": {
+    "table": "sectors"
+   },
+   "enforcement": "checked",
+   "note": "the sector must be in the bundle"
+  },
+  {
+   "from": {
+    "table": "estimation_settings",
+    "columns": "sector"
+   },
+   "to": {
+    "table": "sectors"
+   },
+   "enforcement": "unstated",
+   "note": ""
+  },
+  {
+   "from": {
+    "table": "observation_settings",
+    "columns": "obs_type"
+   },
+   "to": {
+    "table": "observation_types"
+   },
+   "enforcement": "unstated",
+   "note": ""
+  },
+  {
+   "from": {
+    "table": "series_mappings",
+    "columns": "sector, series"
+   },
+   "to": {
+    "table": "series_catalog"
+   },
+   "enforcement": "none",
+   "note": "a missing series is skipped"
+  },
+  {
+   "from": {
+    "table": "entity_params",
+    "columns": "row order"
+   },
+   "to": {
+    "table": "fit_runs"
+   },
+   "enforcement": "none",
+   "note": "by order only"
+  },
+  {
+   "from": {
+    "table": "group_params",
+    "columns": "row order"
+   },
+   "to": {
+    "table": "fit_runs"
+   },
+   "enforcement": "none",
+   "note": "by order only"
+  },
+  {
+   "from": {
+    "table": "sector_params",
+    "columns": "row order"
+   },
+   "to": {
+    "table": "fit_runs"
+   },
+   "enforcement": "none",
+   "note": "by order only"
+  },
+  {
+   "from": {
+    "table": "representative_scale",
+    "columns": "row order"
+   },
+   "to": {
+    "table": "fit_runs"
+   },
+   "enforcement": "none",
+   "note": "by order only"
+  },
+  {
+   "from": {
+    "table": "fit_runs",
+    "columns": "input bundle"
+   },
+   "to": {
+    "table": "manifest"
+   },
+   "enforcement": "none",
+   "note": "recorded, but not checked when the fit is reused"
+  },
+  {
+   "from": {
+    "table": "run_meta",
+    "columns": "input bundle name"
+   },
+   "to": {
+    "table": "receipts"
+   },
+   "enforcement": "together",
+   "note": "recorded with the manifest checksum"
+  },
+  {
+   "from": {
+    "table": "run_meta",
+    "columns": "fit used"
+   },
+   "to": {
+    "table": "fit_runs"
+   },
+   "enforcement": "together",
+   "note": "recorded"
+  },
+  {
+   "from": {
+    "table": "sector_aggregates",
+    "columns": "sector"
+   },
+   "to": {
+    "table": "sectors_run"
+   },
+   "enforcement": "together",
+   "note": ""
+  },
+  {
+   "from": {
+    "table": "sector_aggregates",
+    "columns": "sector, variable"
+   },
+   "to": {
+    "table": "variables"
+   },
+   "enforcement": "together",
+   "note": ""
+  },
+  {
+   "from": {
+    "table": "sector_aggregates",
+    "columns": "member"
+   },
+   "to": {
+    "table": "member_map"
+   },
+   "enforcement": "together",
+   "note": ""
+  },
+  {
+   "from": {
+    "table": "member_map",
+    "columns": "input_member"
+   },
+   "to": {
+    "table": "drivers"
+   },
+   "enforcement": "together",
+   "note": "input draws"
+  },
+  {
+   "from": {
+    "table": "coverage",
+    "columns": "sector"
+   },
+   "to": {
+    "table": "sectors_run"
+   },
+   "enforcement": "together",
+   "note": ""
+  },
+  {
+   "from": {
+    "table": "identifiability",
+    "columns": "sector, variable"
+   },
+   "to": {
+    "table": "variables"
+   },
+   "enforcement": "together",
+   "note": ""
+  },
+  {
+   "from": {
+    "table": "reconciliation",
+    "columns": "sector, series"
+   },
+   "to": {
+    "table": "series_catalog"
+   },
+   "enforcement": "together",
+   "note": ""
+  },
+  {
+   "from": {
+    "table": "entity_states",
+    "columns": "entity_id"
+   },
+   "to": {
+    "table": "entities_out"
+   },
+   "enforcement": "together",
+   "note": ""
+  },
+  {
+   "from": {
+    "table": "entity_detail",
+    "columns": "entity_id"
+   },
+   "to": {
+    "table": "entities_out"
+   },
+   "enforcement": "together",
+   "note": ""
+  },
+  {
+   "from": {
+    "table": "entity_states",
+    "columns": "member"
+   },
+   "to": {
+    "table": "member_map"
+   },
+   "enforcement": "together",
+   "note": ""
+  },
+  {
+   "from": {
+    "table": "variables",
+    "columns": "sector"
+   },
+   "to": {
+    "table": "sectors_run"
+   },
+   "enforcement": "together",
+   "note": ""
+  },
+  {
+   "from": {
+    "table": "entities_out",
+    "columns": "firm_id"
+   },
+   "to": {
+    "table": "companies"
+   },
+   "enforcement": "together",
+   "note": "the first company linked to the entity on the run date, whatever its role"
+  },
+  {
+   "from": {
+    "table": "entities_out",
+    "columns": "entity_id"
+   },
+   "to": {
+    "table": "entities"
+   },
+   "enforcement": "together",
+   "note": "a snapshot of the registry at the run date"
+  },
+  {
+   "from": {
+    "table": "observation_fit",
+    "columns": "obs_id"
+   },
+   "to": {
+    "table": "observations"
+   },
+   "enforcement": "together",
+   "note": ""
+  },
+  {
+   "from": {
+    "table": "obs_types_run",
+    "columns": "obs_type"
+   },
+   "to": {
+    "table": "observation_types"
+   },
+   "enforcement": "together",
+   "note": "a copy"
+  },
+  {
+   "from": {
+    "table": "sectors_run",
+    "columns": "sector"
+   },
+   "to": {
+    "table": "sectors"
+   },
+   "enforcement": "together",
+   "note": "a copy"
+  },
+  {
+   "from": {
+    "table": "grouping_spans",
+    "columns": "grouping_id"
+   },
+   "to": {
+    "table": "groupings"
+   },
+   "enforcement": "unstated",
+   "note": "derived spans of all seven kinds"
+  },
+  {
+   "from": {
+    "table": "grouping_spans",
+    "columns": "entity_id"
+   },
+   "to": {
+    "table": "entities"
+   },
+   "enforcement": "unstated",
+   "note": ""
+  },
+  {
+   "from": {
+    "table": "truth_sector_totals",
+    "columns": "sector, variable, month"
+   },
+   "to": {
+    "table": "sector_aggregates"
+   },
+   "enforcement": "none",
+   "note": "by name, component total"
+  },
+  {
+   "from": {
+    "table": "truth_sector_components",
+    "columns": "sector, variable, component, month"
+   },
+   "to": {
+    "table": "sector_aggregates"
+   },
+   "enforcement": "none",
+   "note": "by name"
+  },
+  {
+   "from": {
+    "table": "truth_entity_states",
+    "columns": "entity_id"
+   },
+   "to": {
+    "table": "entities"
+   },
+   "enforcement": "none",
+   "note": "by name; quantity names differ from the outputs'"
+  },
+  {
+   "from": {
+    "table": "truth_entity_params",
+    "columns": "entity_id"
+   },
+   "to": {
+    "table": "entities"
+   },
+   "enforcement": "none",
+   "note": "by name"
+  },
+  {
+   "from": {
+    "table": "truth_sector_params",
+    "columns": "sector"
+   },
+   "to": {
+    "table": "sectors"
+   },
+   "enforcement": "none",
+   "note": "by name"
+  },
+  {
+   "from": {
+    "table": "truth_drivers",
+    "columns": "sector"
+   },
+   "to": {
+    "table": "sectors"
+   },
+   "enforcement": "none",
+   "note": "by name"
+  },
+  {
+   "from": {
+    "table": "truth_normalization",
+    "columns": "sector"
+   },
+   "to": {
+    "table": "sectors"
+   },
+   "enforcement": "none",
+   "note": "by name"
+  },
+  {
+   "from": {
+    "table": "backtest_scores",
+    "columns": "as_of"
+   },
+   "to": {
+    "table": "run_meta"
+   },
+   "enforcement": "none",
+   "note": "the run, by name"
+  },
+  {
+   "from": {
+    "table": "backtest_scores",
+    "columns": "sector, variable, month"
+   },
+   "to": {
+    "table": "sector_aggregates"
+   },
+   "enforcement": "none",
+   "note": "by name"
+  },
+  {
+   "from": {
+    "table": "backtest_scores",
+    "columns": "sector, variable, month"
+   },
+   "to": {
+    "table": "truth_sector_totals"
+   },
+   "enforcement": "none",
+   "note": "by name"
+  },
+  {
+   "from": {
+    "table": "accuracy_checkpoints",
+    "columns": "run"
+   },
+   "to": {
+    "table": "run_meta"
+   },
+   "enforcement": "none",
+   "note": "the run's name, as text"
+  },
+  {
+   "from": {
+    "table": "catalog_fits",
+    "columns": "world_id"
+   },
+   "to": {
+    "table": "catalog_worlds"
+   },
+   "enforcement": "none",
+   "note": "copied from the world's record when the fit is saved"
+  },
+  {
+   "from": {
+    "table": "catalog_fits",
+    "columns": "model_id"
+   },
+   "to": {
+    "table": "catalog_models"
+   },
+   "enforcement": "together",
+   "note": "recorded with the fit"
+  },
+  {
+   "from": {
+    "table": "catalog_fits",
+    "columns": "assembled_from"
+   },
+   "to": {
+    "table": "catalog_fits"
+   },
+   "enforcement": "together",
+   "note": "recorded with the assembled fit"
+  },
+  {
+   "from": {
+    "table": "catalog_fits",
+    "columns": "superseded_by"
+   },
+   "to": {
+    "table": "catalog_fits"
+   },
+   "enforcement": "together",
+   "note": "set when the later fit is recorded"
+  },
+  {
+   "from": {
+    "table": "catalog_fits",
+    "columns": "location"
+   },
+   "to": {
+    "table": "fit_runs"
+   },
+   "enforcement": "none",
+   "note": "by file location"
+  },
+  {
+   "from": {
+    "table": "catalog_forecasts",
+    "columns": "world_id"
+   },
+   "to": {
+    "table": "catalog_worlds"
+   },
+   "enforcement": "none",
+   "note": "copied from the world's record"
+  },
+  {
+   "from": {
+    "table": "catalog_forecasts",
+    "columns": "model_id"
+   },
+   "to": {
+    "table": "catalog_models"
+   },
+   "enforcement": "together",
+   "note": "recorded with the forecast"
+  },
+  {
+   "from": {
+    "table": "catalog_forecasts",
+    "columns": "fit_id"
+   },
+   "to": {
+    "table": "catalog_fits"
+   },
+   "enforcement": "together",
+   "note": "the fit the run used, recorded with it"
+  },
+  {
+   "from": {
+    "table": "catalog_forecasts",
+    "columns": "location"
+   },
+   "to": {
+    "table": "run_meta"
+   },
+   "enforcement": "none",
+   "note": "by folder"
+  },
+  {
+   "from": {
+    "table": "problems",
+    "columns": "forecast_id"
+   },
+   "to": {
+    "table": "catalog_forecasts"
+   },
+   "enforcement": "checked",
+   "note": "the forecast must be in the catalog when the problems are registered"
+  },
+  {
+   "from": {
+    "table": "problems",
+    "columns": "world_id"
+   },
+   "to": {
+    "table": "catalog_worlds"
+   },
+   "enforcement": "together",
+   "note": "copied from the forecast's record"
+  },
+  {
+   "from": {
+    "table": "problems",
+    "columns": "fit_id"
+   },
+   "to": {
+    "table": "catalog_fits"
+   },
+   "enforcement": "together",
+   "note": "copied from the forecast's record"
+  },
+  {
+   "from": {
+    "table": "possible_fixes",
+    "columns": "problem_id"
+   },
+   "to": {
+    "table": "problems"
+   },
+   "enforcement": "checked",
+   "note": "every fix must name a problem in its report"
+  },
+  {
+   "from": {
+    "table": "possible_fixes",
+    "columns": "forecast_id"
+   },
+   "to": {
+    "table": "catalog_forecasts"
+   },
+   "enforcement": "together",
+   "note": "copied from the problem's record"
+  },
+  {
+   "from": {
+    "table": "possible_fixes",
+    "columns": "world_id"
+   },
+   "to": {
+    "table": "catalog_worlds"
+   },
+   "enforcement": "together",
+   "note": "copied from the problem's record"
+  },
+  {
+   "from": {
+    "table": "possible_fixes",
+    "columns": "fit_id"
+   },
+   "to": {
+    "table": "catalog_fits"
+   },
+   "enforcement": "together",
+   "note": "copied from the problem's record"
+  }
+ ]
+}

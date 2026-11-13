@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>How It Works · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=ae6cb95-1794584865">
-<link rel="stylesheet" href="assets/datamodel.css?v=ae6cb95-1794584865">
+<link rel="stylesheet" href="assets/site.css?v=ae6cb95-1794596311">
+<link rel="stylesheet" href="assets/datamodel.css?v=ae6cb95-1794596311">
 <style>
   .hiw-fig { margin: 16px 0 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px; overflow-x: auto; }
   .hiw-fig svg { display: block; width: 100%; min-width: 760px; height: auto; }
@@ -25,15 +25,17 @@
 <main class="hiw">
   <h1>How It Works</h1>
   <div class="sub">
-    <p>Model 2 works in three stages:</p>
+    <p>Model 2 works in four stages:</p>
     <ol>
       <li><b>Choose a world</b>, either a version of the real world or a wholly-synthetic one.</li>
       <li><b>Run the world forward</b>, both running forecasts and fitting parameters to past data.</li>
       <li><b>Score the results</b> as best it can. When the world is synthetic, more detailed scores are possible.</li>
+      <li><b>Improve the system</b>: record what the scores show is wrong and the possible fixes, so that the next
+      version of the model can be run on a world again.</li>
     </ol>
   </div>
   <figure class="hiw-fig dm">
-    <svg viewBox="0 0 1140 484" role="img" aria-label="Choose a world, run the world forward at each date T using only what was known then, then score the results">
+    <svg viewBox="0 0 1140 668" role="img" aria-label="Choose a world, run the world forward at each date T using only what was known then, score the results, then improve the system and start again from a world">
       <defs><marker id="hiw-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--muted)"/></marker></defs>
 
       <!-- backtest loop over stages 2 and 3 -->
@@ -126,6 +128,34 @@
       <!-- truth → scores -->
       <path class="edge" d="M141 408V456H1009V238" marker-end="url(#hiw-arrow)" stroke-dasharray="5 3"/>
       <text x="570" y="476" text-anchor="middle" class="q">the truth, for scoring only; the model never sees it</text>
+      <!-- 4 · improving the system: from the scores back to choosing a world -->
+      <rect class="frame" x="290" y="500" width="580" height="152" rx="10"/>
+      <text x="306" y="526" class="t">4 · Improving the system</text>
+      <a href="datamodel.html?t=catalog_forecasts">
+        <rect x="306" y="540" width="170" height="96" rx="6" fill="var(--dm-9)" fill-opacity="0.2" stroke="var(--dm-9)"/>
+        <text x="318" y="562" class="n">Catalog</text>
+        <text x="318" y="582" class="q">every world, model,</text>
+        <text x="318" y="598" class="q">fit and forecast, each</text>
+        <text x="318" y="614" class="q">with a lasting id</text>
+      </a>
+      <a href="datamodel.html?t=problems">
+        <rect x="492" y="540" width="186" height="96" rx="6" fill="var(--dm-10)" fill-opacity="0.2" stroke="var(--dm-10)"/>
+        <text x="504" y="562" class="n">Problems and fixes</text>
+        <text x="504" y="582" class="q">what the scores show is</text>
+        <text x="504" y="598" class="q">wrong, and possible fixes,</text>
+        <text x="504" y="614" class="q">each naming its forecast</text>
+      </a>
+      <path class="edge" d="M478 588H490" marker-end="url(#hiw-arrow)"/>
+      <rect x="694" y="540" width="160" height="96" rx="6" fill="none" stroke="var(--muted)" stroke-opacity="0.7" stroke-dasharray="5 3"/>
+      <text x="706" y="562" class="n">Later</text>
+      <text x="706" y="582" class="q">fixes tested and their</text>
+      <text x="706" y="598" class="q">results; the ones good</text>
+      <text x="706" y="614" class="q">enough to deploy</text>
+      <path class="edge" d="M680 588H692" marker-end="url(#hiw-arrow)"/>
+      <path class="edge" d="M1060 436V576H872" marker-end="url(#hiw-arrow)"/>
+      <text x="1050" y="598" text-anchor="end" class="q">scores show problems</text>
+      <path class="edge" d="M290 576H70V438" marker-end="url(#hiw-arrow)"/>
+      <text x="84" y="598" class="q">the next version starts again</text>
     </svg>
   </figure>
   <p class="sub">Click a box to see its tables in the <a href="datamodel.html">Data Model</a>.</p>
@@ -168,12 +198,24 @@
     census count can be compared with the value once it appears. This scoring is not built yet.</li>
   </ul>
 
+  <h2>4 · Improving the system</h2>
+  <ul>
+    <li><b>The catalog</b> records every world, model version, fit and forecast with an id that never changes, so
+    any result can be traced to exactly what produced it.</li>
+    <li><b>Problems</b> are found in a forecast by an evaluator that sees only the Evaluation pages that need no
+    ground truth (Next Version, <a href="next_problems.html">Current Problems</a>). <b>Possible fixes</b> for each
+    are written by a reviewer who knows the model but not the world's truth, with odds of success and the time and
+    cost to test (<a href="next_improvements.html">Possible Improvements</a>). Each problem and fix has a lasting id
+    and names the world, fit and forecast it is about.</li>
+    <li><b>Later</b>, the fixes that are actually tested will be recorded with their results, and the ones good
+    enough to deploy go into the next version of the model, which starts again from stage 1.</li>
+  </ul>
   <h2>Backtests</h2>
   <p>A backtest repeats stages 2 and 3 at a series of past dates. Each run sees only what was known on its date, as if
   it had run then, so its errors show how the model would have done in real time. The scores cover the last 12 months
   of history, the nowcast, and forecasts 3, 6 and 12 months ahead.</p>
 </main>
-<script src="assets/site.js?v=ae6cb95-1794584865"></script>
+<script src="assets/site.js?v=ae6cb95-1794596311"></script>
 <script>
 (async () => {
   try {

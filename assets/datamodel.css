@@ -1,13 +1,15 @@
 /* Data model explorer (datamodel.js). Uses the page's --bg, --panel, --fg, --muted, --line,
-   --accent and --warn when present; family colours --dm-1 … --dm-8. */
+   --accent and --warn when present; family colors --dm-1 … --dm-10. */
 .dm {
   --dm-1: #2f6fb3; --dm-2: #c8642a; --dm-3: #2e9a6f; --dm-4: #3b4a6b;
   --dm-5: #c2457a; --dm-6: #a07a12; --dm-7: #8a5a9e; --dm-8: #7d6b5a;
+  --dm-9: #1c8a8f; --dm-10: #b23a48;
 }
 @media (prefers-color-scheme: dark) {
   .dm {
     --dm-1: #6fa8e6; --dm-2: #ee9461; --dm-3: #5cc79a; --dm-4: #8fa0c8;
     --dm-5: #ec7fae; --dm-6: #d9b34e; --dm-7: #c39bd3; --dm-8: #b8a490;
+    --dm-9: #5cc6cb; --dm-10: #ec7b86;
   }
 }
 .dm-tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 12px 0 6px; }

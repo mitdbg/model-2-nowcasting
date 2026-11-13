@@ -3,23 +3,26 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Data Model · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=ae6cb95-1794584865">
-<link rel="stylesheet" href="assets/datamodel.css?v=ae6cb95-1794584865">
+<link rel="stylesheet" href="assets/site.css?v=ae6cb95-1794596311">
+<link rel="stylesheet" href="assets/datamodel.css?v=ae6cb95-1794596311">
 </head>
 <body>
 <main>
   <h1>Data Model</h1>
-  <p class="sub">Model 2 works with eight families of related tables. The entity registry records what exists
+  <p class="sub">Model 2 works with ten families of related tables, in four phases. The entity registry records what exists
   and who owns what on any date. Observations are the published readings the model learns from, each about
   an entity or a grouping. The sector input bundle supplies each sector's drivers and statistics as ensemble
   draws. Configuration holds the settings people choose; parameter fitting holds the parameters estimated
   from past data. Each run produces sector totals, entity states and diagnostics for its run date. Synthetic truth holds the true values behind a synthetic world and exists
-  only there; scores record how close each run came. Click a table to see its columns, its key and how it
+  only there; scores record how close each run came. To improve the system, the catalog keeps a lasting record
+  of every world, model version, fit and forecast, and problems and possible fixes record what the evaluation of
+  a forecast found wrong and what might fix it, each with an id that never changes and naming its world, fit and
+  forecast. Click a table to see its columns, its key and how it
   joins to the others; the notes in amber say where a rule is not checked or the meaning is unclear.</p>
   <div id="explorer"></div>
 </main>
-<script src="assets/site.js?v=ae6cb95-1794584865"></script>
-<script src="assets/datamodel.js?v=ae6cb95-1794584865"></script>
+<script src="assets/site.js?v=ae6cb95-1794596311"></script>
+<script src="assets/datamodel.js?v=ae6cb95-1794596311"></script>
 <script>
 (async () => {
   try {
