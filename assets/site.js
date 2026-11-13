@@ -342,7 +342,7 @@ M2.EXPLAIN = {
   utilization: "Output divided by capacity: how hard the existing plants are running. 100% would be every plant flat out.",
   shipments: "Product delivered to customers in the month. It can differ from output when goods go into or come out of stock.",
   backlog: "Orders customers have placed but not yet received, at the end of the month. A growing order book means demand is outrunning deliveries.",
-  new_orders: "Orders received in the month, minus orders cancelled.",
+  new_orders: "Orders received in the month, minus orders canceled.",
   price: "Average selling price per unit, weighted by how much each entity shipped.",
   unit_cost: "Average cost of producing one unit, weighted the same way as price. Price minus unit cost is the margin.",
   lead_time: "Months a customer ordering today is quoted to wait for delivery. Lead time lengthens when the order book is long relative to output.",

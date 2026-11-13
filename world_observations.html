@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Observations · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=616e719-1794543371">
-<link rel="stylesheet" href="assets/datamodel.css?v=616e719-1794543371">
+<link rel="stylesheet" href="assets/site.css?v=1ad103d-1794543425">
+<link rel="stylesheet" href="assets/datamodel.css?v=1ad103d-1794543425">
 <style>
   .spark { display: block; }
   .spark rect { fill: var(--accent); fill-opacity: 0.55; }
@@ -78,7 +78,7 @@
   <div class="tablewrap dm"><table id="types"></table></div>
   </section>
 </main>
-<script src="assets/site.js?v=616e719-1794543371"></script>
+<script src="assets/site.js?v=1ad103d-1794543425"></script>
 <script>
 (async () => {
   try {
@@ -216,7 +216,7 @@
       }
       const ys0 = Math.floor(x0 / 12), ys1 = Math.floor(x1 / 12), every = Math.max(1, Math.ceil((ys1 - ys0) / 10));
       for (let yy = ys0 + 1; yy <= ys1; yy++) if ((yy - ys0) % every === 0) g += `<text x="${X(yy * 12)}" y="${H - 5}" text-anchor="middle">${yy}</text>`;
-      // one line per subject: the most frequent subjects in colour, the rest grey
+      // one line per subject: the most frequent subjects in color, the rest gray
       const bySub = new Map();
       pts.forEach((i) => { const s = R.subject[i]; (bySub.get(s) || bySub.set(s, []).get(s)).push(i); });
       const order = [...bySub.entries()].sort((a, b) => b[1].length - a[1].length);

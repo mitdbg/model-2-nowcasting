@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Model Configuration · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=616e719-1794543371">
+<link rel="stylesheet" href="assets/site.css?v=1ad103d-1794543425">
 <style>
   main > p, main > ul { max-width: 80ch; }
   .wkv { display: grid; grid-template-columns: 230px 1fr; gap: 6px 16px; max-width: 980px; font-size: 14px; }
@@ -56,8 +56,8 @@
   <div class="wkv" id="fitkv"></div>
 
   <h2>Starting ranges for the parameters</h2>
-  <p>Before fitting, each parameter has a prior: a centre and a 90% range of plausible values. The fit starts from the
-  centre and the range sets how far the data must push to move it (see <a href="evaluation.html">What the data pin down</a>
+  <p>Before fitting, each parameter has a prior: a center and a 90% range of plausible values. The fit starts from the
+  center and the range sets how far the data must push to move it (see <a href="evaluation.html">What the data pin down</a>
   for how far they did). Most come from the model's catalog; some are set for a sector, with a recorded reason. Entity
   parameters' ranges also bound how much entities in a group may differ.</p>
   <div class="ctl" id="pctl"></div>
@@ -81,7 +81,7 @@
   representative entities that stand for untracked establishments.</p>
   <div class="cmp tablewrap"><table id="estab"></table></div>
 </main>
-<script src="assets/site.js?v=616e719-1794543371"></script>
+<script src="assets/site.js?v=1ad103d-1794543425"></script>
 <script>
 (async () => {
   try {
@@ -180,7 +180,7 @@
       row("Rounds", `up to ${ft.max_rounds}, stopping after ${ft.patience} rounds without improvement or a relative change below ${ft.tol}; the best round is kept`),
       row("Steps per round", `${ft.lbfgs_iters} optimizer steps per entity, ${ft.sector_iters} for the sector parameters`),
       row("Pull toward the group", `as strong as ${ft.kappa0} entities' worth of data, before the fit adjusts it (L25)`),
-      row("Capacity growth priors", ft.trend_priors ? "centred on each sector's demand trend" : "from the catalog"),
+      row("Capacity growth priors", ft.trend_priors ? "centered on each sector's demand trend" : "from the catalog"),
       row("Per-sector settings", ov.length ? ov.map((s) => `${M2.esc(short[s.code])}: ${Object.entries(s.fit_overrides).map(([k, v]) => `${k.replace(/_/g, " ")} ${v}`).join(", ")}`).join("; ") : "none"),
     ].join("");
 
@@ -194,17 +194,17 @@
       document.getElementById("priors").innerHTML = `<tr><th class="sym">symbol${M2.info("The parameter as it appears in the equations on Model Structure.")}</th>
         <th>meaning${M2.info("What the parameter controls, and the equation it appears in.")}</th>
         <th>kind${M2.info("Entity: each firm gets its own value. Starting state: a firm's level in the first month of the window. Sector: one value shared by every firm in the sector.")}</th>
-        <th class="n">centre${M2.info("Where the fit starts: the most plausible value before seeing any data.")}</th>
+        <th class="n">center${M2.info("Where the fit starts: the most plausible value before seeing any data.")}</th>
         <th class="n">90% range${M2.info("Values the model finds plausible before seeing data. The narrower the range, the harder the data must push to move the parameter outside it.")}</th>
         <th>set by${M2.info("Catalog: the model's default for every sector. This sector: chosen for this sector, with the reason given.")}</th></tr>` +
         s.priors.map((p) => `<tr><td class="sym">${sym(p.symbol)}</td><td>${M2.esc(M2.PARAM?.[p.name] || p.description)}</td><td class="muted">${KIND[p.kind]}</td>
-          <td class="n">${f(p.centre)}</td><td class="n">${f(p.lo)} to ${f(p.hi)}</td>
+          <td class="n">${f(p.center)}</td><td class="n">${f(p.lo)} to ${f(p.hi)}</td>
           <td>${p.set ? `<span class="setby on" title="${M2.esc(p.reason)}">this sector: ${M2.esc(p.reason)}</span>` : `<span class="setby">catalog</span>`}</td></tr>`).join("");
       history.replaceState(null, "", `?s=${sel}`);
     };
     document.getElementById("pctl").addEventListener("change", (e) => { if (e.target.id === "psel") { sel = e.target.value; drawPriors(); } });
     drawPriors();
-    if (c.fit.trend_priors) document.getElementById("trendnote").textContent = "Capacity drift δ is recentred on the sector's demand trend when the fit starts, so its centre here is the catalog's, not the one the fit used.";
+    if (c.fit.trend_priors) document.getElementById("trendnote").textContent = "Capacity drift δ is recentred on the sector's demand trend when the fit starts, so its center here is the catalog's, not the one the fit used.";
 
     document.getElementById("sigma").innerHTML = `<tr><th>kind of observation${M2.info("A kind of data the model reads, such as a company's revenue or a plant's stated capacity.")}</th>
       <th class="n">noise${M2.info("How far an observation of this kind typically strays from the truth, as a fraction of its value. Larger noise means the model trusts each reading less and moves less when it disagrees.")}</th></tr>` +

@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Model Structure · Model 2 (dev)</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital@0;1&display=swap">
-<link rel="stylesheet" href="assets/site.css?v=616e719-1794543371">
+<link rel="stylesheet" href="assets/site.css?v=1ad103d-1794543425">
 <style>
   main > p, main > ul, main > ol { max-width: 78ch; }
   main > .eqcard, main > figure, main > .tablewrap { max-width: 1000px; }
@@ -85,8 +85,8 @@
   entity in a sector. Not every equation applies to every sector: each sector's <a href="#templates">template</a> switches
   parts on or off. Equations marked with template names apply only to those templates; unmarked ones apply to all. The tags (L1, L2, …) number the equations; the rest of the
   site uses them too.</p>
-  <p class="sub">Every symbol in an equation is coloured by where it comes from, and the rows under the equation
-  describe each one, using the same colours:
+  <p class="sub">Every symbol in an equation is colored by where it comes from, and the rows under the equation
+  describe each one, using the same colors:
   <span class="src-inline"><span class="k c-out">Computed here</span> what the equation works out;
   <span class="k c-lrn">Learned by the fit</span> a parameter the fit estimates from past observations, per entity or per
   sector; <span class="k c-bnd">From the sector input bundle</span> a driver, taken as given;
@@ -274,7 +274,7 @@
   </div>
   <div class="eqcard"><h3>Phantom orders <span class="tag">L10</span><span class="when">where order inflation is on</span></h3>
     <div class="eq"><span class="c-out">P<sub>t</sub></span> = clip( <span class="c-oth">P<sub>t−1</sub></span> + (<span class="c-oth">O<sub>t</sub></span> − <span class="c-oth">O<sup>gen</sup><sub>t</sub></span>) − <span class="c-oth">X<sub>t</sub></span> − (<span class="c-oth">P<sub>t−1</sub></span> / <span class="c-oth">B<sub>t−1</sub></span>) · <span class="c-oth">Sh<sub>t</sub></span>,&nbsp; 0,&nbsp; <span class="c-oth">B<sub>t</sub></span> )</div>
-    <p>Phantom orders are cancelled, or shipped in proportion to their share of the book.</p>
+    <p>Phantom orders are canceled, or shipped in proportion to their share of the book.</p>
     <div class="src"><span class="k c-out">Computed here</span><span><span class="c-out">P<sub>t</sub></span> phantom orders</span><span class="k c-oth">From other equations</span><span><span class="c-oth">P<sub>t−1</sub></span> last month's phantom orders (L10); <span class="c-oth">O<sub>t</sub>, O<sup>gen</sup><sub>t</sub></span> orders placed and genuine orders (L6); <span class="c-oth">X<sub>t</sub></span> cancellations (L7); <span class="c-oth">Sh<sub>t</sub></span> shipments (L8); <span class="c-oth">B<sub>t−1</sub>, B<sub>t</sub></span> the order book last month and this month, scheduled plus overdue (L9)</span></div>
   </div>
   <div class="eqcard"><h3>Finished stock <span class="tag">L11</span><span class="when">where output can be stored</span></h3>
@@ -405,7 +405,7 @@
   </ol>
 </main>
 <div class="eqtip" id="eqtip" hidden></div>
-<script src="assets/site.js?v=616e719-1794543371"></script>
+<script src="assets/site.js?v=1ad103d-1794543425"></script>
 <script>
 // One month's chain of equations, drawn for a template's modules (src/firm_model/templates.py):
 // pipeline (capacity built through L19–L22), occ (output is capacity in use, L18), stock (finished stock),
@@ -445,7 +445,7 @@ function chainSVG(m, label) {
   E.push(ln(150, 62, 188, 62), ln(330, 62, 368, 62, "placed", 349, 54), ln(510, 62, 548, 62, "due", 529, 54, "middle", 1),
     ln(330, 262, 368, 262, "limits", 349, 254), ln(150, 362, 188, 362), ln(330, 362, 368, 362));
   if (!m.lost) E.push(path("M 590 84 C 590 112, 500 112, 500 86", "left overdue", 545, 124));
-  if (m.infl) E.push(ln(260, 84, 260, 138, "extra orders", 266, 116, "start"), path("M 330 150 C 400 150, 420 120, 420 86", "cancelled", 428, 114, "start"));
+  if (m.infl) E.push(ln(260, 84, 260, 138, "extra orders", 266, 116, "start"), path("M 330 150 C 400 150, 420 120, 420 86", "canceled", 428, 114, "start"));
   if (!m.occ) E.push(path("M 80 84 V 210 H 410 V 238", "demand pressure", 160, 204));
   if (m.inv) E.push(path("M 410 284 V 304 H 80 V 286", "inputs used", 140, 298));
   if (m.stock) E.push(ln(510, 262, 548, 262, "made", 529, 254), ln(620, 240, 620, 86, "shipped from", 614, 200, "end", 1));

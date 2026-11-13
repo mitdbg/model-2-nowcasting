@@ -1,7 +1,7 @@
 // Data model explorer: draws a descriptive-datamodel/1 file (docs/datamodel.json) as a schema
-// map, tables grouped and coloured by family, joins as crow's-foot lines, with a sidebar that
+// map, tables grouped and colored by family, joins as crow's-foot lines, with a sidebar that
 // shows the selected table's columns and joins. Self-contained: DataModel.render(element, model).
-// Styles in datamodel.css; colours from its --dm-* variables.
+// Styles in datamodel.css; colors from its --dm-* variables.
 
 const DataModel = (() => {
   const NS = "http://www.w3.org/2000/svg";
@@ -73,7 +73,7 @@ const DataModel = (() => {
     return { W, H: y - GAP + 16, regions, boxes };
   }
 
-  // Where a line leaves box p towards box o, and the outward direction there.
+  // Where a line leaves box p toward box o, and the outward direction there.
   const end = (p, o) => {
     const cx = p.x + p.w / 2, cy = p.y + p.h / 2, dx = o.x + o.w / 2 - cx, dy = o.y + o.h / 2 - cy;
     return Math.abs(dx) * p.h > Math.abs(dy) * p.w

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Entities · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=616e719-1794543371">
+<link rel="stylesheet" href="assets/site.css?v=1ad103d-1794543425">
 <style>
   .gchips { display: flex; flex-wrap: wrap; gap: 4px 6px; margin-top: 6px; align-items: center; font-size: 12.5px; }
   .gchips .gk { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; margin-right: 2px; }
@@ -51,7 +51,7 @@
       <div class="grid" id="obs"></div>
 
       <h2>Fitted parameters</h2>
-      <p class="sub">Each row shows one free parameter of this entity. Bar: the prior's 90% interval (grey), the fit's
+      <p class="sub">Each row shows one free parameter of this entity. Bar: the prior's 90% interval (gray), the fit's
       90% interval (outlined), the fitted value and the truth (orange tick). Sd ratio: the fit's sd over the prior's; near
       1, the data taught little. Offsets such as õ and α count from window constants (D̄, x̄, log K₀) that the fit sets
       from its own window, so fit and truth can differ by convention as well as by error.</p>
@@ -63,7 +63,7 @@
     </div>
   </div>
 </main>
-<script src="assets/site.js?v=616e719-1794543371"></script>
+<script src="assets/site.js?v=1ad103d-1794543425"></script>
 <script>
 const toT = (tr, v) => (tr === "log" ? Math.log(v) : tr === "logit" ? Math.log(v / (1 - v)) : v);
 (async () => {

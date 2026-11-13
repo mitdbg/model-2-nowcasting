@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Fitted Parameters · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=616e719-1794543371">
+<link rel="stylesheet" href="assets/site.css?v=1ad103d-1794543425">
 <style>
   #fit td.n { font-variant-numeric: tabular-nums; }
   td.sym, th.sym { white-space: nowrap; font-style: italic; }
@@ -13,13 +13,13 @@
 <main>
   <h1>Fitted Parameters</h1>
   <p class="sub">The sector parameters of the <a href="forecast_overview.html">current fit</a>, one sector at a time, beside
-  the value the fit started from (the prior's centre)<span id="truthnote"></span>. Each parameter's role is on
+  the value the fit started from (the prior's center)<span id="truthnote"></span>. Each parameter's role is on
   <a href="forecast_model.html#params">Model Structure</a>. Entity parameters are on each entity's page in
   <a href="sector.html">Forecasts</a>.</p>
   <div class="tabs" id="sectabs" role="tablist" aria-label="Sector"></div>
   <div class="tablewrap"><table id="fit"></table></div>
 </main>
-<script src="assets/site.js?v=616e719-1794543371"></script>
+<script src="assets/site.js?v=1ad103d-1794543425"></script>
 <script>
 (async () => {
   try {
@@ -29,7 +29,7 @@
     const synthetic = f.sectors.some((s) => s.params.some((p) => p.truth != null));
     if (synthetic) document.getElementById("truthnote").innerHTML = `, and the truth that generated this synthetic world.
       In this world every sector parameter's starting value equals its truth (the simulation set them at the
-      priors' centres), so the table shows how far the fit wandered from the truth, not how far it travelled to find it;
+      priors' centers), so the table shows how far the fit wandered from the truth, not how far it traveled to find it;
       red marks a fitted value more than 5% from the truth`;
     const short = Object.fromEntries(meta.sectors.map((s) => [s.code, s.short]));
     const bySector = [...f.sectors].sort((a, b) => (short[a.code] || a.code).localeCompare(short[b.code] || b.code));

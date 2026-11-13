@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Current Problems · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=616e719-1794543371">
+<link rel="stylesheet" href="assets/site.css?v=1ad103d-1794543425">
 <style>
   main > p, main > ol { max-width: 80ch; }
   .how { background: var(--band2); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; max-width: 900px; font-size: 13.5px; }
@@ -44,7 +44,7 @@
 </div>
 <div class="prob"><h3>2. Machinery output does not match official industrial production</h3>
 <div class="row"><span>Evidence</span><span>"Sector totals against official statistics": Industrial production, machinery, 26/100 months in range, 13.4% gap, "disagrees"; capacity utilization 96/100 with a 3.4% gap. Machinery Output has a spread ratio of 10.90. On the forecast page, Machinery's typical gap is 3.9%.</span></div>
-<div class="row"><span>Why it matters</span><span>The model's Machinery output is about an eighth away from the official figure, even though it is pulled towards that figure while it runs.</span></div>
+<div class="row"><span>Why it matters</span><span>The model's Machinery output is about an eighth away from the official figure, even though it is pulled toward that figure while it runs.</span></div>
 <div class="row"><span>Likely causes</span><span>This could be a consequence of problem 1. The tracked firms may not represent the whole industry, or they may be scaled up to the industry total wrongly. Utilization can only stay close while output is 13% off if the capacity level is off by a similar amount.</span></div>
 <div class="row"><span>Confidence</span><span>High.</span></div>
 </div>
@@ -57,7 +57,7 @@
 <div class="prob"><h3>4. Inventory and shipment data are fitted poorly even after being seen</h3>
 <div class="row"><span>Evidence</span><span>"Observations against the model": Sector inventories 43/100, sitting 98% of the way to the edge of the range (94 observations); Finished inventory 80/100 (783); Census shipments 78/100 (160); Wholesale 79/100 (371). These are the only kinds of observation, and the only sector, marked "misses too many".</span></div>
 <div class="row"><span>Why it matters</span><span>These observations have already been used by the model, so misses this large mean its structure cannot reproduce how inventories behave.</span></div>
-<div class="row"><span>Likely causes</span><span>The units or definitions may not match between the data and the model, for example months of sales against money, or cost against price. The model may also pull inventories towards a fixed normal level more strongly than the data shows.</span></div>
+<div class="row"><span>Likely causes</span><span>The units or definitions may not match between the data and the model, for example months of sales against money, or cost against price. The model may also pull inventories toward a fixed normal level more strongly than the data shows.</span></div>
 <div class="row"><span>Confidence</span><span>High.</span></div>
 </div>
 <div class="prob"><h3>5. The ranges on sector totals are too narrow</h3>
@@ -85,7 +85,7 @@
 <div class="row"><span>Confidence</span><span>High.</span></div>
 </div>
 <div class="prob"><h3>9. Some parameters rest mainly on their priors</h3>
-<div class="row"><span>Evidence</span><span>"What the data pin down": emissions slope b is informative for 23 of 47 entities (median 0.81), δ for 47 of 90, starting markup m0 for 68 of 115, and List-price gap for 6 of 11. Semiconductors lead-time bias is 0% informative and Steel b 18%. The page warns that the pull towards each group's average can make a parameter look informative when it is not.</span></div>
+<div class="row"><span>Evidence</span><span>"What the data pin down": emissions slope b is informative for 23 of 47 entities (median 0.81), δ for 47 of 90, starting markup m0 for 68 of 115, and List-price gap for 6 of 11. Semiconductors lead-time bias is 0% informative and Steel b 18%. The page warns that the pull toward each group's average can make a parameter look informative when it is not.</span></div>
 <div class="row"><span>Why it matters</span><span>These settings come mainly from assumptions, and any error in them passes silently into emissions, prices and capacity.</span></div>
 <div class="row"><span>Likely causes</span><span>There may be too little data that varies in the right way, or pairs of parameters may trade off against each other, for example starting markup against starting unit cost.</span></div>
 <div class="row"><span>Confidence</span><span>Medium.</span></div>
@@ -100,7 +100,7 @@
 <p><b>What the pages cannot tell me:</b></p>
 <ol><li>How the forecasts compare with what actually happened, as opposed to later model estimates.</li><li>How the forecasts compare with a simple baseline, such as the last value or a seasonal trend.</li><li>When over time the official misses and the jumps in spread occur (a steady offset, or a break in a particular month).</li><li>What share of each official statistic the tracked entities cover.</li><li>How many simulated copies the filter keeps, and how often they collapse onto a few.</li></ol>
 </main>
-<script src="assets/site.js?v=616e719-1794543371"></script>
+<script src="assets/site.js?v=1ad103d-1794543425"></script>
 <script>
 (async () => {
   try {
