@@ -16,6 +16,13 @@ const DataModel = (() => {
 
   // When the file names columns and every family has one, families stack in their columns (each
   // column outlined and titled, one or two tables across); otherwise see layout() below.
+  // A column title's width in the diagram's units, measured in the title's font (.dm-ctitle: 14px, 600).
+  function titleWidth(text) {
+    const ctx = (titleWidth.ctx ||= document.createElement("canvas").getContext("2d"));
+    ctx.font = `600 14px ${getComputedStyle(document.body).fontFamily}`;
+    return ctx.measureText(text).width;
+  }
+
   function columnLayout(model) {
     const bw = 150, bh = 24, gy = 8, fh = 30, top = 44;
     const regions = [], boxes = new Map(), frames = [];
@@ -24,8 +31,7 @@ const DataModel = (() => {
       const fams = model.families.filter((f) => f.column === c.id);
       const count = (f) => model.tables.filter((t) => t.family === f.id).length;
       const nc = fams.every((f) => count(f) <= 4) ? 1 : 2;
-      // at least as wide as the column's title (about 6.2 px a character at the title's size)
-      const w = Math.max(2 * PAD + nc * bw + (nc - 1) * GAP, c.name.length * 6.2 - 2 * PAD);
+      const w = Math.max(2 * PAD + nc * bw + (nc - 1) * GAP, titleWidth(c.name) + 4);   // the title fits too
       let y = top;
       for (const f of fams) {
         const h = fh + Math.max(1, Math.ceil(count(f) / nc)) * (bh + gy) + 4;
