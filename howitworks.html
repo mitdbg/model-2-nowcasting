@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>How It Works · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=ae6cb95-1794597140">
-<link rel="stylesheet" href="assets/datamodel.css?v=ae6cb95-1794597140">
+<link rel="stylesheet" href="assets/site.css?v=ae6cb95-1794597230">
+<link rel="stylesheet" href="assets/datamodel.css?v=ae6cb95-1794597230">
 <style>
   .hiw-fig { margin: 16px 0 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px; overflow-x: auto; }
   .hiw-fig svg { display: block; width: 100%; min-width: 760px; height: auto; }
@@ -29,7 +29,7 @@
     <ol start="0">
       <li><b>Manage worlds and forecasts</b>: record every world, model version, fit and forecast with an id that
       never changes.</li>
-      <li><b>Choose a world</b>, either a version of the real world or a wholly-synthetic one.</li>
+      <li><b>Build a world</b>, either a version of the real world or a wholly-synthetic one.</li>
       <li><b>Run the world forward</b>, both running forecasts and fitting parameters to past data.</li>
       <li><b>Score the results</b> as best it can. When the world is synthetic, more detailed scores are possible.</li>
       <li><b>Improve the system</b>: record what the scores show is wrong and the possible fixes, so that the next
@@ -37,7 +37,7 @@
     </ol>
   </div>
   <figure class="hiw-fig dm">
-    <svg viewBox="0 0 1140 760" role="img" aria-label="Over every stage, a catalog records each world, fit and forecast. Choose a world, run the world forward at each date T using only what was known then, score the results, then improve the system and start again from a world">
+    <svg viewBox="0 0 1140 760" role="img" aria-label="Over every stage, a catalog records each world, fit and forecast. Build a world, run the world forward at each date T using only what was known then, score the results, then improve the system and start again from a world">
       <defs><marker id="hiw-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--muted)"/></marker></defs>
 
       <!-- 0 · manage worlds and forecasts: across every stage -->
@@ -55,9 +55,9 @@
       <text x="700" y="16" text-anchor="middle" class="q">Backtest: repeat stages 2 and 3 at a series of past dates, each run seeing only what was known then</text>
       <path class="edge" d="M1009 56V30H330V54" marker-end="url(#hiw-arrow)"/>
 
-      <!-- 1 · choose a world -->
+      <!-- 1 · build a world -->
       <rect class="frame" x="16" y="56" width="250" height="380" rx="10"/>
-      <text x="32" y="82" class="t">1 · Choose a world</text>
+      <text x="32" y="82" class="t">1 · Build a world</text>
       <a href="datamodel.html?t=entities">
         <rect x="32" y="96" width="218" height="68" rx="6" fill="var(--dm-1)" fill-opacity="0.2" stroke="var(--dm-1)"/>
         <text x="44" y="118" class="n">Entity registry</text>
@@ -141,7 +141,7 @@
       <!-- truth → scores -->
       <path class="edge" d="M141 408V456H1009V238" marker-end="url(#hiw-arrow)" stroke-dasharray="5 3"/>
       <text x="570" y="476" text-anchor="middle" class="q">the truth, for scoring only; the model never sees it</text>
-      <!-- 4 · improving the system: from the scores back to choosing a world -->
+      <!-- 4 · improving the system: from the scores back to building a world -->
       <rect class="frame" x="290" y="500" width="580" height="152" rx="10"/>
       <text x="306" y="526" class="t">4 · Improving the system</text>
       <a href="datamodel.html?t=problems">
@@ -170,7 +170,7 @@
   made, each with an id that never changes, so any result can be traced to exactly what produced it. A world's
   own tables (its registry, observations, input bundles and truth) are keyed only within the world, so their rows
   are unique together with the world's id; a run refuses a world that has no id, or a fit made on another world.</p>
-  <h2>1 · Choose a world</h2>
+  <h2>1 · Build a world</h2>
   <p>A world is everything the model can see:</p>
   <ul>
     <li><b>The entity registry</b> lists the entities, their sites, the companies that own or operate them, and the
@@ -223,7 +223,7 @@
   it had run then, so its errors show how the model would have done in real time. The scores cover the last 12 months
   of history, the nowcast, and forecasts 3, 6 and 12 months ahead.</p>
 </main>
-<script src="assets/site.js?v=ae6cb95-1794597140"></script>
+<script src="assets/site.js?v=ae6cb95-1794597230"></script>
 <script>
 (async () => {
   try {
