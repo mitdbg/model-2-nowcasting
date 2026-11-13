@@ -282,6 +282,8 @@ const DataModel = (() => {
     root.querySelector(".dm-others").addEventListener("change", (e) => { others = e.target.checked; update(); });
     new ResizeObserver(() => draw()).observe(root);
     draw();
+    // column widths are measured in the page's font: draw again once web fonts have loaded
+    document.fonts?.ready.then(() => { L = null; draw(); });
     return { select };
   }
 

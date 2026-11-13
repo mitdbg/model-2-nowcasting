@@ -131,3 +131,117 @@ button.info:hover, .infowrap.open button.info { background: var(--accent); borde
   background: var(--panel); color: var(--fg); border: 1px solid var(--line); border-radius: 6px;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12); font-size: 13px; font-weight: 400; line-height: 1.45; }
 .infowrap:hover .infotip, .infowrap.open .infotip { display: block; }
+
+/* ===== Design C: "Statistical Abstract" (print-statistics). Source Serif 4 headings, Source Sans 3 text and data, muted navy and slate. ===== */
+:root {
+  --bg: #fbfaf7; --panel: #ffffff; --fg: #1f2933; --muted: #52606d; --line: #d3d0c7; --grid: #e8e5dd;
+  --accent: #23395b; --band: rgba(46, 90, 135, 0.17); --band2: rgba(46, 90, 135, 0.05);
+  --truth: #c0561f; --obs: #1f2933; --rep: #7d3f86; --rep-band: rgba(125, 63, 134, 0.15); --tracked: #23395b;
+  --nowcast: rgba(181, 140, 60, 0.12); --forecast: rgba(82, 96, 109, 0.09);
+  --good: #2f6b3a; --warn: #8a5d00; --bad: #a3261b; --chip: #eeebe3;
+  --link: #2a5a8c;
+  --serif: "Source Serif 4", "Source Serif Pro", Georgia, "Times New Roman", serif;
+  --sans: "Source Sans 3", "Source Sans Pro", "Segoe UI", Helvetica, Arial, sans-serif;
+  --mono: "Source Code Pro", ui-monospace, Menlo, monospace;
+  font-family: var(--sans);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #15181c; --panel: #1c2026; --fg: #e6e4de; --muted: #a3acb5; --line: #363c45; --grid: #272c33;
+    --accent: #9db7d9; --band: rgba(157, 183, 217, 0.2); --band2: rgba(157, 183, 217, 0.08);
+    --truth: #e8896b; --obs: #e6e4de; --rep: #c69bd0; --rep-band: rgba(198, 155, 208, 0.17); --tracked: #9db7d9;
+    --nowcast: rgba(212, 180, 94, 0.10); --forecast: rgba(163, 172, 181, 0.08);
+    --good: #7fbf8a; --warn: #e0b45c; --bad: #ef8a7d; --chip: #272c33; --link: #9db7d9;
+  }
+}
+body { font-size: 15.5px; line-height: 1.55; }
+a { color: var(--link); }
+.mono, .setmenu .sm-w, header.top .run, code, .pid { font-family: var(--mono) !important; }
+header.top { background: var(--panel); border-bottom: 0; box-shadow: 0 1px 0 var(--line), 0 3px 0 var(--panel), 0 5px 0 var(--accent); }
+header.top .in { padding-top: 12px; padding-bottom: 10px; }
+header.top .brand { font-family: var(--serif); font-weight: 700; font-size: 20px; color: var(--accent); letter-spacing: 0; }
+header.top nav a { color: var(--muted); font-size: 14px; letter-spacing: 0.01em; }
+header.top nav a.on { color: var(--accent); font-weight: 600; }
+h1, h2, .q h3, .dm-head b { font-family: var(--serif); }
+h1 { font-size: 31px; font-weight: 600; line-height: 1.2; color: var(--fg); }
+h2 { font-size: 21px; font-weight: 600; border-bottom: 1px solid var(--fg); padding-bottom: 3px; margin-top: 36px; }
+h3 { font-size: 15px; font-weight: 700; }
+.q .big { font-family: var(--serif); font-weight: 600; font-variant-numeric: lining-nums; }
+.sub { color: #3e4c59; }
+@media (prefers-color-scheme: dark) { .sub { color: #c3c8ce; } }
+.card, .side, .dm-side, .excard, .q, .how { border-radius: 2px !important; }
+.card { border-color: var(--line); border-top: 2px solid var(--accent); }
+.tabs { gap: 0 22px; border-bottom: 1px solid var(--line); padding-bottom: 0; }
+.tabs a, .tabs button { border: 0; border-radius: 0; background: transparent; color: var(--muted); padding: 4px 0 7px;
+  font-size: 13px; text-transform: uppercase; letter-spacing: 0.07em; font-weight: 600; border-bottom: 3px solid transparent; margin-bottom: -1px; }
+.tabs a:hover { border-color: var(--line); color: var(--fg); }
+.tabs a.on, .tabs button.on { background: transparent; color: var(--accent); border-bottom-color: var(--accent); }
+/* booktabs-style tables */
+table { font-variant-numeric: tabular-nums; }
+thead th, table tr:first-child th { border-top: 1.5px solid var(--fg); }
+th { color: var(--fg); font-weight: 600; font-size: 12.5px; border-bottom: 1px solid var(--fg); }
+td { border-bottom-color: var(--grid); }
+tbody tr:last-child td { border-bottom: 1.5px solid var(--fg); }
+.chip { border-radius: 2px; color: var(--muted); }
+.note { border-left: 3px solid var(--warn); background: #fbf6ea; font-style: normal; }
+@media (prefers-color-scheme: dark) { .note { background: #241f14; } }
+.side .grp { font-weight: 700; letter-spacing: 0.08em; }
+.side a.on { background: var(--band); color: var(--fg); font-weight: 600; }
+svg.chart text { font-family: var(--sans); }
+
+th button { color: var(--link) !important; }
+th[aria-sort] button { color: var(--fg) !important; }
+
+/* ===== Variant C1: "Abstract, closer to the book". Applied on top of C.css.
+   Bold grotesque headings (Libre Franklin), near-black ink on white, rules instead of color;
+   the accent only for links and the selected tab. ===== */
+:root {
+  --bg: #fdfdfb; --panel: #ffffff; --fg: #111111; --muted: #4d4d4d; --line: #c9c9c6; --grid: #e6e6e3;
+  --accent: #1f4e8c; --link: #1f4e8c;
+  --band: rgba(17, 17, 17, 0.13); --band2: rgba(17, 17, 17, 0.04);
+  --truth: #c8551a; --obs: #111111; --rep: #7d3f86; --rep-band: rgba(125, 63, 134, 0.15); --tracked: #111111;
+  --nowcast: rgba(200, 150, 40, 0.11); --forecast: rgba(17, 17, 17, 0.06);
+  --good: #2c6b35; --warn: #8a5d00; --bad: #a3261b; --chip: #f1f1ee;
+  --head: "Libre Franklin", "Franklin Gothic Medium", "Helvetica Neue", Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #121212; --panel: #191919; --fg: #ececec; --muted: #a8a8a8; --line: #3a3a3a; --grid: #2a2a2a;
+    --accent: #8fb4e3; --link: #8fb4e3; --band: rgba(236, 236, 236, 0.16); --band2: rgba(236, 236, 236, 0.05);
+    --truth: #f08a52; --obs: #ececec; --rep: #c99bd3; --rep-band: rgba(201, 155, 211, 0.17); --tracked: #ececec;
+    --nowcast: rgba(220, 180, 80, 0.09); --forecast: rgba(236, 236, 236, 0.05); --chip: #262626;
+  }
+}
+/* headings: bold grotesque, black */
+h1, h2, h3, .q h3, .dm-head b, .q .big, header.top .brand { font-family: var(--head) !important; }
+header.top { box-shadow: none; border-bottom: 3px solid var(--fg); }
+header.top .brand { color: var(--fg); font-weight: 800; font-size: 19px; letter-spacing: -0.01em; }
+header.top nav a.on { color: var(--fg); font-weight: 700; }
+h1 { font-weight: 800; font-size: 30px; letter-spacing: -0.015em; }
+h2 { font-weight: 700; font-size: 19px; border-bottom: 0; border-top: 2px solid var(--fg); padding: 6px 0 0; }
+h3 { font-weight: 700; }
+.q .big { font-weight: 700; }
+.sub { color: var(--fg); }
+/* boxes: no fill tint, rules only */
+.card { border: 0; border-top: 2px solid var(--fg); border-bottom: 1px solid var(--line); border-radius: 0 !important; background: transparent; padding-left: 0; padding-right: 0; }
+.excard, .q { border: 0 !important; border-top: 2px solid var(--fg) !important; border-bottom: 1px solid var(--line) !important; background: transparent !important; padding-left: 0 !important; padding-right: 0 !important; }
+.how { background: transparent !important; border: 0 !important; border-top: 1px solid var(--fg) !important; border-bottom: 1px solid var(--fg) !important; padding-left: 0 !important; font-size: 13px !important; }
+.side, .dm-side { border-radius: 0 !important; border-color: var(--line); }
+.chip { background: transparent; border: 1px solid var(--line); border-radius: 0; color: var(--muted); }
+.note { background: transparent; border-left: 3px solid var(--warn); font-size: 13px; }
+/* tabs: plain labels, accent only on the selected one */
+.tabs a, .tabs button { color: var(--fg); font-family: var(--head); font-size: 12px; letter-spacing: 0.06em; font-weight: 600; }
+.tabs a.on, .tabs button.on { color: var(--accent); border-bottom-color: var(--accent); }
+/* tables: heavy top and bottom rules, hairline under the heading */
+thead th, table tr:first-child th { border-top: 2px solid var(--fg); }
+th { font-family: var(--head); font-weight: 600; font-size: 12px; border-bottom: 1px solid var(--fg); }
+tbody tr:last-child td { border-bottom: 2px solid var(--fg); }
+td { border-bottom-color: var(--grid); }
+.hz .bar { background: var(--fg) !important; opacity: 0.7 !important; }
+.side a.on { background: transparent; color: var(--fg); font-weight: 700; box-shadow: inset 3px 0 0 var(--accent); }
+/* chart medians and other data marks in ink, not the accent */
+svg.chart polyline[stroke="var(--accent)"] { stroke: var(--fg); }
+.legend i[style*="var(--accent)"] { background: var(--fg) !important; }
+.lk .dots i.on { background: var(--fg) !important; border-color: var(--fg) !important; }
+/* sub-tabs in normal case so long labels fit on one line */
+.tabs a, .tabs button { text-transform: none; letter-spacing: 0; font-size: 13.5px; }

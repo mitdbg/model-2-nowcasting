@@ -62,3 +62,10 @@
   .dm-body { grid-template-columns: 1fr; }
   .dm-side { position: static; max-height: 320px; }
 }
+
+/* Design C family colors (muted, print-like, still distinct) */
+.dm { --dm-1: #2e5a87; --dm-2: #b5652a; --dm-3: #3d7a4f; --dm-4: #23395b; --dm-5: #a34d6d; --dm-6: #9a7a1f; --dm-7: #6b5b95; --dm-8: #7a6a58; --dm-9: #2f7f86; --dm-10: #a3261b; }
+@media (prefers-color-scheme: dark) { .dm { --dm-1: #8fb3db; --dm-2: #e39a68; --dm-3: #86c299; --dm-4: #b3c0d6; --dm-5: #e08fae; --dm-6: #d8bd6a; --dm-7: #b0a3d6; --dm-8: #c4b4a0; --dm-9: #7cc4ca; --dm-10: #ef8a7d; } }
+
+/* C1: data-model family colors kept distinct but darker and less saturated, closer to ink */
+.dm { --dm-1: #2e5a87; --dm-2: #a85a2a; --dm-3: #3d6e48; --dm-4: #333333; --dm-5: #93445f; --dm-6: #85691c; --dm-7: #62558a; --dm-8: #6d6052; --dm-9: #2c6f74; --dm-10: #962a20; }

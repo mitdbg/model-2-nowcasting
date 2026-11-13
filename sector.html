@@ -3,7 +3,9 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Sectors · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=ae6cb95-1794599529">
+<link rel="stylesheet" href="assets/site.css?v=19834de-1794600206">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Code+Pro:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800&display=swap">
 <style>
   .card .head .chips { display: flex; gap: 6px; align-items: center; }
   .chip.frommodel { color: var(--warn); background: color-mix(in srgb, var(--warn) 14%, transparent); font-weight: 600; cursor: help; }
@@ -53,7 +55,7 @@
   </div>
   </div>
 </main>
-<script src="assets/site.js?v=ae6cb95-1794599529"></script>
+<script src="assets/site.js?v=19834de-1794600206"></script>
 <script>
 (async () => {
   try {
@@ -105,7 +107,7 @@
         const tt = [[tr, "tracked", "var(--tracked)"], [rp, "representative", "var(--rep)"]]
           .filter(([c]) => c.truth).map(([c, l, col]) => ({ month: c.month, value: c.truth, color: col, label: `${l} truth` }));
         M2.chart(card(split, v, "", " Split: tracked and representative entities, which sum to the sector total."), { bands: [{ ...tr, label: "tracked", color: "var(--tracked)" },
-                                          { ...rp, label: "representative", color: "var(--rep)", bandColor: "rgba(138,90,158,.16)" }],
+                                          { ...rp, label: "representative", color: "var(--rep)", bandColor: "var(--rep-band, rgba(138,90,158,.16))" }],
                                    truth: tt, status: t, unit, yZero: true, yLabel: ylab(v) });
       }
     }
