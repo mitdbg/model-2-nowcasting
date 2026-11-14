@@ -29,9 +29,11 @@ under Evaluation, `eval_revisions.html` (each backtest run's nowcast and forecas
 `datamodel.html?t=TABLE` is the data model,
 drawn from `docs/datamodel.json` by `assets/datamodel.js`; edit that file and rebuild to change it. Not part of the Model 1 (KEYNES) site.
 
-The site holds several sets, each a world with a forecast made on it, under `data/sets/<world>__<run>/`,
-listed in `data/sets.json`. Each build adds one (`--no-default` keeps the current default); the picker at the
-top right of every page switches between them, remembered in the browser, or `?set=ID` in the address.
+The site holds several sets, each one forecast with everything it was made from, under `data/sets/<forecast id>/`,
+listed in `data/sets.json`. Each build adds one (`--no-default` keeps the current default). The picker at the top
+right of every page chooses a forecast; its world, model and fit follow from it, so each entry shows them as facts
+about the forecast, with when it was made and the months it covers (`time_grid`, `model_commit` in `sets.json`).
+The choice is remembered in the browser, or `?set=ID` in the address.
 
 Under Next Version, `next_problems.html` shows the chosen set's problem summary (`data/problems.json`), written by
 an evaluator that saw only that set's four Evaluation pages that need no ground truth, and kept in

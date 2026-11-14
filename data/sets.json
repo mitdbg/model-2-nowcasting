@@ -11,7 +11,15 @@
    "made_utc": "2026-11-10T04:06:42Z",
    "fit": "fit_2026q3:2026-09-30",
    "built_utc": "2026-11-13T03:50:27Z",
-   "forecast": "b653c9a8-4454-5e3d-8a00-0a530afd83a0"
+   "forecast": "b653c9a8-4454-5e3d-8a00-0a530afd83a0",
+   "time_grid": {
+    "frequency": "monthly",
+    "history_start": "2018-10",
+    "last_observed": "2026-09",
+    "forecast_end": "2027-09"
+   },
+   "model": "5cbe5e41-3076-5c38-9c17-7cf014193fd5",
+   "model_commit": "de7dbd9"
   },
   {
    "id": "976debf3-7f2a-5e1a-aec0-e24ae8ea99d3",
@@ -23,7 +31,15 @@
    "made_utc": "2026-11-13T13:29:22Z",
    "fit": "fit_2026q3:2026-09-30",
    "built_utc": "2026-11-13T14:27:44Z",
-   "forecast": "976debf3-7f2a-5e1a-aec0-e24ae8ea99d3"
+   "forecast": "976debf3-7f2a-5e1a-aec0-e24ae8ea99d3",
+   "time_grid": {
+    "frequency": "monthly",
+    "history_start": "2018-10",
+    "last_observed": "2026-08",
+    "forecast_end": "2027-09"
+   },
+   "model": "f9fc9a9b-a8c5-5b55-ad69-2e9a0f746b52",
+   "model_commit": "4659a39"
   }
  ]
 }

@@ -141,22 +141,25 @@ M2.header = (meta, page) => {
   };
   pin();
   addEventListener("resize", pin);
-  // which world and forecast the site shows, top right; clicking lists the others to switch to
+  // which forecast the site shows, top right; clicking lists the others to switch to. The forecast is the one
+  // choice: its world, model and fit follow from it, so they are shown as facts about each forecast
   Promise.all([M2.sets(), M2.currentSet()]).then(([idx, cur]) => {
     const wrap = document.getElementById("setpick"), btn = document.getElementById("worldtag"), menu = document.getElementById("setmenu");
     const c = idx.sets.find((x) => x.id === cur);
     if (!wrap || !c) return;
     const day = (t) => (t ? t.slice(0, 10) : "");
-    btn.textContent = `World ${c.world} · Forecast ${c.as_of} ▾`;
-    btn.title = "Change the world and forecast this site shows";
+    btn.textContent = `Forecast for ${c.as_of}, made ${day(c.made_utc)} ▾`;
+    btn.title = `Change the forecast this site shows (now: world ${c.world})`;
     wrap.hidden = false;
     const sets = [...idx.sets].sort((a, b) => (b.made_utc || "").localeCompare(a.made_utc || ""));
+    const span = (g) => g ? `covers ${g.history_start} to ${g.forecast_end} (observed to ${g.last_observed})` : "";
     // each entry: the body switches to it on this page; "About this world" switches and opens Inputs
-    menu.innerHTML = `<div class="sm-head">World and forecast shown</div>` + sets.map((x) =>
+    menu.innerHTML = `<div class="sm-head">Forecast shown</div>` + sets.map((x) =>
       `<div class="sm-row${x.id === cur ? " on" : ""}">
         <button type="button" class="sm-item" data-set="${M2.esc(x.id)}" role="option" aria-selected="${x.id === cur}">
-        <span class="sm-w">World ${M2.esc(x.world)} <span class="sm-k">(${x.world_kind === "synthetic" ? "synthetic" : "real"})</span></span>
-        <span class="sm-f">Forecast for ${M2.esc(x.as_of)}, made ${M2.esc(day(x.made_utc))}${x.id === idx.default ? " · default" : ""}</span></button>
+        <span class="sm-w">Forecast for ${M2.esc(x.as_of)}, made ${M2.esc(day(x.made_utc))}${x.id === idx.default ? " <span class=\"sm-k\">· default</span>" : ""}</span>
+        <span class="sm-f">${M2.esc(span(x.time_grid))}</span>
+        <span class="sm-f">World ${M2.esc(x.world)} (${x.world_kind === "synthetic" ? "synthetic" : "real"})${x.model_commit ? ` · model ${M2.esc(x.model_commit)}` : ""}</span></button>
         <a class="sm-about" href="world_overview.html?set=${encodeURIComponent(x.id)}" title="Show this world and forecast, and open Inputs">About this world</a></div>`).join("");
     const open = (on) => { menu.hidden = !on; btn.setAttribute("aria-expanded", on); };
     btn.addEventListener("click", (e) => { e.stopPropagation(); open(menu.hidden); });
