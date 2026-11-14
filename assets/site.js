@@ -38,7 +38,7 @@ M2.SUBPAGES = {"index.html": [["index.html", "Introduction"], ["howitworks.html"
                           ["forecast_config.html", "Model Configuration"]],
   "forecast_overview.html": [["forecast_overview.html", "Introduction"], ["forecast_fit.html", "Fitted Parameters"], ["sector.html", "Forecasts"]],
   "next_problems.html": [["next_problems.html", "Current Problems"], ["next_improvements.html", "Possible Improvements"],
-                         ["next_plan.html", "Testing Plan"], ["next_results.html", "Test Results"]],
+                         ["next_testing.html", "Improvement Testing"]],
   "eval_revisions.html": [["eval_revisions.html", "Forecasts against later estimates"], ["eval_observations.html", "Observations against the model"], ["eval_official.html", "Sector totals against official statistics"], ["evaluation.html", "What the data pin down"], ["accuracy.html", "Against ground truth"]]};
 // Pages reached through a sub-tab without being one: they light up that sub-tab.
 M2.SUBALIAS = {"entity.html": "sector.html", "groupings.html": "world_entities.html"};

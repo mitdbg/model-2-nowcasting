@@ -2802,6 +2802,11 @@
      "description": "its problem's number and a letter: 1A, 1B, 2A, ..."
     },
     {
+     "name": "title",
+     "type": "string",
+     "description": "a short summary of the fix"
+    },
+    {
      "name": "fix",
      "type": "text",
      "description": "2-3 sentences"
@@ -2977,6 +2982,11 @@
      "name": "label",
      "type": "string",
      "description": "the fix's label"
+    },
+    {
+     "name": "verdict",
+     "type": "code",
+     "description": "Worked, Partly worked, Did not work, Could not test"
     },
     {
      "name": "summary",
