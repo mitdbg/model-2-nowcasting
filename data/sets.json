@@ -19,7 +19,8 @@
     "forecast_end": "2027-09"
    },
    "model": "5cbe5e41-3076-5c38-9c17-7cf014193fd5",
-   "model_commit": "de7dbd9"
+   "model_commit": "de7dbd9",
+   "fit_catalog_id": "eb6bdf47-04b2-5b23-8e0e-1d2ec46ad133"
   },
   {
    "id": "976debf3-7f2a-5e1a-aec0-e24ae8ea99d3",
@@ -39,7 +40,8 @@
     "forecast_end": "2027-09"
    },
    "model": "f9fc9a9b-a8c5-5b55-ad69-2e9a0f746b52",
-   "model_commit": "4659a39"
+   "model_commit": "4659a39",
+   "fit_catalog_id": "686d981a-645e-5417-863a-7bc252f90d2d"
   }
  ]
 }
