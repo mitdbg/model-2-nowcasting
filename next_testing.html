@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Improvement Testing · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=8b997ef-1794678605">
+<link rel="stylesheet" href="assets/site.css?v=7d9d013-1794678653">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Code+Pro:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800&display=swap">
 <style>
@@ -46,7 +46,7 @@
   <div class="how" id="how"></div>
   <div class="tablewrap ai" id="wrap" data-ai="Tested by AI agents, not human-reviewed"></div>
 </main>
-<script src="assets/site.js?v=8b997ef-1794678605"></script>
+<script src="assets/site.js?v=7d9d013-1794678653"></script>
 <script>
 (async () => {
   try {
@@ -62,7 +62,7 @@
     }
     how.innerHTML = `<p>Every possible improvement, and what became of it. Each test was carried out by an AI agent that
       made the change and ran the checks its fix describes. These results have not been human-reviewed.</p>
-      ${t.planned_by ? `<p>Not all Possible Improvements are tested. The system prioritized fixes likely to work. It
+      ${t.planned_by ? `<p>Not all possible improvements are tested. The system prioritized fixes likely to work. It
       evaluates no fix that is less likely than Coin Flip. The total testing plan must cost at most $100 and complete
       within 24 hours when run in parallel.</p>` : ""}`;
     const problems = rep ? rep.problems : {};
