@@ -134,6 +134,10 @@ button.info:hover, .infowrap.open button.info { background: var(--accent); borde
   background: var(--panel); color: var(--fg); border: 1px solid var(--line); border-radius: 6px;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12); font-size: 13px; font-weight: 400; line-height: 1.45; }
 .infowrap:hover .infotip, .infowrap.open .infotip { display: block; }
+/* in a table heading the tip opens just below its (i), not at the top of the card or page */
+th .infowrap { position: relative; }
+th .infotip { left: auto; right: -6px; top: 22px; width: 260px; white-space: normal; text-align: left; font-family: inherit; }
+th:first-child .infotip, th:nth-child(2) .infotip { right: auto; left: -6px; }
 
 /* ===== Design C: "Statistical Abstract" (print-statistics). Source Serif 4 headings, Source Sans 3 text and data, muted navy and slate. ===== */
 :root {
