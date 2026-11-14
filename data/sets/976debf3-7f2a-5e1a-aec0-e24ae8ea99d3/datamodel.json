@@ -2851,7 +2851,7 @@
    "key": "planned_test_id",
    "description": "One possible fix chosen to be tested: the testing plan, in the order the fixes will be tested.",
    "constraints": "A fix is planned at most once; planning it again updates its place in the plan and keeps its id.",
-   "unclear": "A fix taken off the plan keeps its record.",
+   "unclear": "A fix taken off the plan keeps its record, with on_plan false.",
    "columns": [
     {
      "name": "planned_test_id",
@@ -2898,6 +2898,11 @@
      "name": "order",
      "type": "int",
      "description": "its place in the plan"
+    },
+    {
+     "name": "on_plan",
+     "type": "bool",
+     "description": "false once the fix is taken off the plan"
     },
     {
      "name": "planned_by",
