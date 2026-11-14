@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Possible Improvements · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=ab41214-1794678682">
+<link rel="stylesheet" href="assets/site.css?v=80297ec-1794678750">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Code+Pro:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800&display=swap">
 <style>
@@ -26,9 +26,9 @@
   table.fixes td.f { width: 46%; }
   table.fixes td.n { white-space: nowrap; }
   table.fixes tr.cont td.p a { color: var(--muted); }
-  th button { all: unset; cursor: pointer; color: var(--accent); }
-  th button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  th[aria-sort] button { color: var(--fg); }
+  th button[data-k] { all: unset; cursor: pointer; color: var(--accent); }
+  th button[data-k]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  th[aria-sort] button[data-k] { color: var(--fg); }
   th .arrow { font-size: 10px; margin-left: 3px; }
   .lk { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
   .lk .dots { display: inline-flex; gap: 2px; }
@@ -43,7 +43,7 @@
   <div class="how" id="how"></div>
   <div class="tablewrap ai" id="wrap" data-ai="Written by AI, not human-reviewed"></div>
 </main>
-<script src="assets/site.js?v=ab41214-1794678682"></script>
+<script src="assets/site.js?v=80297ec-1794678750"></script>
 <script>
 (async () => {
   try {
@@ -69,10 +69,10 @@
                    time: (a, b) => a.time_hours - b.time_hours || a.problem - b.problem || a.order - b.order,
                    cost: (a, b) => a.cost_usd - b.cost_usd || a.problem - b.problem || a.order - b.order };
     let key = cols[M2.param("sort")] ? M2.param("sort") : "problem", dir = M2.param("dir") === "desc" ? -1 : 1;
-    const head = (k, label) => {
+    const head = (k, label, tip = "") => {
       const on = k === key;
       return `<th${on ? ` aria-sort="${dir > 0 ? "ascending" : "descending"}"` : ""}><button type="button" data-k="${k}">${label}`
-        + `<span class="arrow" aria-hidden="true">${on ? (dir > 0 ? "▲" : "▼") : "↕"}</span></button></th>`;
+        + `<span class="arrow" aria-hidden="true">${on ? (dir > 0 ? "▲" : "▼") : "↕"}</span></button>${M2.info(tip)}</th>`;
     };
     const lk = (v) => {
       const n = L.length - L.indexOf(v);
@@ -83,7 +83,9 @@
       const sorted = rows.slice().sort((a, b) => dir * cols[key](a, b));
       let last = null;
       document.getElementById("wrap").innerHTML = `<table class="fixes"><thead><tr><th>Fix</th>${head("problem", "Problem")}<th>Possible Fix</th>`
-        + `${head("likelihood", "Likelihood of Success")}${head("time", "Estimated Time To Test")}${head("cost", "Estimated Financial Cost To Test")}</tr></thead><tbody>`
+        + `${head("likelihood", "Likelihood of Success", "The reviewer's judgment of whether the fix would clearly reduce the problem, as the Evaluation pages show it.")}`
+        + `${head("time", "Estimated Time To Test", "From starting work on the fix to having the test's result: writing the change and running the checks.")}`
+        + `${head("cost", "Estimated Financial Cost To Test", "The cloud computing the checks would use.")}</tr></thead><tbody>`
         + sorted.map((f) => {
           const cont = key === "problem" && f.problem === last;   // later fixes for the same problem: link muted
           last = f.problem;
@@ -92,7 +94,7 @@
             + `<span class="pid" title="The problem's lasting id: ${M2.esc(f.problem_id)}">${M2.esc(f.problem_id.slice(0, 8))}</span></td>`
             + `<td class="f">${M2.esc(f.fix)}</td><td>${lk(f.likelihood)}</td><td class="n">${M2.esc(f.time)}</td><td class="n">${M2.esc(f.cost)}</td></tr>`;
         }).join("") + "</tbody></table>";
-      document.querySelectorAll("th button").forEach((b) => b.addEventListener("click", () => {
+      document.querySelectorAll("th button[data-k]").forEach((b) => b.addEventListener("click", () => {
         if (b.dataset.k === key) dir = -dir; else { key = b.dataset.k; dir = 1; }
         const q = new URLSearchParams(location.search);
         q.set("sort", key);
