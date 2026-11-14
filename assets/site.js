@@ -30,7 +30,7 @@ M2.param = (k) => new URLSearchParams(location.search).get(k);
 
 M2.esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
-M2.PAGES = [["index.html", "Overview"], ["world_overview.html", "Inputs"], ["forecast_overview.html", "Model and Forecasts"],
+M2.PAGES = [["index.html", "Overview"], ["world_overview.html", "World Inputs"], ["forecast_overview.html", "Model and Forecasts"],
             ["eval_revisions.html", "Evaluation"], ["next_problems.html", "Next Version"]];
 // Pages shown as sub-tabs under a top-level tab, chosen near the top of the page.
 M2.SUBPAGES = {"index.html": [["index.html", "Introduction"], ["howitworks.html", "How It Works"], ["datamodel.html", "Data Model"], ["forecast_model.html", "Model Structure"]],
