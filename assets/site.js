@@ -149,7 +149,7 @@ M2.header = (meta, page) => {
     if (!wrap || !c) return;
     const day = (t) => (t ? t.slice(0, 10) : "");
     btn.textContent = `Forecast ${(c.forecast || c.id).slice(0, 8)} · computed ${day(c.made_utc)} ▾`;
-    btn.title = `Change the forecast this site shows (now: forecast ${c.forecast || c.id}, world ${c.world})`;
+    btn.title = `Change the forecast this site shows (now: forecast ${c.forecast || c.id}, world ${c.world_catalog_id || c.world})`;
     wrap.hidden = false;
     const sets = [...idx.sets].sort((a, b) => (b.made_utc || "").localeCompare(a.made_utc || ""));
     const span = (g) => g ? `Covers ${g.history_start} to ${g.forecast_end} (observed to ${g.last_observed})` : "";
@@ -160,7 +160,7 @@ M2.header = (meta, page) => {
         <span class="sm-w">Forecast <span class="sm-id">${M2.esc(x.forecast || x.id)}</span>${x.id === idx.default ? " <span class=\"sm-k\">· default</span>" : ""}</span>
         <span class="sm-c">Computed ${M2.esc(day(x.made_utc))}</span>
         <span class="sm-f">${M2.esc(span(x.time_grid))}</span>
-        <span class="sm-f">As-of date ${M2.esc(x.as_of)} · world ${M2.esc(x.world)} (${x.world_kind === "synthetic" ? "synthetic" : "real"})${x.model_commit ? ` · model ${M2.esc(x.model_commit)}` : ""}</span></button></div>`).join("");
+        <span class="sm-f">As-of date ${M2.esc(x.as_of)} · world <span title="${M2.esc(x.world_catalog_id || "")}">${M2.esc((x.world_catalog_id || x.world).slice(0, 8))}</span> (${x.world_kind === "synthetic" ? "synthetic" : "real"}, ${M2.esc(x.world)})${x.model_commit ? ` · model ${M2.esc(x.model_commit)}` : ""}</span></button></div>`).join("");
     const open = (on) => { menu.hidden = !on; btn.setAttribute("aria-expanded", on); };
     btn.addEventListener("click", (e) => { e.stopPropagation(); open(menu.hidden); });
     document.addEventListener("click", (e) => { if (!wrap.contains(e.target)) open(false); });
