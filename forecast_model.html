@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital@0;1&display=swap">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Code+Pro:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800&display=swap">
-<link rel="stylesheet" href="assets/site.css?v=a4261dc-1794677178">
+<link rel="stylesheet" href="assets/site.css?v=2d553f0-1794677384">
 <style>
   main > p, main > ul, main > ol { max-width: 78ch; }
   main > .eqcard, main > figure, main > .tablewrap { max-width: 1000px; }
@@ -78,10 +78,10 @@
 <main>
   <h1>Model Structure</h1>
   <p class="sub">Model 2 describes every entity by a handful of <b>hidden states</b>, such as its capacity, its order
-  book and its unit cost, that change month by month. One set of equations moves them forward a month at a time.
-  <b>Drivers</b> from the sector input bundle push them; <b>parameters</b> set how strongly, and how fast each state
-  returns to normal; and random <b>shocks</b> each month stand for the events the equations don't describe, such as an outage, a strike or a surprise order. <b>Observation equations</b> say what each kind of
-  observation would read, given the states. This page gives the equations as the current forecast runs them.</p>
+  book and its unit cost, that change month by month. One set of equations moves them forward a month at a time.</p>
+  <p class="sub"><b>Drivers</b> from the sector input bundle push them; <b>parameters</b> set how strongly, and how fast each state
+  returns to normal; and random <b>shocks</b> each month capture the events the equations don't describe, such as an outage, a strike or a surprise order. <b>Observation equations</b> say what each kind of
+  observation would read, given the states.</p>
   <p class="sub">Every equation is per entity, and <span class="sym">t</span> is the month. Sector quantities (the
   drivers, real demand <span class="sym">D</span>, sector capacity <span class="sym">K</span>) are the same for every
   entity in a sector. Not every equation applies to every sector: each sector's <a href="#templates">template</a> switches
@@ -407,7 +407,7 @@
   </ol>
 </main>
 <div class="eqtip" id="eqtip" hidden></div>
-<script src="assets/site.js?v=a4261dc-1794677178"></script>
+<script src="assets/site.js?v=2d553f0-1794677384"></script>
 <script>
 // One month's chain of equations, drawn for a template's modules (src/firm_model/templates.py):
 // pipeline (capacity built through L19–L22), occ (output is capacity in use, L18), stock (finished stock),
