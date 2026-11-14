@@ -31,8 +31,8 @@ drawn from `docs/datamodel.json` by `assets/datamodel.js`; edit that file and re
 
 The site holds several sets, each one forecast with everything it was made from, under `data/sets/<forecast id>/`,
 listed in `data/sets.json`. Each build adds one (`--no-default` keeps the current default). The picker at the top
-right of every page chooses a forecast; its world, model and fit follow from it, so each entry shows them as facts
-about the forecast, with when it was made and the months it covers (`time_grid`, `model_commit` in `sets.json`).
+right of every page chooses a forecast; its world, model and fit follow from it, so each entry shows the forecast's id, when it was
+computed and the months it covers, then its run date, world and model (`time_grid`, `model_commit` in `sets.json`).
 The choice is remembered in the browser, or `?set=ID` in the address.
 
 Under Next Version, `next_problems.html` shows the chosen set's problem summary (`data/problems.json`), written by
