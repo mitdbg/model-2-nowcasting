@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Test Results · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=e6c8d54-1794663321">
+<link rel="stylesheet" href="assets/site.css?v=794d327-1794668058">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Code+Pro:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800&display=swap">
 <style>
@@ -12,11 +12,11 @@
   table.tests { font-size: 13px; max-width: 1200px; }
   @media (min-width: 900px) {
     #wrap.tablewrap { overflow: visible; }
-    table.tests thead th { position: sticky; top: var(--hdr, 43px); z-index: 2; background: var(--bg); box-shadow: inset 0 -1px 0 var(--line); }
+    table.tests thead th { position: sticky; top: calc(var(--hdr, 43px) + var(--sub, 0px)); z-index: 2; background: var(--bg); box-shadow: inset 0 -1px 0 var(--line); }
   }
   table.tests td.id { font-weight: 600; white-space: nowrap; }
   .pid { display: block; font-weight: 400; font-size: 11px; color: var(--muted); font-family: "IBM Plex Mono", ui-monospace, monospace; }
-  table.tests tr { scroll-margin-top: calc(var(--hdr, 48px) + 44px); }
+  table.tests tr { scroll-margin-top: calc(var(--hdr, 48px) + var(--sub, 0px) + 44px); }
   table.tests tr.hit { background: var(--band2); }
   table.tests td.p { width: 20%; }
   table.tests td.s { width: 50%; }
@@ -30,7 +30,7 @@
   <div class="how" id="how"></div>
   <div class="tablewrap" id="wrap"></div>
 </main>
-<script src="assets/site.js?v=e6c8d54-1794663321"></script>
+<script src="assets/site.js?v=794d327-1794668058"></script>
 <script>
 (async () => {
   try {

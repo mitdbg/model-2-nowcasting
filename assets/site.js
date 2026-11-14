@@ -30,12 +30,13 @@ M2.param = (k) => new URLSearchParams(location.search).get(k);
 
 M2.esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
-M2.PAGES = [["index.html", "Overview"], ["world_overview.html", "World Details"], ["forecast_overview.html", "Model and Forecasts"],
+M2.PAGES = [["index.html", "Overview"], ["world_overview.html", "Inputs"], ["forecast_overview.html", "Model and Forecasts"],
             ["eval_revisions.html", "Evaluation"], ["next_problems.html", "Next Version"]];
 // Pages shown as sub-tabs under a top-level tab, chosen near the top of the page.
 M2.SUBPAGES = {"index.html": [["index.html", "Introduction"], ["howitworks.html", "How It Works"], ["datamodel.html", "Data Model"], ["forecast_model.html", "Model Structure"]],
-  "world_overview.html": [["world_overview.html", "Introduction"], ["world_entities.html", "Entities"], ["world_observations.html", "Observations"], ["world_bundle.html", "Sector input bundle"]],
-  "forecast_overview.html": [["forecast_overview.html", "Introduction"], ["forecast_config.html", "Model Configuration"], ["forecast_fit.html", "Fitted Parameters"], ["sector.html", "Forecasts"]],
+  "world_overview.html": [["world_overview.html", "Introduction"], ["world_entities.html", "World Entities"], ["world_observations.html", "World Observations"], ["world_bundle.html", "Sector input bundle"],
+                          ["forecast_config.html", "Model Configuration"]],
+  "forecast_overview.html": [["forecast_overview.html", "Introduction"], ["forecast_fit.html", "Fitted Parameters"], ["sector.html", "Forecasts"]],
   "next_problems.html": [["next_problems.html", "Current Problems"], ["next_improvements.html", "Possible Improvements"],
                          ["next_plan.html", "Testing Plan"], ["next_results.html", "Test Results"]],
   "eval_revisions.html": [["eval_revisions.html", "Forecasts against later estimates"], ["eval_observations.html", "Observations against the model"], ["eval_official.html", "Sector totals against official statistics"], ["evaluation.html", "What the data pin down"], ["accuracy.html", "Against ground truth"]]};
@@ -150,13 +151,13 @@ M2.header = (meta, page) => {
     btn.title = "Change the world and forecast this site shows";
     wrap.hidden = false;
     const sets = [...idx.sets].sort((a, b) => (b.made_utc || "").localeCompare(a.made_utc || ""));
-    // each entry: the body switches to it on this page; "About this world" switches and opens World Details
+    // each entry: the body switches to it on this page; "About this world" switches and opens Inputs
     menu.innerHTML = `<div class="sm-head">World and forecast shown</div>` + sets.map((x) =>
       `<div class="sm-row${x.id === cur ? " on" : ""}">
         <button type="button" class="sm-item" data-set="${M2.esc(x.id)}" role="option" aria-selected="${x.id === cur}">
         <span class="sm-w">World ${M2.esc(x.world)} <span class="sm-k">(${x.world_kind === "synthetic" ? "synthetic" : "real"})</span></span>
         <span class="sm-f">Forecast for ${M2.esc(x.as_of)}, made ${M2.esc(day(x.made_utc))}${x.id === idx.default ? " · default" : ""}</span></button>
-        <a class="sm-about" href="world_overview.html?set=${encodeURIComponent(x.id)}" title="Show this world and forecast, and open World Details">About this world</a></div>`).join("");
+        <a class="sm-about" href="world_overview.html?set=${encodeURIComponent(x.id)}" title="Show this world and forecast, and open Inputs">About this world</a></div>`).join("");
     const open = (on) => { menu.hidden = !on; btn.setAttribute("aria-expanded", on); };
     btn.addEventListener("click", (e) => { e.stopPropagation(); open(menu.hidden); });
     document.addEventListener("click", (e) => { if (!wrap.contains(e.target)) open(false); });

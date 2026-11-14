@@ -79,7 +79,7 @@ svg.chart .gridline { stroke: var(--grid); }
 .tip { position: fixed; pointer-events: none; background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 6px 8px; font-size: 12px; box-shadow: 0 2px 8px rgba(0,0,0,.15); z-index: 20; white-space: nowrap; }
 .layout { display: grid; grid-template-columns: 260px 1fr; gap: 20px; }
 .layout > * { min-width: 0; }
-.side { position: sticky; top: 56px; align-self: start; max-height: calc(100vh - 70px); overflow: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 10px; }
+.side { position: sticky; top: calc(var(--hdr, 43px) + var(--sub, 0px) + 12px); align-self: start; max-height: calc(100vh - var(--hdr, 43px) - var(--sub, 0px) - 24px); overflow: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 10px; }
 .side input, .side select, select, input[type=search] { width: 100%; font: inherit; padding: 4px 6px; border: 1px solid var(--line); border-radius: 4px; background: var(--bg); color: var(--fg); }
 .side .grp { margin: 10px 0 2px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
 .side a { display: block; padding: 2px 4px; border-radius: 3px; font-size: 13px; }
@@ -92,7 +92,8 @@ svg.chart .gridline { stroke: var(--grid); }
 .tabs a.on { background: var(--accent); border-color: var(--accent); color: var(--panel); }
 .subtabs { margin: 0 0 16px; }
 /* Forecasts pages: the sub-tabs, and the chosen item's name and details, stay pinned while the page scrolls */
-main:has(.fx) > .subtabs { position: sticky; top: var(--hdr, 43px); z-index: 4; background: var(--bg); margin: 0 0 8px; padding: 8px 0; }
+/* every page's sub-tabs stay in view below the site header; pages that pin more below them use --sub */
+main > .subtabs { position: sticky; top: var(--hdr, 43px); z-index: 4; background: var(--bg); margin: 0 0 8px; padding: 8px 0; }
 .fx .ehead { position: sticky; top: var(--sub-top, calc(var(--hdr, 43px) + var(--sub, 44px))); z-index: 3; background: var(--bg);
   padding: 2px 0 8px; margin-bottom: 4px; border-bottom: 1px solid var(--line); }
 .fx .ehead h1 { margin: 0 0 2px; }

@@ -21,7 +21,7 @@
 .dm-legend span { display: flex; gap: 6px; align-items: center; }
 .dm-body { display: grid; grid-template-columns: 1fr 300px; gap: 16px; align-items: start; }
 .dm-body > * { min-width: 0; }
-.dm-side { position: sticky; top: 56px; max-height: calc(100vh - 70px); overflow: auto; background: var(--panel);
+.dm-side { position: sticky; top: calc(var(--hdr, 43px) + var(--sub, 0px) + 12px); max-height: calc(100vh - var(--hdr, 43px) - var(--sub, 0px) - 24px); overflow: auto; background: var(--panel);
   border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; font-size: 13px; }
 .dm-map svg { display: block; width: 100%; height: auto; max-height: calc(100vh - 80px); background: var(--panel);
   border: 1px solid var(--line); border-radius: 8px; touch-action: none; cursor: grab; user-select: none; }
