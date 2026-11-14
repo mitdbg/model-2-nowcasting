@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Improvement Testing · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=f6c2091-1794680504">
+<link rel="stylesheet" href="assets/site.css?v=002aae4-1794680763">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Code+Pro:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800&display=swap">
 <style>
@@ -50,7 +50,7 @@
   <div class="how" id="how"></div>
   <div class="tablewrap" id="wrap"></div>
 </main>
-<script src="assets/site.js?v=f6c2091-1794680504"></script>
+<script src="assets/site.js?v=002aae4-1794680763"></script>
 <script>
 (async () => {
   try {
@@ -104,7 +104,7 @@
         const nb = key === "order" ? b.order == null : key === "time" || key === "cost" ? !b.result : false;
         return na !== nb ? (na ? 1 : -1) : dir * c;
       });
-      document.getElementById("wrap").innerHTML = `<table class="tests"><thead><tr>${head("order", "Order", "", "The fix's place in the testing plan. Fixes that were not tried have none.")}${head("fix", "Fix")}`
+      document.getElementById("wrap").innerHTML = `<table class="tests"><thead><tr>${head("order", "Test Order", "", "The fix's place in the testing plan. Fixes that were not tried have none.")}${head("fix", "Fix")}`
         + `${head("problem", "Problem")}<th>Fix Summary</th>${head("status", "Status", "aicol", "", true)}${head("time", "Actual Time To Test", "n", "From the start of the test to its result: making the change and running the checks.")}`
         + `${head("cost", "Actual Financial Cost", "n", "The cloud computing the test used.")}<th class="aicol"><span class="ailabel">AI generated</span>What Happened</th></tr></thead><tbody>`
         + sorted.map((f) => `<tr id="fix-${f.label}" class="${f.order == null ? "untried" : ""}">`
