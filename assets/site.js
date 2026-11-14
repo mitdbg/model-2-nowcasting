@@ -175,7 +175,9 @@ M2.header = (meta, page) => {
     });
   }).catch(() => {});
   const sub = page === "sector.html" ? (own === "entity.html" ? "Forecasts by entity" : "Forecasts by sector") : subs?.find((p) => p[0] === page)?.[1];
-  document.title = `${sub && page !== top ? sub : M2.PAGES.find((p) => p[0] === top)?.[1] ?? "Model 2"} · Model 2 (dev)`;
+  // the home page is simply "Model 2"; every other page names itself first
+  document.title = page === "index.html" ? "Model 2"
+    : `${sub && page !== top ? sub : M2.PAGES.find((p) => p[0] === top)?.[1] ?? "Model 2"} · Model 2`;
 };
 
 M2.fmt = (v, unit) => {
