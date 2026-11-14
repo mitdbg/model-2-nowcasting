@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Model and Forecasts · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=945a1fb-1794679294">
+<link rel="stylesheet" href="assets/site.css?v=f6c2091-1794680504">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Code+Pro:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800&display=swap">
 <style>
@@ -32,7 +32,7 @@
   the round kept.</p>
   <div class="tablewrap"><table id="secs"></table></div>
 </main>
-<script src="assets/site.js?v=945a1fb-1794679294"></script>
+<script src="assets/site.js?v=f6c2091-1794680504"></script>
 <script>
 (async () => {
   try {
@@ -48,9 +48,7 @@
       the observations known on the run date. Then the <b>filter</b> runs every entity forward month by month with those
       numbers, correcting its hidden states with each month's observations, to the last observed month (history), the
       months since (nowcast) and a year ahead (forecast). It runs ${f.n_members} copies of the world at once, each with
-      its own random shocks and its own draw of the uncertain parameters; their spread gives the 90% band.
-      <a href="forecast_model.html">Overview › Model Structure</a> gives the equations, and <a href="sector.html">Forecasts</a>
-      shows the results.`;
+      its own random shocks and its own draw of the uncertain parameters; their spread gives the 90% band.`;
     const row = (k, v) => v == null || v === "" ? "" : `<span class="k">${k}</span><span>${v}</span>`;
     const bi = f.band_inflation;
     document.getElementById("run").innerHTML = [
