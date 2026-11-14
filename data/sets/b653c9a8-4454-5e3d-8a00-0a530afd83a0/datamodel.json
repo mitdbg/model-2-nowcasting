@@ -137,7 +137,7 @@
    "name": "Catalog",
    "color": 9,
    "column": 0,
-   "description": "A lasting record of every world, model version, fit and forecast, spanning all the other phases: worlds are recorded as they are built, fits and forecasts as they are made, and problems and fixes name the ones they are about. One record per item; records point to each other by id and say where the files they describe are.",
+   "description": "A lasting record of every world, model version, fit and forecast, spanning all the other phases: worlds are recorded as they are built, fits and forecasts as they are made, and problems and fixes name the ones they are about. One record per item; records point to each other by id and say where the files they describe are. Every id is a UUID that says nothing about the record; readable names are separate fields.",
    "note": "Every record also has recorded_utc, when the catalog learned of it."
   },
   {
@@ -2425,14 +2425,14 @@
    "columns": [
     {
      "name": "world_id",
-     "type": "string",
-     "description": "name and creation time",
+     "type": "uuid",
+     "description": "a UUID computed from what identifies it, so recording it again finds the same record; never changes (from its name and creation time)",
      "key": true
     },
     {
      "name": "name",
      "type": "string",
-     "description": ""
+     "description": "readable: generator and seed, e.g. w34-units-seed20261112"
     },
     {
      "name": "kind",
@@ -2468,6 +2468,11 @@
      "name": "recorded_later",
      "type": "bool",
      "description": "added after the fact"
+    },
+    {
+     "name": "former_id",
+     "type": "string",
+     "description": "its id before ids became UUIDs (2026-11-13); files written earlier may still hold it, and lookups accept it"
     }
    ]
   },
@@ -2483,9 +2488,14 @@
    "columns": [
     {
      "name": "model_id",
-     "type": "string",
-     "description": "commit and configuration fingerprint",
+     "type": "uuid",
+     "description": "a UUID computed from what identifies it, so recording it again finds the same record; never changes (from its commit and configuration fingerprint)",
      "key": true
+    },
+    {
+     "name": "name",
+     "type": "string",
+     "description": "readable: model--<commit>--<fingerprint>"
     },
     {
      "name": "code",
@@ -2506,6 +2516,11 @@
      "name": "first_seen_utc",
      "type": "timestamp",
      "description": ""
+    },
+    {
+     "name": "former_id",
+     "type": "string",
+     "description": "its id before ids became UUIDs (2026-11-13); files written earlier may still hold it, and lookups accept it"
     }
    ]
   },
@@ -2521,9 +2536,14 @@
    "columns": [
     {
      "name": "fit_id",
-     "type": "string",
-     "description": "",
+     "type": "uuid",
+     "description": "a UUID computed from what identifies it, so recording it again finds the same record; never changes (from its file and when it was made)",
      "key": true
+    },
+    {
+     "name": "name",
+     "type": "string",
+     "description": "readable: world, run date, sector and time"
     },
     {
      "name": "world_id",
@@ -2575,6 +2595,11 @@
      "type": "string",
      "description": "",
      "references": "fit_runs"
+    },
+    {
+     "name": "former_id",
+     "type": "string",
+     "description": "its id before ids became UUIDs (2026-11-13); files written earlier may still hold it, and lookups accept it"
     }
    ]
   },
@@ -2590,9 +2615,19 @@
    "columns": [
     {
      "name": "forecast_id",
-     "type": "string",
-     "description": "",
+     "type": "uuid",
+     "description": "a UUID computed from what identifies it, so recording it again finds the same record; never changes (from where its outputs are)",
      "key": true
+    },
+    {
+     "name": "name",
+     "type": "string",
+     "description": "readable: world and run"
+    },
+    {
+     "name": "run",
+     "type": "string",
+     "description": "the run's folder name: run date and start time"
     },
     {
      "name": "world_id",
@@ -2632,6 +2667,11 @@
      "type": "string",
      "description": "the run's folder",
      "references": "run_meta"
+    },
+    {
+     "name": "former_id",
+     "type": "string",
+     "description": "its id before ids became UUIDs (2026-11-13); files written earlier may still hold it, and lookups accept it"
     }
    ]
   },
