@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital@0;1&display=swap">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Code+Pro:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800&display=swap">
-<link rel="stylesheet" href="assets/site.css?v=edcda6d-1794683492">
+<link rel="stylesheet" href="assets/site.css?v=c13602b-1794684018">
 <style>
   main > p, main > ul, main > ol { max-width: 78ch; }
   main > .eqcard, main > figure, main > .tablewrap { max-width: 1000px; }
@@ -114,8 +114,8 @@
         hidden state, or a quantity the model works out from the states</span></p>
       <p>The chain for a factory that makes goods to order; hover over (or tap) a box for its equation. Demand brings
       orders into the order book; capacity and utilization set output; orders falling due are shipped from output and
-      stock, and what cannot be shipped stays in the book as overdue. Solid arrows carry this month's values, dashed
-      arrows last month's; each state also builds on its own last value, which the popups list. Observations are not
+      stock, and what cannot be shipped stays in the book as overdue. Solid arrows carry this month's values, so they never
+      point left; dashed arrows carry last month's, so they never point right; each state also builds on its own last value, which the popups list. Observations are not
       drawn: after this step, the filter corrects the states with the month's observations (see
       <a href="#filter">How the forecast is made</a>).</p>
       <p>The three arrows marked "feedback" carry last month's <b>tightness</b> (how far the entity is booked beyond
@@ -407,7 +407,7 @@
   </ol>
 </main>
 <div class="eqtip" id="eqtip" hidden></div>
-<script src="assets/site.js?v=edcda6d-1794683492"></script>
+<script src="assets/site.js?v=c13602b-1794684018"></script>
 <script>
 // One month's chain of equations, drawn for a template's modules (src/firm_model/templates.py):
 // pipeline (capacity built through L19–L22), occ (output is capacity in use, L18), stock (finished stock),
@@ -434,27 +434,28 @@ function chainSVG(m, label) {
   const path = (d, t, lx, ly, anchor, dash) => `<path${dash ? ' class="lagd"' : ""} d="${d}" marker-end="url(#ar)"/>` + lab(t, lx, ly, anchor);
   const N = [], E = [];
   N.push(node(0, 0, "Demand, price", "drivers · L2", "L2", "drv"), node(1, 0, "New orders", "L6", "L6"), node(2, 0, "Order book", "L9", "L9"),
-    m.occ ? node(3, 0, "Leases starting", "L8, L18", "L8,L18") : node(3, 0, "Shipments", "L8", "L8"),
+    m.occ ? node(2, 1, "Leases starting", "L8, L18", "L8,L18") : node(2, 1, "Shipments", "L8", "L8"),
     m.pipeline ? node(1, 2, "Capacity pipeline", "L19–L22", "L19") : node(1, 2, "Capacity", "L1", "L1"),
     m.occ ? node(2, 2, "Capacity in use", "L18", "L18") : node(2, 2, "Utilization → output", "L3", "L3"),
     m.occ ? node(4, 2, "Tightness, lead time", "L18", "L18") : m.lost ? node(4, 2, "Tightness", "load factor · L17", "L17") : node(4, 2, "Tightness, lead time", "L13", "L13"),
     node(0, 3, "Input cost", "driver · L4", "L4", "drv"), node(1, 3, "Unit cost", "L4", "L4"), node(2, 3, "Markup → price", "L5", "L5"));
   if (m.infl) N.push(node(1, 1, "Phantom orders", "cancellations · L7, L10", "L7,L10"));
   if (m.lost) N.push(node(4, 0, "Lost demand", "L17", "L17"));
-  if (m.inv) N.push(node(0, 2, "Input inventory", "L12", "L12"));
+  if (m.inv) N.push(node(3, 3, "Input inventory", "L12", "L12"));
   if (m.stock) N.push(node(3, 2, "Finished stock", "L11", "L11"));
-  // this month's flow
-  E.push(ln(150, 62, 188, 62), ln(330, 62, 368, 62, "placed", 349, 54), ln(510, 62, 548, 62, "due", 529, 54, "middle", 1),
+  // this month's flow. Solid arrows (this month) run left to right or straight up or down; dashed ones (last month)
+  // run right to left or straight up or down, so no arrow seems to run against time
+  E.push(ln(150, 62, 188, 62), ln(330, 62, 368, 62, "placed", 349, 54), ln(420, 84, 420, 138, "due", 414, 116, "end", 1),
     ln(330, 262, 368, 262, "limits", 349, 254), ln(150, 362, 188, 362), ln(330, 362, 368, 362));
-  if (!m.lost) E.push(path("M 590 84 C 590 112, 500 112, 500 86", "left overdue", 545, 124));
-  if (m.infl) E.push(ln(260, 84, 260, 138, "extra orders", 266, 116, "start"), path("M 330 150 C 400 150, 420 120, 420 86", "canceled", 428, 114, "start"));
+  if (!m.lost) E.push(ln(480, 140, 480, 86, "left overdue", 486, 116, "start"));
+  if (m.infl) E.push(ln(260, 84, 260, 138, "extra orders", 266, 116, "start"), path("M 330 150 C 362 150, 388 122, 388 86", "canceled", 352, 100, "end"));
   if (!m.occ) E.push(path("M 80 84 V 210 H 410 V 238", "demand pressure", 160, 204));
-  if (m.inv) E.push(path("M 410 284 V 304 H 80 V 286", "inputs used", 140, 298));
-  if (m.stock) E.push(ln(510, 262, 548, 262, "made", 529, 254), ln(620, 240, 620, 86, "shipped from", 614, 200, "end", 1));
-  else if (m.occ) E.push(path("M 620 86 V 262 H 512", "leases start", 626, 200, "start"));
-  else E.push(path("M 510 262 H 620 V 86", "sold from output", 614, 200, "end"));
+  if (m.inv) E.push(path("M 500 284 V 296 H 530 V 362 H 548", "inputs used", 538, 309, "start"));
+  if (m.stock) E.push(ln(510, 262, 548, 262, "made", 529, 254), path("M 600 240 V 172 H 512", "shipped from", 606, 210, "start", 1));
+  else if (m.occ) E.push(ln(440, 184, 440, 238, "leases start", 446, 216, "start"));
+  else E.push(ln(440, 240, 440, 186, "sold from output", 446, 216, "start"));
   // what tightness is measured from
-  if (m.lost) E.push(ln(690, 56, 728, 56, "turned away", 709, 34), path("M 690 76 H 710 V 262 H 728", "sold ÷ output", 704, 190, "end"));
+  if (m.lost) E.push(path("M 510 150 H 790 V 86", "turned away", 700, 144), path("M 510 160 H 760 V 238", "sold ÷ output", 700, 176));
   else if (m.occ) E.push(path("M 470 40 V 26 H 770 V 238", "leases waiting", 764, 150, "end"), path("M 480 284 V 300 H 760 V 286", "in use ÷ capacity", 620, 296));
   else {
     E.push(path("M 470 40 V 26 H 770 V 238", "book ÷ output", 764, 150, "end"));
@@ -463,8 +464,8 @@ function chainSVG(m, label) {
   // last month's tightness, lead time and lost customers, back to the start of the chain
   if (m.infl) E.push(path("M 830 240 V 12 H 230 V 38", "feedback: long lead times bring over-ordering", 530, 6, "middle", 1));
   if (m.lost) E.push(path("M 800 40 V 12 H 270 V 38", "feedback: a share of lost customers books again", 530, 6, "middle", 1));
-  if (!m.occ) E.push(path("M 760 284 V 318 H 470 V 286", "feedback: runs harder", 615, 313, "middle", 1));
-  if (m.pipeline) E.push(path("M 800 284 V 334 H 280 V 286", "feedback: tight → more capacity announced", 640, 352, "middle", 1));
+  if (!m.occ) E.push(path("M 760 284 V 318 H 470 V 286", "feedback: runs harder", 700, 313, "middle", 1));
+  if (m.pipeline) E.push(path("M 800 284 V 334 H 280 V 286", "feedback: tight → more capacity announced", 405, 329, "middle", 1));
   E.push(path("M 840 284 V 410 H 460 V 388", "feedback: raises margin", 650, 403, "middle", 1));
   return `<svg class="fl" viewBox="0 -14 880 434" role="img" aria-label="${label}">
     <defs><marker id="ar" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L8,4 L0,8 z" style="fill: var(--muted); stroke: none"/></marker></defs>
