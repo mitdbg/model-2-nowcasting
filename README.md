@@ -39,7 +39,11 @@ an evaluator that saw only that set's four Evaluation pages that need no ground 
 A set without one says so. `next_improvements.html` (Possible Improvements) shows possible fixes for those problems
 (`data/improvements.json`, from `docs/next_version/<set id>.improvements.json`), each linking to its problem at
 `next_problems.html#problem-N`, labeled 1A, 1B, 2A, ... (`#fix-1A` links to a row), sortable by problem, likelihood of success, time to test or cost to test (`?sort=`, `&dir=desc`).
-`next_plan.html` (Improvement Plan) is a placeholder.
+`next_plan.html` (Testing Plan) lists the fixes chosen to be tested (`data/testplan.json`, from
+`docs/next_version/<set id>.testplan.json`, a list of fix labels in order), and `next_results.html` (Test Results)
+what each test found (`data/testresults.json`: the catalog's test results for the set's forecast, recorded with
+`scripts/record_test.py`), with its summary, runtime and cost; each result's agent transcript stays in the catalog
+and is never published. `#result-<id>` links to a row.
 
 `scripts/deploy_site.sh` pushes `site/` with its data to the private repository
 `mitdbg/model-2-nowcasting`, which serves it with GitHub Pages so it can be viewed from other

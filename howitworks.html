@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>How It Works · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=e751d1b-1794628256">
+<link rel="stylesheet" href="assets/site.css?v=dfdeaed-1794654087">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Code+Pro:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800&display=swap">
-<link rel="stylesheet" href="assets/datamodel.css?v=e751d1b-1794628256">
+<link rel="stylesheet" href="assets/datamodel.css?v=dfdeaed-1794654087">
 <style>
   .hiw-fig { margin: 16px 0 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px; overflow-x: auto; }
   .hiw-fig svg { display: block; width: 100%; min-width: 760px; height: auto; }
@@ -34,8 +34,9 @@
       <li><b>Build a world</b>, either a version of the real world or a wholly-synthetic one.</li>
       <li><b>Run the world forward</b>, both running forecasts and fitting parameters to past data.</li>
       <li><b>Score the results</b> as best it can. When the world is synthetic, more detailed scores are possible.</li>
-      <li><b>Improve the system</b>: record what the scores show is wrong and the possible fixes, so that the next
-      version of the model can be run on a world again.</li>
+      <li><b>Improve the system</b>: record what the scores show is wrong and the possible fixes, test the most
+      promising fixes, and record what each test found, so that the next version of the model can be run on a world
+      again.</li>
     </ol>
   </div>
   <figure class="hiw-fig dm">
@@ -144,24 +145,33 @@
       <path class="edge" d="M141 408V456H1009V238" marker-end="url(#hiw-arrow)" stroke-dasharray="5 3"/>
       <text x="570" y="476" text-anchor="middle" class="q">the truth, for scoring only; the model never sees it</text>
       <!-- 4 · improving the system: from the scores back to building a world -->
-      <rect class="frame" x="290" y="500" width="580" height="152" rx="10"/>
-      <text x="306" y="526" class="t">4 · Improving the system</text>
+      <rect class="frame" x="230" y="500" width="670" height="152" rx="10"/>
+      <text x="246" y="526" class="t">4 · Improving the system</text>
       <a href="datamodel.html?t=problems">
-        <rect x="554" y="540" width="300" height="96" rx="6" fill="var(--dm-10)" fill-opacity="0.2" stroke="var(--dm-10)"/>
-        <text x="566" y="562" class="n">Problems and fixes</text>
-        <text x="566" y="582" class="q">what the evaluation shows is wrong, and</text>
-        <text x="566" y="598" class="q">possible fixes, each with a lasting id and</text>
-        <text x="566" y="614" class="q">naming its world, fit and forecast</text>
+        <rect x="650" y="540" width="234" height="96" rx="6" fill="var(--dm-10)" fill-opacity="0.2" stroke="var(--dm-10)"/>
+        <text x="662" y="562" class="n">Problems and fixes</text>
+        <text x="662" y="582" class="q">what the evaluation shows is</text>
+        <text x="662" y="598" class="q">wrong, and possible fixes, each</text>
+        <text x="662" y="614" class="q">naming its world, fit and forecast</text>
       </a>
-            <rect x="306" y="540" width="224" height="96" rx="6" fill="none" stroke="var(--muted)" stroke-opacity="0.7" stroke-dasharray="5 3"/>
-      <text x="318" y="562" class="n">Later</text>
-      <text x="318" y="582" class="q">fixes tested and their results;</text>
-      <text x="318" y="598" class="q">the ones good enough to deploy</text>
-      <path class="edge" d="M552 588H532" marker-end="url(#hiw-arrow)"/>
-      <path class="edge" d="M1060 436V576H872" marker-end="url(#hiw-arrow)"/>
+      <a href="datamodel.html?t=planned_tests">
+        <rect x="392" y="540" width="234" height="96" rx="6" fill="var(--dm-10)" fill-opacity="0.2" stroke="var(--dm-10)"/>
+        <text x="404" y="562" class="n">Testing plan and results</text>
+        <text x="404" y="582" class="q">the fixes chosen to test, then</text>
+        <text x="404" y="598" class="q">what each test found, how long</text>
+        <text x="404" y="614" class="q">it took and what it cost</text>
+      </a>
+      <rect x="246" y="540" width="122" height="96" rx="6" fill="none" stroke="var(--muted)" stroke-opacity="0.7" stroke-dasharray="5 3"/>
+      <text x="258" y="562" class="n">Later</text>
+      <text x="258" y="582" class="q">the fixes good</text>
+      <text x="258" y="598" class="q">enough to deploy</text>
+      <path class="edge" d="M648 588H628" marker-end="url(#hiw-arrow)"/>
+      <path class="edge" d="M390 588H370" marker-end="url(#hiw-arrow)"/>
+      <path class="edge" d="M1060 436V576H902" marker-end="url(#hiw-arrow)"/>
       <text x="1050" y="598" text-anchor="end" class="q">scores show problems</text>
-      <path class="edge" d="M290 576H70V438" marker-end="url(#hiw-arrow)"/>
-      <text x="84" y="598" class="q">the next version starts again</text>
+      <path class="edge" d="M230 576H70V438" marker-end="url(#hiw-arrow)"/>
+      <text x="84" y="598" class="q">the next version</text>
+      <text x="84" y="614" class="q">starts again</text>
       </g>
     </svg>
   </figure>
@@ -217,15 +227,19 @@
     are written by a reviewer who knows the model but not the world's truth, with odds of success and the time and
     cost to test (<a href="next_improvements.html">Possible Improvements</a>). Each problem and fix has a lasting id
     and names the world, fit and forecast it is about.</li>
-    <li><b>Later</b>, the fixes that are actually tested will be recorded with their results, and the ones good
-    enough to deploy go into the next version of the model, which starts again from stage 1.</li>
+    <li><b>Tests</b>: the fixes chosen to be tested make up the <a href="next_plan.html">Testing Plan</a>. Each
+    test makes the change and runs the checks its fix describes; <a href="next_results.html">Test Results</a> says
+    what each found in a few sentences, how long it took and what it cost. Each planned test and each result has a
+    lasting id and names its fix, problem, world, fit and forecast.</li>
+    <li><b>Later</b>, the fixes good enough to deploy will be recorded too, and go into the next version of the
+    model, which starts again from stage 1.</li>
   </ul>
   <h2>Backtests</h2>
   <p>A backtest repeats stages 2 and 3 at a series of past dates. Each run sees only what was known on its date, as if
   it had run then, so its errors show how the model would have done in real time. The scores cover the last 12 months
   of history, the nowcast, and forecasts 3, 6 and 12 months ahead.</p>
 </main>
-<script src="assets/site.js?v=e751d1b-1794628256"></script>
+<script src="assets/site.js?v=dfdeaed-1794654087"></script>
 <script>
 (async () => {
   try {

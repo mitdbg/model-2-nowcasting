@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Data Model · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=e751d1b-1794628256">
+<link rel="stylesheet" href="assets/site.css?v=dfdeaed-1794654087">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Code+Pro:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800&display=swap">
-<link rel="stylesheet" href="assets/datamodel.css?v=e751d1b-1794628256">
+<link rel="stylesheet" href="assets/datamodel.css?v=dfdeaed-1794654087">
 </head>
 <body>
 <main>
@@ -18,14 +18,15 @@
   draws. Configuration holds the settings people choose; parameter fitting holds the parameters estimated
   from past data. Each run produces sector totals, entity states and diagnostics for its run date. Synthetic truth holds the true values behind a synthetic world and exists
   only there; scores record how close each run came. To improve the system, problems and possible fixes record what the
-  evaluation of a forecast found wrong and what might fix it, each with an id that never changes and naming its
-  world, fit and forecast. A world's own tables are keyed only within the world, so their rows are unique together
+  evaluation of a forecast found wrong and what might fix it, and the testing plan and test results record which
+  fixes were tested and what each test found; each has an id that never changes and names its world, fit and
+  forecast. A world's own tables are keyed only within the world, so their rows are unique together
   with the world's id. Click a table to see its columns, its key and how it
   joins to the others; the notes in amber say where a rule is not checked or the meaning is unclear.</p>
   <div id="explorer"></div>
 </main>
-<script src="assets/site.js?v=e751d1b-1794628256"></script>
-<script src="assets/datamodel.js?v=e751d1b-1794628256"></script>
+<script src="assets/site.js?v=dfdeaed-1794654087"></script>
+<script src="assets/datamodel.js?v=dfdeaed-1794654087"></script>
 <script>
 (async () => {
   try {

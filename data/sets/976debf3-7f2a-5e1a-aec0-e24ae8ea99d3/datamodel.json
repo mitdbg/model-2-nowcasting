@@ -2,7 +2,7 @@
  "format": "descriptive-datamodel/1",
  "name": "Model 2",
  "description": "Model 2's data as notional relational tables.",
- "generated": "2026-11-13",
+ "generated": "2026-11-14",
  "sources": [
   "Claude Doc 'Model 2: Data Schema' rev 15",
   "model-2-compute src/firm_model"
@@ -142,10 +142,10 @@
   },
   {
    "id": "improving",
-   "name": "Problems and fixes",
+   "name": "Problems, fixes and tests",
    "color": 10,
    "column": 4,
-   "description": "What the evaluation of a forecast found wrong, and the possible fixes for it. Each problem and fix has an id that never changes and names the world, fit and forecast it is about. Later: the fixes actually tested and their results, and the ones good enough to deploy.",
+   "description": "What the evaluation of a forecast found wrong, the possible fixes for it, the fixes chosen to be tested and what each test found. Each record has an id that never changes and names the world, fit and forecast it is about. Later: the fixes good enough to deploy.",
    "note": "Every record also has recorded_utc, when it was first registered, and updated_utc, when its text last changed; the id never changes."
   }
  ],
@@ -2842,6 +2842,183 @@
      "description": ""
     }
    ]
+  },
+  {
+   "id": "planned_tests",
+   "name": "planned_tests",
+   "family": "improving",
+   "location": "catalog/planned_tests/<id>.json (code repository; on Modal, the volume's catalog/); written as a list of fix labels in docs/next_version/<set>.testplan.json",
+   "key": "planned_test_id",
+   "description": "One possible fix chosen to be tested: the testing plan, in the order the fixes will be tested.",
+   "constraints": "A fix is planned at most once; planning it again updates its place in the plan and keeps its id.",
+   "unclear": "A fix taken off the plan keeps its record.",
+   "columns": [
+    {
+     "name": "planned_test_id",
+     "type": "uuid",
+     "description": "a random UUID, assigned once; never changes",
+     "key": true
+    },
+    {
+     "name": "fix_id",
+     "type": "string",
+     "description": "",
+     "references": "possible_fixes"
+    },
+    {
+     "name": "problem_id",
+     "type": "string",
+     "description": "",
+     "references": "problems"
+    },
+    {
+     "name": "world_id",
+     "type": "string",
+     "description": "",
+     "references": "catalog_worlds"
+    },
+    {
+     "name": "fit_id",
+     "type": "string",
+     "description": "",
+     "references": "catalog_fits"
+    },
+    {
+     "name": "forecast_id",
+     "type": "string",
+     "description": "",
+     "references": "catalog_forecasts"
+    },
+    {
+     "name": "label",
+     "type": "string",
+     "description": "the fix's label: 1A, 1B, 2A, ..."
+    },
+    {
+     "name": "order",
+     "type": "int",
+     "description": "its place in the plan"
+    },
+    {
+     "name": "planned_by",
+     "type": "string",
+     "description": ""
+    },
+    {
+     "name": "source",
+     "type": "string",
+     "description": ""
+    },
+    {
+     "name": "updated_utc",
+     "type": "timestamp",
+     "description": ""
+    }
+   ]
+  },
+  {
+   "id": "test_results",
+   "name": "test_results",
+   "family": "improving",
+   "location": "catalog/test_results/<id>.json (code repository; on Modal, the volume's catalog/)",
+   "key": "test_result_id",
+   "description": "What one test of a planned fix found: a short summary, its runtime and cost, and the whole transcript of the agent that ran it. A fix tested twice has two results.",
+   "constraints": "A test is identified by its planned test and its start time; recording it again updates it and keeps its id. Runtime is computed from the start and finish times.",
+   "unclear": "The summary is written by the agent that ran the test; the transcript is kept but never published.",
+   "columns": [
+    {
+     "name": "test_result_id",
+     "type": "uuid",
+     "description": "a random UUID, assigned once; never changes",
+     "key": true
+    },
+    {
+     "name": "planned_test_id",
+     "type": "string",
+     "description": "",
+     "references": "planned_tests"
+    },
+    {
+     "name": "fix_id",
+     "type": "string",
+     "description": "",
+     "references": "possible_fixes"
+    },
+    {
+     "name": "problem_id",
+     "type": "string",
+     "description": "",
+     "references": "problems"
+    },
+    {
+     "name": "world_id",
+     "type": "string",
+     "description": "",
+     "references": "catalog_worlds"
+    },
+    {
+     "name": "fit_id",
+     "type": "string",
+     "description": "",
+     "references": "catalog_fits"
+    },
+    {
+     "name": "forecast_id",
+     "type": "string",
+     "description": "",
+     "references": "catalog_forecasts"
+    },
+    {
+     "name": "label",
+     "type": "string",
+     "description": "the fix's label"
+    },
+    {
+     "name": "summary",
+     "type": "text",
+     "description": "what happened, in 1-3 sentences"
+    },
+    {
+     "name": "started_utc",
+     "type": "timestamp",
+     "description": ""
+    },
+    {
+     "name": "finished_utc",
+     "type": "timestamp",
+     "description": ""
+    },
+    {
+     "name": "runtime_hours",
+     "type": "float",
+     "description": "from start to finish"
+    },
+    {
+     "name": "cost_usd",
+     "type": "float",
+     "description": "the cloud computing it used"
+    },
+    {
+     "name": "branch, commit",
+     "type": "string",
+     "description": "where the change was made, when reported"
+    },
+    {
+     "name": "transcript",
+     "type": "text",
+     "description": "the testing agent's whole transcript; not shown on the site"
+    },
+    {
+     "name": "transcript_source",
+     "type": "string",
+     "description": ""
+    },
+    {
+     "name": "updated_utc",
+     "type": "timestamp",
+     "description": ""
+    }
+   ]
   }
  ],
  "relationships": [
@@ -3944,6 +4121,127 @@
    },
    "enforcement": "together",
    "note": "recorded by the run"
+  },
+  {
+   "from": {
+    "table": "planned_tests",
+    "columns": "fix_id"
+   },
+   "to": {
+    "table": "possible_fixes"
+   },
+   "enforcement": "checked",
+   "note": "every planned test must name a possible fix of its set"
+  },
+  {
+   "from": {
+    "table": "planned_tests",
+    "columns": "problem_id"
+   },
+   "to": {
+    "table": "problems"
+   },
+   "enforcement": "together",
+   "note": "copied from the fix's record"
+  },
+  {
+   "from": {
+    "table": "planned_tests",
+    "columns": "world_id"
+   },
+   "to": {
+    "table": "catalog_worlds"
+   },
+   "enforcement": "together",
+   "note": "copied from the fix's record"
+  },
+  {
+   "from": {
+    "table": "planned_tests",
+    "columns": "fit_id"
+   },
+   "to": {
+    "table": "catalog_fits"
+   },
+   "enforcement": "together",
+   "note": "copied from the fix's record"
+  },
+  {
+   "from": {
+    "table": "planned_tests",
+    "columns": "forecast_id"
+   },
+   "to": {
+    "table": "catalog_forecasts"
+   },
+   "enforcement": "together",
+   "note": "copied from the fix's record"
+  },
+  {
+   "from": {
+    "table": "test_results",
+    "columns": "planned_test_id"
+   },
+   "to": {
+    "table": "planned_tests"
+   },
+   "enforcement": "checked",
+   "note": "a result can be recorded only for a fix on the testing plan"
+  },
+  {
+   "from": {
+    "table": "test_results",
+    "columns": "fix_id"
+   },
+   "to": {
+    "table": "possible_fixes"
+   },
+   "enforcement": "together",
+   "note": "copied from the planned test's record"
+  },
+  {
+   "from": {
+    "table": "test_results",
+    "columns": "problem_id"
+   },
+   "to": {
+    "table": "problems"
+   },
+   "enforcement": "together",
+   "note": "copied from the planned test's record"
+  },
+  {
+   "from": {
+    "table": "test_results",
+    "columns": "world_id"
+   },
+   "to": {
+    "table": "catalog_worlds"
+   },
+   "enforcement": "together",
+   "note": "copied from the planned test's record"
+  },
+  {
+   "from": {
+    "table": "test_results",
+    "columns": "fit_id"
+   },
+   "to": {
+    "table": "catalog_fits"
+   },
+   "enforcement": "together",
+   "note": "copied from the planned test's record"
+  },
+  {
+   "from": {
+    "table": "test_results",
+    "columns": "forecast_id"
+   },
+   "to": {
+    "table": "catalog_forecasts"
+   },
+   "enforcement": "together",
+   "note": "copied from the planned test's record"
   }
  ]
 }
