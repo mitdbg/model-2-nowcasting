@@ -3,32 +3,33 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Sector input bundle · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=887248c-1794675928">
+<link rel="stylesheet" href="assets/site.css?v=4af39a6-1794675964">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Code+Pro:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800&display=swap">
 </head>
 <body>
 <main>
   <h1>Sector input bundle</h1>
-  <p class="sub" id="intro"></p>
+  <div class="sub" id="intro"></div>
+  <style>#intro p { margin: 0 0 8px; }</style>
   <div class="tabs" id="sectabs" role="tablist" aria-label="Sector"></div>
   <p class="sub" id="secnote"></p>
   <div class="grid" id="charts"></div>
   <div id="leg"></div>
 </main>
-<script src="assets/site.js?v=887248c-1794675928"></script>
+<script src="assets/site.js?v=4af39a6-1794675964"></script>
 <script>
 (async () => {
   try {
     const [meta, b] = await Promise.all([M2.load("meta.json"), M2.load("bundle.json")]);
     M2.header(meta, "world_bundle.html");
     const g = b.time_grid || {};
-    document.getElementById("intro").innerHTML = `Each run date brings one delivery of sector data from an outside
-      source. This is the delivery for ${b.as_of}. For every sector it gives <b>drivers</b> (demand, price and input cost,
+    document.getElementById("intro").innerHTML = `<p>Each forecast run date brings one delivery of sector data from an
+      outside source. This is the delivery for ${b.as_of}.</p><p>For every sector it gives <b>drivers</b> (demand, price and input cost,
       which push the sector's entities) and <b>sector statistics</b> (official series such as industrial production or
       capacity utilization), month by month from ${g.history_start} to ${g.forecast_end}: observed or re-estimated history
       to ${g.last_observed}, then a nowcast and forecasts. Every series comes as ${b.n_members} draws; the charts show their
-      median and 90% band.`;
+      median and 90% band.</p>`;
     const NAME = { demand: "Demand", price: "Price", input_cost: "Input cost", delivery_pressure: "Delivery pressure",
                    energy_cost: "Energy cost", general_activity: "General activity", general_prices: "General prices" };
     const UNIT = { log_index: "log index", log_usd_index: "log index (dollars)", log_ratio: "log ratio", percent: "percent", index: "index" };
