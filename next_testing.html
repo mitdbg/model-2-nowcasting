@@ -3,12 +3,13 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Improvement Testing · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=eff3ba4-1794678237">
+<link rel="stylesheet" href="assets/site.css?v=0b1fa53-1794678458">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Code+Pro:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800&display=swap">
 <style>
   main > p { max-width: 80ch; }
   .how { background: var(--band2); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; max-width: 900px; font-size: 13.5px; margin-bottom: 14px; }
+  .how p { margin: 0 0 6px; max-width: none; } .how p:last-child { margin: 0; }
   table.tests { font-size: 13px; }
   /* the headings stay in view below the sub-tabs while rows remain; that needs the table outside a sideways-scrolling
      box, so on narrow screens (where it must scroll sideways) they scroll away */
@@ -32,9 +33,9 @@
   .st { font-weight: 600; white-space: nowrap; }
   .st.worked { color: var(--good); }
   .st.didnot { color: var(--bad); }
-  th button { all: unset; cursor: pointer; color: var(--accent); }
-  th button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  th[aria-sort] button { color: var(--fg); }
+  th button[data-k] { all: unset; cursor: pointer; color: var(--accent); }
+  th button[data-k]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  th[aria-sort] button[data-k] { color: var(--fg); }
   th .arrow { font-size: 10px; margin-left: 3px; }
   .sorthint { font-size: 12.5px; color: var(--muted); margin: 0 0 6px; }
 </style>
@@ -45,9 +46,9 @@
   <div class="how" id="how"></div>
   <p class="sorthint" id="hint" hidden>Sort by clicking a blue column heading. Each fix's label links to its row on
   Possible Improvements, where the fix is described in full.</p>
-  <div class="tablewrap" id="wrap"></div>
+  <div class="tablewrap ai" id="wrap" data-ai="Tested by AI agents, not human-reviewed"></div>
 </main>
-<script src="assets/site.js?v=eff3ba4-1794678237"></script>
+<script src="assets/site.js?v=0b1fa53-1794678458"></script>
 <script>
 (async () => {
   try {
@@ -61,11 +62,11 @@
       how.innerHTML = `No possible improvements have been written for this world and forecast yet, so none has been tested.`;
       return;
     }
-    how.innerHTML = `Every <a href="next_improvements.html">possible improvement</a>, and what became of it.
-      ${t.planned_by ? `The fixes to test were chosen by a fixed rule: ${M2.esc(t.planned_by)}; the rest were not tried.` : ""}
-      Each test was carried out by an AI agent that made the change and ran the checks its fix describes. <b>Order</b> is
-      the fix's place in the testing plan. <b>Actual time to test</b> runs from the start of the test to its result, and
-      <b>actual financial cost</b> is the cloud computing it used. These results have not been human-reviewed.`;
+    how.innerHTML = `<p>Every possible improvement, and what became of it. Each test was carried out by an AI agent that
+      made the change and ran the checks its fix describes. These results have not been human-reviewed.</p>
+      ${t.planned_by ? `<p>Not all Possible Improvements are tested. The system prioritized fixes likely to work. It
+      evaluates no fix that is less likely than Coin Flip. The total testing plan must cost at most $100 and complete
+      within 24 hours when run in parallel.</p>` : ""}`;
     const problems = rep ? rep.problems : {};
     const STATUS = ["Worked", "Partly worked", "Did not work", "Could not test", "Tested", "Planned", "Not tried"];
     const title = (s) => s.replace(/\b\w/g, (c) => c.toUpperCase());   // "Partly worked" -> "Partly Worked"
@@ -82,10 +83,10 @@
       cost: (a, b) => last(a.result?.cost_usd) - last(b.result?.cost_usd) || tie(a, b),
     };
     let key = cols[M2.param("sort")] ? M2.param("sort") : "order", dir = M2.param("dir") === "desc" ? -1 : 1;
-    const head = (k, label, cls = "") => {
+    const head = (k, label, cls = "", tip = "") => {
       const on = k === key;
       return `<th class="${cls}"${on ? ` aria-sort="${dir > 0 ? "ascending" : "descending"}"` : ""}><button type="button" data-k="${k}">${label}`
-        + `<span class="arrow" aria-hidden="true">${on ? (dir > 0 ? "▲" : "▼") : "↕"}</span></button></th>`;
+        + `<span class="arrow" aria-hidden="true">${on ? (dir > 0 ? "▲" : "▼") : "↕"}</span></button>${M2.info(tip)}</th>`;
     };
     const NONE = `<span class="none" title="Not tested, so there is nothing to show">–</span>`;   // empty on purpose
     const dur = (h) => h == null ? NONE : h < 1 ? `${Math.round(h * 60)} minutes` : `${h.toFixed(1)} hours`;
@@ -101,9 +102,9 @@
         const nb = key === "order" ? b.order == null : key === "time" || key === "cost" ? !b.result : false;
         return na !== nb ? (na ? 1 : -1) : dir * c;
       });
-      document.getElementById("wrap").innerHTML = `<table class="tests"><thead><tr>${head("order", "Order")}${head("fix", "Fix")}`
-        + `${head("problem", "Problem")}<th>Fix Summary</th>${head("status", "Status")}${head("time", "Actual Time To Test", "n")}`
-        + `${head("cost", "Actual Financial Cost", "n")}<th>What Happened</th></tr></thead><tbody>`
+      document.getElementById("wrap").innerHTML = `<table class="tests"><thead><tr>${head("order", "Order", "", "The fix's place in the testing plan. Fixes that were not tried have none.")}${head("fix", "Fix")}`
+        + `${head("problem", "Problem")}<th>Fix Summary</th>${head("status", "Status")}${head("time", "Actual Time To Test", "n", "From the start of the test to its result: making the change and running the checks.")}`
+        + `${head("cost", "Actual Financial Cost", "n", "The cloud computing the test used.")}<th>What Happened</th></tr></thead><tbody>`
         + sorted.map((f) => `<tr id="fix-${f.label}" class="${f.order == null ? "untried" : ""}">`
           + `<td class="n">${f.order ?? NONE}</td>`
           + `<td class="id"><a href="next_improvements.html#fix-${f.label}">${f.label}</a><span class="pid" title="The fix's lasting id: ${M2.esc(f.fix_id)}">${M2.esc(f.fix_id.slice(0, 8))}</span></td>`
@@ -114,7 +115,7 @@
           + `<td class="s">${f.result ? M2.esc(f.result.summary) : NONE}</td></tr>`).join("")
         + `</tbody><tfoot><tr><td colspan="5">${tested.length} of ${rows.length} fixes tested</td><td class="n">${dur(hrs)}</td>`
         + `<td class="n">${usd(cost)}</td><td class="muted">time added up over all tests, which ran in parallel</td></tr></tfoot></table>`;
-      document.querySelectorAll("th button").forEach((b) => b.addEventListener("click", () => {
+      document.querySelectorAll("th button[data-k]").forEach((b) => b.addEventListener("click", () => {
         if (b.dataset.k === key) dir = -dir; else { key = b.dataset.k; dir = 1; }
         const q = new URLSearchParams(location.search);
         q.set("sort", key);
