@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Improvement Testing · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=d073472-1794678942">
+<link rel="stylesheet" href="assets/site.css?v=da1a85f-1794678998">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Code+Pro:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800&display=swap">
 <style>
@@ -29,6 +29,10 @@
   table.tests tr.untried td { color: var(--muted); }
   table.tests tr.untried td a { color: var(--muted); }
   .none { color: var(--muted); }
+  /* only what happened was written by the testing agents: that column alone gets the AI-generated background */
+  table.tests .aicol { background: var(--ai) !important; }
+  .ailabel { display: block; font-size: 10.5px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 2px; }
   table.tests tfoot td { font-weight: 600; border-top: 1px solid var(--fg); }
   .st { font-weight: 600; white-space: nowrap; }
   .st.worked { color: var(--good); }
@@ -44,9 +48,9 @@
 <main>
   <h1>Improvement Testing</h1>
   <div class="how" id="how"></div>
-  <div class="tablewrap ai" id="wrap" data-ai="AI generated"></div>
+  <div class="tablewrap" id="wrap"></div>
 </main>
-<script src="assets/site.js?v=d073472-1794678942"></script>
+<script src="assets/site.js?v=da1a85f-1794678998"></script>
 <script>
 (async () => {
   try {
@@ -102,7 +106,7 @@
       });
       document.getElementById("wrap").innerHTML = `<table class="tests"><thead><tr>${head("order", "Order", "", "The fix's place in the testing plan. Fixes that were not tried have none.")}${head("fix", "Fix")}`
         + `${head("problem", "Problem")}<th>Fix Summary</th>${head("status", "Status")}${head("time", "Actual Time To Test", "n", "From the start of the test to its result: making the change and running the checks.")}`
-        + `${head("cost", "Actual Financial Cost", "n", "The cloud computing the test used.")}<th>What Happened</th></tr></thead><tbody>`
+        + `${head("cost", "Actual Financial Cost", "n", "The cloud computing the test used.")}<th class="aicol"><span class="ailabel">AI generated</span>What Happened</th></tr></thead><tbody>`
         + sorted.map((f) => `<tr id="fix-${f.label}" class="${f.order == null ? "untried" : ""}">`
           + `<td class="n">${f.order ?? NONE}</td>`
           + `<td class="id"><a href="next_improvements.html#fix-${f.label}">${f.label}</a><span class="pid" title="The fix's lasting id: ${M2.esc(f.fix_id)}">${M2.esc(f.fix_id.slice(0, 8))}</span></td>`
@@ -110,9 +114,9 @@
           + `<td class="t"><a href="next_improvements.html#fix-${f.label}">${M2.esc(f.title || f.label)}</a></td>`
           + `<td><span class="st ${stcls(f.status)}">${title(f.status)}</span>${f.tests > 1 ? `<span class="pid">latest of ${f.tests} tests</span>` : ""}</td>`
           + `<td class="n">${dur(f.result?.runtime_hours)}</td><td class="n">${usd(f.result?.cost_usd)}</td>`
-          + `<td class="s">${f.result ? M2.esc(f.result.summary) : NONE}</td></tr>`).join("")
+          + `<td class="s aicol">${f.result ? M2.esc(f.result.summary) : NONE}</td></tr>`).join("")
         + `</tbody><tfoot><tr><td colspan="5">${tested.length} of ${rows.length} fixes tested</td><td class="n">${dur(hrs)}</td>`
-        + `<td class="n">${usd(cost)}</td><td class="muted">time added up over all tests, which ran in parallel</td></tr></tfoot></table>`;
+        + `<td class="n">${usd(cost)}</td><td class="muted aicol">time added up over all tests, which ran in parallel</td></tr></tfoot></table>`;
       document.querySelectorAll("th button[data-k]").forEach((b) => b.addEventListener("click", () => {
         if (b.dataset.k === key) dir = -dir; else { key = b.dataset.k; dir = 1; }
         const q = new URLSearchParams(location.search);
