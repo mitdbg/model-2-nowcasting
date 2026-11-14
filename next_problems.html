@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Current Problems · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=d18d073-1794660029">
+<link rel="stylesheet" href="assets/site.css?v=e6c8d54-1794663321">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Code+Pro:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800&display=swap">
 <style>
@@ -31,7 +31,7 @@
   <nav class="toc" id="toc" aria-label="On this page" hidden><a href="#sectors">Weakest sectors</a><a href="#quantities">Weakest hidden quantities</a><a href="#problems">Problems</a></nav>
   <div id="report"></div>
 </main>
-<script src="assets/site.js?v=d18d073-1794660029"></script>
+<script src="assets/site.js?v=e6c8d54-1794663321"></script>
 <script>
 (async () => {
   try {
@@ -48,11 +48,9 @@
         world and forecast at the top right to see one that has a summary.`;
       return;
     }
-    how.innerHTML = `How this page was written: by an evaluator that saw only what a reader of this site sees on the
-      four <a href="eval_revisions.html">Evaluation</a> pages that need no ground truth (Forecasts against later estimates,
-      Observations against the model, Sector totals against official statistics, What the data pin down), for ${which}.
-      It knew nothing of the true values, the model's code or how it was developed, and was asked to describe problems,
-      not to propose fixes. Its causes are hypotheses. Proposed fixes belong on
+    how.innerHTML = `This page was written by an AI evaluator that saw only the
+      <a href="eval_revisions.html">Evaluation pages</a> that need no ground truth. It examined ${which}. It had no access
+      to the true values, the model's code, or how the model was developed. Proposed fixes are on
       <a href="next_improvements.html">Possible Improvements</a>.`;
     document.getElementById("report").innerHTML = rep.html;
     document.getElementById("toc").hidden = false;
