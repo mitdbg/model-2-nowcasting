@@ -89,7 +89,7 @@
    "name": "Sector input bundle",
    "color": 3,
    "column": 1,
-   "description": "Each sector's drivers and statistics as ensemble draws, delivered by an outside source once per run date and never changed afterwards.",
+   "description": "Each sector's drivers and statistics as ensemble draws, delivered by an outside source once per as-of date and never changed afterwards.",
    "note": "Each delivery carries a manifest listing its tables with their schema versions, row counts and checksums. Every table here belongs to one world, by folder: its keys are unique only within that world, so a row's full key is (world_id, its key). Entity and observation ids repeat across synthetic worlds of one generator. The world's id is checked whenever the world is loaded."
   },
   {
@@ -121,7 +121,7 @@
    "name": "Run outputs",
    "color": 7,
    "column": 2,
-   "description": "What each run produces for its run date. Tables marked published are delivered to users; the rest are kept for diagnosis.",
+   "description": "What each run produces for its as-of date. Tables marked published are delivered to users; the rest are kept for diagnosis.",
    "note": ""
   },
   {
@@ -1707,7 +1707,7 @@
    "location": "sector_aggregates.csv (published)",
    "key": "(sector, variable, component, month, member)",
    "description": "The main product: every sector quantity, month and draw.",
-   "constraints": "One run date has about 5.8 million rows.",
+   "constraints": "One as-of date has about 5.8 million rows.",
    "unclear": "Holds every draw; medians and 90% bands are not included, so every user computes them.",
    "columns": [
     {
@@ -1983,9 +1983,9 @@
    "family": "runs",
    "location": "entities.csv (published if export_entities)",
    "key": "entity_id",
-   "description": "A snapshot of the registry's entities at the run date.",
+   "description": "A snapshot of the registry's entities at the as-of date.",
    "constraints": "Off by default.",
-   "unclear": "firm_id is the first company linked to the entity on the run date, whatever its role; it may be an operator rather than the controlling owner.",
+   "unclear": "firm_id is the first company linked to the entity on the as-of date, whatever its role; it may be an operator rather than the controlling owner.",
    "columns": [
     {
      "name": "entity_id",
@@ -2308,7 +2308,7 @@
     {
      "name": "as_of",
      "type": "date",
-     "description": "the run date scored",
+     "description": "the as-of date scored",
      "references": "run_meta",
      "key": true
     },
@@ -2349,7 +2349,7 @@
    "family": "scores",
    "location": "source.json",
    "key": "(one per backtest)",
-   "description": "Which model version ran, when it started, which run dates, which estimation settings.",
+   "description": "Which model version ran, when it started, which as-of dates, which estimation settings.",
    "constraints": "",
    "unclear": "",
    "columns": [
@@ -2364,7 +2364,7 @@
      "description": ""
     },
     {
-     "name": "run dates",
+     "name": "as-of dates",
      "type": "",
      "description": ""
     },
@@ -2447,7 +2447,7 @@
     {
      "name": "as_of",
      "type": "list",
-     "description": "the run dates it has input bundles for"
+     "description": "the as-of dates it has input bundles for"
     },
     {
      "name": "created_utc",
@@ -2543,7 +2543,7 @@
     {
      "name": "name",
      "type": "string",
-     "description": "readable: world, run date, sector and time"
+     "description": "readable: world, as-of date, sector and time"
     },
     {
      "name": "world_id",
@@ -2609,7 +2609,7 @@
    "family": "catalog",
    "location": "catalog/forecasts/<id>.json (code repository; on Modal, the volume's catalog/)",
    "key": "forecast_id",
-   "description": "One run: the fit it used, its run date and where its outputs are.",
+   "description": "One run: the fit it used, its as-of date and where its outputs are.",
    "constraints": "Recorded when the run finishes.",
    "unclear": "",
    "columns": [
@@ -2627,7 +2627,7 @@
     {
      "name": "run",
      "type": "string",
-     "description": "the run's folder name: run date and start time"
+     "description": "the run's folder name: as-of date and start time"
     },
     {
      "name": "world_id",
@@ -3629,7 +3629,7 @@
     "table": "companies"
    },
    "enforcement": "together",
-   "note": "the first company linked to the entity on the run date, whatever its role"
+   "note": "the first company linked to the entity on the as-of date, whatever its role"
   },
   {
    "from": {
@@ -3640,7 +3640,7 @@
     "table": "entities"
    },
    "enforcement": "together",
-   "note": "a snapshot of the registry at the run date"
+   "note": "a snapshot of the registry at the as-of date"
   },
   {
    "from": {

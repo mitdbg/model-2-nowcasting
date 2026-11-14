@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital@0;1&display=swap">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Code+Pro:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800&display=swap">
-<link rel="stylesheet" href="assets/site.css?v=d95d46d-1794681389">
+<link rel="stylesheet" href="assets/site.css?v=a2f5c01-1794681571">
 <style>
   main > p, main > ul, main > ol { max-width: 78ch; }
   main > .eqcard, main > figure, main > .tablewrap { max-width: 1000px; }
@@ -168,7 +168,7 @@
   <p>They arrive in the <a href="world_bundle.html">sector input bundle</a>, month by month: history up to the last
   month published, then a nowcast and a forecast. Nobody knows those later months exactly, and even history is
   sometimes revised, so each driver comes not as one series but as 100 <b>draws</b>. A draw is one complete, plausible
-  path of the series over every month, consistent with what was known on the run date. The draws agree where the
+  path of the series over every month, consistent with what was known on the as-of date. The draws agree where the
   series is well known and fan out where it is not, so their spread is the driver's uncertainty. Draw number
   <span class="sym">j</span> of each driver comes from the same scenario, so demand, price and input cost move together
   as they would in one possible economy.</p>
@@ -407,7 +407,7 @@
   </ol>
 </main>
 <div class="eqtip" id="eqtip" hidden></div>
-<script src="assets/site.js?v=d95d46d-1794681389"></script>
+<script src="assets/site.js?v=a2f5c01-1794681571"></script>
 <script>
 // One month's chain of equations, drawn for a template's modules (src/firm_model/templates.py):
 // pipeline (capacity built through L19–L22), occ (output is capacity in use, L18), stock (finished stock),

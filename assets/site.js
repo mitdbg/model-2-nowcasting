@@ -160,7 +160,7 @@ M2.header = (meta, page) => {
         <span class="sm-w">Forecast <span class="sm-id">${M2.esc(x.forecast || x.id)}</span>${x.id === idx.default ? " <span class=\"sm-k\">· default</span>" : ""}</span>
         <span class="sm-c">Computed ${M2.esc(day(x.made_utc))}</span>
         <span class="sm-f">${M2.esc(span(x.time_grid))}</span>
-        <span class="sm-f">Run date ${M2.esc(x.as_of)} · world ${M2.esc(x.world)} (${x.world_kind === "synthetic" ? "synthetic" : "real"})${x.model_commit ? ` · model ${M2.esc(x.model_commit)}` : ""}</span></button>
+        <span class="sm-f">As-of date ${M2.esc(x.as_of)} · world ${M2.esc(x.world)} (${x.world_kind === "synthetic" ? "synthetic" : "real"})${x.model_commit ? ` · model ${M2.esc(x.model_commit)}` : ""}</span></button>
         <a class="sm-about" href="world_overview.html?set=${encodeURIComponent(x.id)}" title="Show this world and forecast, and open Inputs">About this world</a></div>`).join("");
     const open = (on) => { menu.hidden = !on; btn.setAttribute("aria-expanded", on); };
     btn.addEventListener("click", (e) => { e.stopPropagation(); open(menu.hidden); });

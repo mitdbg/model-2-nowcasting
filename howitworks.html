@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>How It Works · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=d95d46d-1794681389">
+<link rel="stylesheet" href="assets/site.css?v=a2f5c01-1794681571">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Code+Pro:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800&display=swap">
-<link rel="stylesheet" href="assets/datamodel.css?v=d95d46d-1794681389">
+<link rel="stylesheet" href="assets/datamodel.css?v=a2f5c01-1794681571">
 <style>
   .hiw-fig { margin: 16px 0 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px; overflow-x: auto; }
   .hiw-fig svg { display: block; width: 100%; min-width: 760px; height: auto; }
@@ -76,7 +76,7 @@
         <rect x="32" y="240" width="218" height="68" rx="6" fill="var(--dm-3)" fill-opacity="0.2" stroke="var(--dm-3)"/>
         <text x="44" y="262" class="n">Sector input bundle</text>
         <text x="44" y="280" class="q">drivers and statistics as</text>
-        <text x="44" y="296" class="q">draws, one per run date</text>
+        <text x="44" y="296" class="q">draws, one per as-of date</text>
       </a>
       <a href="datamodel.html?t=truth_entity_states">
         <rect x="32" y="340" width="218" height="68" rx="6" fill="var(--dm-5)" fill-opacity="0.12" stroke="var(--dm-5)" stroke-dasharray="5 3"/>
@@ -125,7 +125,7 @@
       </a>
       <path class="edge" d="M646 332H668" marker-end="url(#hiw-arrow)"/>
       <text x="306" y="404" class="q">Parameters stay fixed within a run; forecasts never use observations from after T.</text>
-      <text x="306" y="420" class="q">The next run date sees the new observations and starts again.</text>
+      <text x="306" y="420" class="q">The next as-of date sees the new observations and starts again.</text>
 
       <!-- 3 · score the results -->
       <rect class="frame" x="894" y="56" width="230" height="380" rx="10"/>
@@ -187,7 +187,7 @@
     planned, built, go idle or close, and a company can sell a plant. Each run uses the entities active on its date,
     as the registry knew them then.</li>
     <li><b>Observations</b> are published readings about an entity or a grouping, each with the date it became public.</li>
-    <li><b>The sector input bundle</b> arrives once per run date with each sector's drivers (demand, price, input
+    <li><b>The sector input bundle</b> arrives once per as-of date with each sector's drivers (demand, price, input
     cost) and statistics, as ensemble draws.</li>
   </ul>
   <p>A <b>synthetic world</b> is generated from known parameters, so it comes with the true values of every hidden
@@ -205,7 +205,7 @@
     (nowcast), and project 12 months ahead (forecast). Forecasts follow the sector drivers alone, since no
     observations exist yet for those months. The ensemble of 100 draws gives every quantity a 90% band.</li>
   </ol>
-  <p>The next run date sees the new observations and starts again, so the history, nowcast and forecast all move as
+  <p>The next as-of date sees the new observations and starts again, so the history, nowcast and forecast all move as
   information arrives.</p>
 
   <h2>3 · Score the results</h2>
@@ -236,7 +236,7 @@
   it had run then, so its errors show how the model would have done in real time. The scores cover the last 12 months
   of history, the nowcast, and forecasts 3, 6 and 12 months ahead.</p>
 </main>
-<script src="assets/site.js?v=d95d46d-1794681389"></script>
+<script src="assets/site.js?v=a2f5c01-1794681571"></script>
 <script>
 (async () => {
   try {

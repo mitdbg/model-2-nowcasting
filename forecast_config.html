@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Model Configuration · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=d95d46d-1794681389">
+<link rel="stylesheet" href="assets/site.css?v=a2f5c01-1794681571">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Code+Pro:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800&display=swap">
 <style>
@@ -84,7 +84,7 @@
   representative entities that stand for untracked establishments.</p>
   <div class="cmp tablewrap"><table id="estab"></table></div>
 </main>
-<script src="assets/site.js?v=d95d46d-1794681389"></script>
+<script src="assets/site.js?v=a2f5c01-1794681571"></script>
 <script>
 (async () => {
   try {
@@ -172,7 +172,7 @@
       row("Orders follow capacity share", r.order_share === "capacity" ? `yes (L6). <span class="muted">Without it, an entity's orders ignore its own capacity, so an entity that loses capacity for good keeps its orders and its order book grows without bound.</span>` : "no: L6 as first written"),
       row("Starting stocks", `each copy starts its order book, input inventory and project pipeline spread by ${r.initial_stock_sd} (log) around the fitted start`),
       row("Order level in the filter", `moves with a spread of ${r.order_level_sd} (log) where a sector lets the filter correct it`),
-      row("Sector input bundle", `at most ${r.staleness_days} days older than the run date; an older one stops the run`),
+      row("Sector input bundle", `at most ${r.staleness_days} days older than the as-of date; an older one stops the run`),
       row("Band widening", bi ? `published sector bands widened ${bi.smoothed}× in history, ${bi.nowcast}× in the nowcast and ${bi.forecast}× in the forecast. <span class="muted">The model's own 90% bands held too little of the truth in a backtest on this world; these factors bring the published bands to about 90% (see <a href="accuracy.html">Against ground truth</a>).</span>` : "none"),
       row("Order book in the filter", secs.filter((s) => s.filter_order_book.length).map((s) => `${M2.esc(short[s.code])} (${s.filter_order_book.join(", ")})`).join("; ") || "no sector"),
     ].join("");

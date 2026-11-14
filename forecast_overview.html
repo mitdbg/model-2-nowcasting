@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Model and Forecasts · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=d95d46d-1794681389">
+<link rel="stylesheet" href="assets/site.css?v=a2f5c01-1794681571">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Code+Pro:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800&display=swap">
 <style>
@@ -32,7 +32,7 @@
   the round kept.</p>
   <div class="tablewrap"><table id="secs"></table></div>
 </main>
-<script src="assets/site.js?v=d95d46d-1794681389"></script>
+<script src="assets/site.js?v=a2f5c01-1794681571"></script>
 <script>
 (async () => {
   try {
@@ -45,7 +45,7 @@
     const short = Object.fromEntries(meta.sectors.map((s) => [s.code, s]));
     document.getElementById("intro").innerHTML = `A forecast is made in two steps. First a <b>parameter fit</b> sets the
       model's numbers (how fast each entity's capacity drifts, how strongly its prices follow its costs, and so on) from
-      the observations known on the run date. Then the <b>filter</b> runs every entity forward month by month with those
+      the observations known on the as-of date. Then the <b>filter</b> runs every entity forward month by month with those
       numbers, correcting its hidden states with each month's observations, to the last observed month (history), the
       months since (nowcast) and a year ahead (forecast). It runs ${f.n_members} copies of the world at once, each with
       its own random shocks and its own draw of the uncertain parameters; their spread gives the 90% band.`;
@@ -53,10 +53,10 @@
     const bi = f.band_inflation;
     document.getElementById("run").innerHTML = [
       row("Forecast", `<span class="wid">${M2.esc(f.run)}</span>`),
-      row("Run date", `${f.as_of} <span class="muted">(uses only what was published by then)</span>`),
+      row("As-of date", `${f.as_of} <span class="muted">(uses only what was published by then)</span>`),
       row("World", w.id ? `<a href="world_overview.html" class="mono">${M2.esc(w.id)}</a> (${w.kind === "synthetic" ? "synthetic" : "real"})` : null),
       row("Made", when(f.started_utc) + (mins != null ? `, in ${mins} minutes` : "")),
-      row("Months covered", `history ${g.history_start} to ${g.last_observed}; nowcast to the run date; forecast to ${g.forecast_end}
+      row("Months covered", `history ${g.history_start} to ${g.last_observed}; nowcast to the as-of date; forecast to ${g.forecast_end}
         <span class="muted">(${f.forecast_months} months past the last observed month)</span>`),
       row("Sector input", `the <a href="world_bundle.html">delivery for ${f.bundle_as_of}</a>: drivers and sector statistics,
         each as ${f.n_members} draws`),
@@ -72,7 +72,7 @@
     document.getElementById("fit").innerHTML = [
       row("Fit", `<span class="wid">${M2.esc(fit.id)}</span>`),
       row("Made", when(fit.fitted_utc)),
-      row("Data up to", `${fit.as_of} <span class="muted">(the fit, too, uses only what was published by the run date)</span>`),
+      row("Data up to", `${fit.as_of} <span class="muted">(the fit, too, uses only what was published by the as-of date)</span>`),
       row("Window", `${f.window_years} years of observations, ${g.history_start} to ${g.last_observed}`),
       row("What it covers", `${n(fit.entities)} entities in ${n(fit.groups)} groups (sector × size class × region), across
         ${fit.sectors} sectors`),
