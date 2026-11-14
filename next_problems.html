@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Current Problems · Model 2 (dev)</title>
-<link rel="stylesheet" href="assets/site.css?v=f80bffa-1794677900">
+<link rel="stylesheet" href="assets/site.css?v=56b6c23-1794678203">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Code+Pro:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800&display=swap">
 <style>
@@ -15,13 +15,17 @@
   table.rep td { vertical-align: top; }
   table.rep td:first-child { color: var(--muted); }
   table.rep th { vertical-align: bottom; white-space: normal; }
+  /* the AI evaluator's analysis sits on its own background, so it is never mistaken for reviewed text */
+  #report.ai { background: var(--ai); border-radius: 8px; padding: 6px 18px 14px; margin-top: 10px; }
+  #report.ai::before { content: "AI analysis, not human-reviewed"; display: block; padding: 6px 0 2px; font-size: 11.5px;
+    font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); }
   table.rep td { min-width: 3.5em; }
   table.rep td:nth-child(2) { min-width: 6em; }
   /* the headings stay in view below the site header while the table's rows do; that needs the table outside a
      sideways-scrolling box, so on narrow screens (where it must scroll sideways) they scroll away */
   @media (min-width: 900px) {
     #report .tablewrap { overflow: visible; }
-    table.rep thead th { position: sticky; top: calc(var(--hdr, 43px) + var(--sub, 0px)); z-index: 2; background: var(--bg); box-shadow: inset 0 -1px 0 var(--line); }
+    table.rep thead th { position: sticky; top: calc(var(--hdr, 43px) + var(--sub, 0px)); z-index: 2; background: var(--ai); box-shadow: inset 0 -1px 0 var(--line); }
   }
   /* (i) after a heading: its definition shows on hover or keyboard focus */
   .def { position: relative; display: inline-grid; place-items: center; width: 14px; height: 14px; margin-left: 2px; border-radius: 50%;
@@ -48,9 +52,9 @@
   <h1>Current Problems</h1>
   <div class="how" id="how"></div>
   <nav class="toc" id="toc" aria-label="On this page" hidden><a href="#sectors">Weakest sectors</a><a href="#quantities">Weakest hidden quantities</a><a href="#problems">Problems</a></nav>
-  <div id="report"></div>
+  <div id="report" class="ai" aria-label="Analysis written by an AI evaluator"></div>
 </main>
-<script src="assets/site.js?v=f80bffa-1794677900"></script>
+<script src="assets/site.js?v=56b6c23-1794678203"></script>
 <script>
 (async () => {
   try {

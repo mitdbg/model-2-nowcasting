@@ -209,6 +209,7 @@ th[aria-sort] button { color: var(--fg) !important; }
   --truth: #c8551a; --obs: #111111; --rep: #7d3f86; --rep-band: rgba(125, 63, 134, 0.15); --tracked: #111111;
   --nowcast: rgba(200, 150, 40, 0.11); --forecast: rgba(17, 17, 17, 0.06);
   --good: #2c6b35; --warn: #8a5d00; --bad: #a3261b; --chip: #f1f1ee;
+  --ai: #e8eef6;   /* light steel blue: the background of text an AI wrote without human review */
   --head: "Libre Franklin", "Franklin Gothic Medium", "Helvetica Neue", Arial, sans-serif;
 }
 @media (prefers-color-scheme: dark) {
@@ -217,6 +218,7 @@ th[aria-sort] button { color: var(--fg) !important; }
     --accent: #8fb4e3; --link: #8fb4e3; --band: rgba(236, 236, 236, 0.16); --band2: rgba(236, 236, 236, 0.05);
     --truth: #f08a52; --obs: #ececec; --rep: #c99bd3; --rep-band: rgba(201, 155, 211, 0.17); --tracked: #ececec;
     --nowcast: rgba(220, 180, 80, 0.09); --forecast: rgba(236, 236, 236, 0.05); --chip: #262626;
+    --ai: #18212c;
   }
 }
 /* headings: bold grotesque, black */
