@@ -558,9 +558,11 @@ M2.OBS = {
 };
 
 // feedback on anything (assets/feedback.js), on every page that loads this file
+// (the address is taken now: currentScript is gone by DOMContentLoaded, and the deploy adds ?v= to it)
+const FB_SRC = new URL("feedback.js", document.currentScript?.src || location.href.replace(/[^/]*$/, "assets/")).href;
 document.addEventListener("DOMContentLoaded", () => {
-  if (document.querySelector('script[src$="feedback.js"]')) return;   // the page loads it itself (AI Access)
+  if (document.querySelector('script[src*="feedback.js"]')) return;   // the page loads it itself (AI Access)
   const s = document.createElement("script");
-  s.src = new URL("feedback.js", document.currentScript?.src || document.querySelector('script[src$="site.js"]').src).href;
+  s.src = FB_SRC;
   document.body.appendChild(s);
 });
