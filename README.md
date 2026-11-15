@@ -49,6 +49,12 @@ transcript stays in the catalog and is never published. Sortable by order, fix, 
 (`?sort=`, `&dir=desc`); `#fix-1A` links to a row. `next_plan.html` and `next_results.html`, its two former halves,
 now forward to it.
 
+`ai.html` (AI Access) tells people how to connect AI agents: the hosted MCP server
+(`mcp_server/modal_app.py`, https://mikecafarella--model2-mcp.us-east.modal.run/mcp, read-only, no sign-in) client by
+client, and `llms.txt`. Both are described in `docs/mcp.md`. Before each deploy `scripts/agent_docs.py` saves every
+page's text as `data/sets/<forecast>/pages/<page>.md` (rendered in headless Chrome; only pages whose page or data
+changed) and writes `llms.txt`, the index agents start from.
+
 `scripts/deploy_site.sh` pushes `site/` with its data to the private repository
 `mitdbg/model-2-nowcasting`, which serves it with GitHub Pages so it can be viewed from other
 devices.

@@ -2,7 +2,7 @@
 
 # AI Access
 
-AI agents such as Claude, ChatGPT, Cursor and coding agents can read this site's pages and the data behind them. They can connect to a read-only MCP server, or read a plain-text guide to the site.
+AI agents such as Claude can read this site's pages and the data behind them. They can connect to a read-only MCP server, or read a plain-text guide to the site.
 
 ## Quickest: paste this into your agent
 
@@ -20,23 +20,10 @@ Streamable HTTP · read-only · no key or sign-in
 
 Agent | How to add it
 
-Claude (desktop app and claude.ai) | In Settings, open Connectors and add a custom connector. Name it Model 2, paste the server address above, and leave sign-in off.
+Claude desktop app | In Settings, open Connectors and add a custom connector. Name it Model 2, paste the server address above, and leave sign-in off.
 
 Claude Code | Run in a terminal:
 claude mcp add --transport http model2 https://mikecafarella--model2-mcp.us-east.modal.run/mcpCopy
-
-Cursor | Add this entry to ~/.cursor/mcp.json (inside any mcpServers you already have):
-{"mcpServers": {"model2": {"url": "https://mikecafarella--model2-mcp.us-east.modal.run/mcp"}}}Copy
-
-VS Code (GitHub Copilot) | Run in a terminal:
-code --add-mcp '{"name":"model2","type":"http","url":"https://mikecafarella--model2-mcp.us-east.modal.run/mcp"}'Copy
-
-Codex CLI | Run in a terminal:
-codex mcp add model2 --url https://mikecafarella--model2-mcp.us-east.modal.run/mcpCopy
-
-ChatGPT | Where your plan allows custom connectors, add an MCP server named Model 2 with the server address above and no authentication.
-
-Other agents | Any MCP client that speaks Streamable HTTP: give it the server address above, with no authentication.
 
 ## Check that it works
 
