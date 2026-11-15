@@ -1,56 +1,56 @@
 <!-- World Inputs › Entities, for forecast b653c9a8-4454-5e3d-8a00-0a530afd83a0; the page: https://mitdbg.github.io/model-2-nowcasting/world_entities.html?set=b653c9a8-4454-5e3d-8a00-0a530afd83a0 -->
 
-# Entities
+# Entities✎
 
 The world has 275 entities in 14 sectors. 115 tracked entities are specific sites or networks, run by 75 companies, each with observations of its own. 160 representative entities stand for the other 8,335 establishments, one for each sector, size class and region, sized by the Census establishment counts.
 
 Every entity By sector Groupings
 
-Sector |  | Tracked | Representative  | Establishments represented | Companies | Unit of output
+Sector |  | Tracked | Representative  | Establishments represented | Companies | Unit of output |
 
-Steel | Iron and steel mills and steel products | 14 | 11  | 266  | 10 | tonne
+Steel | Iron and steel mills and steel products | 14 | 11  | 266  | 10 | tonne | ✎
 
-Oil and gas | Oil and gas extraction | 8 | 11  | 371  | 6 | barrel of oil equivalent
+Oil and gas | Oil and gas extraction | 8 | 11  | 371  | 6 | barrel of oil equivalent | ✎
 
-Autos | Motor vehicle manufacturing | 8 | 11  | 263  | 4 | vehicle
+Autos | Motor vehicle manufacturing | 8 | 11  | 263  | 4 | vehicle | ✎
 
-Housing | Residential building construction | 8 | 12  | 747  | 4 | home
+Housing | Residential building construction | 8 | 12  | 747  | 4 | home | ✎
 
-Retail | General merchandise retailers | 7 | 12  | 977  | 3 | 2017 dollars
+Retail | General merchandise retailers | 7 | 12  | 977  | 3 | 2017 dollars | ✎
 
-Semiconductors | Semiconductors and other electronic components | 7 | 11  | 254  | 4 | wafer
+Semiconductors | Semiconductors and other electronic components | 7 | 11  | 254  | 4 | wafer | ✎
 
-Chemicals | Chemical manufacturing | 8 | 11  | 393  | 6 | tonne
+Chemicals | Chemical manufacturing | 8 | 11  | 393  | 6 | tonne | ✎
 
-Food | Food, beverage and tobacco manufacturing | 8 | 12  | 1,302  | 6 | tonne
+Food | Food, beverage and tobacco manufacturing | 8 | 12  | 1,302  | 6 | tonne | ✎
 
-Airlines | Air transportation | 6 | 11  | 155  | 6 | seat-mile
+Airlines | Air transportation | 6 | 11  | 155  | 6 | seat-mile | ✎
 
-Hospitals | Hospitals | 8 | 12  | 259  | 6 | patient-day
+Hospitals | Hospitals | 8 | 12  | 259  | 6 | patient-day | ✎
 
-Hotels | Accommodation (hotels and resorts) | 8 | 12  | 731  | 6 | room-night
+Hotels | Accommodation (hotels and resorts) | 8 | 12  | 731  | 6 | room-night | ✎
 
-Machinery | Machinery manufacturing | 8 | 12  | 938  | 7 | 2017 dollars
+Machinery | Machinery manufacturing | 8 | 12  | 938  | 7 | 2017 dollars | ✎
 
-Wholesale | Merchant wholesalers | 7 | 12  | 1,324  | 4 | 2017 dollars
+Wholesale | Merchant wholesalers | 7 | 12  | 1,324  | 4 | 2017 dollars | ✎
 
-Data centers | Data centers (colocation and hyperscale) | 10 | 10  | 355  | 3 | megawatt
+Data centers | Data centers (colocation and hyperscale) | 10 | 10  | 355  | 3 | megawatt | ✎
 
 Observations are about an entity or a grouping of entities. The model predicts an observation about a grouping from the grouping's members on the observation's date, each at its weight.
 
-Kind | Groupings | Members
+Kind | Groupings | Members |
 
-Company | 77 | entities the company controls through its ownership chain, each at its consolidation share
+Company | 77 | entities the company controls through its ownership chain, each at its consolidation share | ✎
 
-Segment | 1 | entities a company assigns to a business segment in its filings
+Segment | 1 | entities a company assigns to a business segment in its filings | ✎
 
-Site | 114 | entities at one physical location, each at the share of its own capacity located there (1 for an entity wholly at the site)
+Site | 114 | entities at one physical location, each at the share of its own capacity located there (1 for an entity wholly at the site) | ✎
 
-Census cell | 168 | tracked entities in one sector, size class and region, and the representative entity standing for the rest
+Census cell | 168 | tracked entities in one sector, size class and region, and the representative entity standing for the rest | ✎
 
-Sector | 14 | every entity in the sector, tracked and representative
+Sector | 14 | every entity in the sector, tracked and representative | ✎
 
-Region | 4 | every entity in one Census region
+Region | 4 | every entity in one Census region | ✎
 
 Sector  Kind  Size  Region  Grouping  Observation
 
@@ -103,5 +103,3 @@ Observations
 261 in total, 6 kinds; browse them · about each kind
 
 List price 95Satellite activity flag 95Order book 31Revenue 31Emissions 6Stated capacity 3
-
-✎✎ Feedback

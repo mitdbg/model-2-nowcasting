@@ -318,15 +318,13 @@ M2.chart = (el, o) => {
   s += `<line class="cursor" x1="0" x2="0" y1="${T}" y2="${H - B}" stroke="var(--muted)" stroke-width="0.7" visibility="hidden"/>`;
   el.innerHTML = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img">${s}<rect x="${L}" y="${T}" width="${W - L - R}" height="${H - T - B}" fill="transparent" class="hit"/></svg>`;
   const svg = el.querySelector("svg"), cur = svg.querySelector(".cursor");
-  const host = el.closest(".card") || el;   // feedback on this chart: what it shows, its months, the month last pointed at
+  const host = el.closest(".card") || el;   // feedback on this chart: what it shows
   if (o.fb) host.dataset.fb = JSON.stringify(o.fb);
-  host._fbMonths = ms; host._fbMonth = null;
   svg.querySelector(".hit").addEventListener("mousemove", (ev) => {
     const pt = svg.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY;
     const p = pt.matrixTransform(svg.getScreenCTM().inverse());
     const mi = Math.round(x0 + ((p.x - L) / (W - L - R)) * (x1 - x0)), m = M2.idxMonth(mi);
     cur.setAttribute("x1", X(m)); cur.setAttribute("x2", X(m)); cur.setAttribute("visibility", "visible");
-    host._fbMonth = m;
     let h = `<b>${m}</b>`;
     (o.bands || []).forEach((b) => {
       const i = b.month.indexOf(m);

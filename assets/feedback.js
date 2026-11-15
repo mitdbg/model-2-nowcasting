@@ -1,7 +1,6 @@
-/* Feedback on anything on the site. Hovering over a chart, a table row, an equation, a heading or a paragraph shows
-   a small ✎; the Feedback button (bottom right) picks a thing by clicking it instead (for touch and keyboard).
-   Either opens a box for a note, sent with exactly what it is about: the forecast, the page, the kind of thing, its
-   id, the month on a chart, and the row's cells or the section it sits in. Elements can say what they are with
+/* Feedback on anything on the site. Every chart, equation, table row, page title and section heading carries a
+   small ✎; clicking it opens a box for a note, sent with exactly what it is about: the forecast, the page, the kind
+   of thing, its id, and the row's cells or the section it sits in. Elements can say what they are with
    data-fb='{"kind": ..., "id": ..., "label": ..., "context": {...}}'; M2.chart takes the same as opts.fb.
    The notes go to the hosted Model 2 server (POST /feedback), the same place as the MCP tool send_feedback.
    Senders sign in with Google; the server then gives this browser a key, kept here, that goes with each note.
@@ -65,29 +64,17 @@
     sector: "sector", series: "series", official_statistic: "official statistic", entity: "entity", state: "hidden state",
     observation: "observations", grouping: "grouping", parameter: "parameter", equation: "equation", problem: "problem",
     fix: "fix", test: "test" };
-  const SKIP = "header.top, .subtabs, .setmenu, .infotip, .tip, .fb-btn, .fb-pop, .fb-go, .keys, button, input, textarea, select";
-  const PICK = "[data-fb], .card, .eqcard, tr, h1, h2, h3, h4, p, li, pre, figure, dd";
+  // what carries a ✎: charts (they say what they show), equations, table rows, the page title, section headings
+  const OBJ = "[data-fb], .card:has(svg.chart), .eqcard, tr, h1, h2";
+  const SKIP = ".fb-pop, .keys, .infotip, .tip";
   const txt = (el) => {   // an element's text as read, without the hidden explanations of its ⓘ marks
     if (!el) return "";
     const c = el.cloneNode(true);
-    c.querySelectorAll(".infowrap, .infotip, .info, .def, .fb-hp, svg").forEach((x) => x.remove());
+    c.querySelectorAll(".infowrap, .infotip, .info, .def, .fb-hp, .fb-pen, .fb-cell, svg").forEach((x) => x.remove());
     return c.textContent;
   };
   const clip = (s, n) => { s = (s || "").replace(/\s+/g, " ").trim(); return s.length > n ? s.slice(0, n - 1) + "…" : s; };
   const page = () => location.pathname.split("/").pop() + location.search;
-
-  // the thing under the pointer worth commenting on: the innermost match, never the site's own controls
-  function targetOf(node) {
-    for (let el = node instanceof Element ? node : node?.parentElement; el && el !== document.body; el = el.parentElement) {
-      if (el.matches(SKIP)) return null;
-      if (!el.closest("main")) return null;
-      if (el.matches(PICK) && (el.textContent.trim() || el.querySelector("svg"))) {
-        if (el.matches("tr") && !el.querySelector("td")) continue;   // a header row: go up to the table's section
-        return el.closest(".card, .eqcard") && !el.matches("[data-fb]") && !el.matches("tr") ? el.closest(".card, .eqcard") : el;
-      }
-    }
-    return null;
-  }
 
   function sectionOf(el) {   // the nearest h2 above the element
     const hs = [...document.querySelectorAll("main h2")];
@@ -122,8 +109,9 @@
     } else if (!kind && el.matches(".card")) {
       kind = el.querySelector("svg.chart") ? "chart" : "section"; label = clip(txt(head), 160);
     } else if (!kind && el.matches("tr")) {
-      const table = el.closest("table"), heads = [...(table?.querySelector("tr")?.children || [])].map((c) => clip(txt(c), 40));
-      const cells = [...el.children].map((c) => clip(txt(c), 120));
+      const own = (tr) => [...(tr?.children || [])].filter((c) => !c.matches(".fb-cell"));
+      const heads = own([...el.closest("table").querySelectorAll("tr")].find((r) => !r.querySelector("td"))).map((c) => clip(txt(c), 40));
+      const cells = own(el).map((c) => clip(txt(c), 120));
       ctx.row = Object.fromEntries(cells.map((c, i) => [heads[i] || `col${i + 1}`, c]));
       const l = linked(el);
       if (l.entity) { kind = "entity"; id = l.entity; }
@@ -141,75 +129,57 @@
     const q = new URLSearchParams(location.search);
     if (q.get("s")) ctx.page_sector = q.get("s");
     if (q.get("e")) ctx.page_entity = q.get("e");
-    return { kind, id: id ?? null, label, ctx, months: el._fbMonths || null, month: el._fbMonth || null };
+    return { kind, id: id ?? null, label, ctx };
   }
 
-  // ---------- the ✎ on hover ----------
-  const btn = document.createElement("button");
-  btn.type = "button"; btn.className = "fb-btn"; btn.textContent = "✎"; btn.hidden = true;
-  btn.setAttribute("aria-label", "Send feedback on this");
-  btn.title = "Feedback on this";
-  let cur = null, hideT = 0, picking = false;
-
-  function place(el) {
-    const r = el.getBoundingClientRect(), m = el.closest("main").getBoundingClientRect();
-    btn.style.top = `${scrollY + r.top + 2}px`;
-    btn.style.left = `${scrollX + Math.min(r.right, m.right) - 24}px`;
+  // ---------- a ✎ on every object, kept up as pages draw and redraw their charts and tables ----------
+  const pen = (el) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "fb-pen"; b.textContent = "✎";
+    b.title = "Feedback on this"; b.setAttribute("aria-label", "Send feedback on this");
+    b.addEventListener("click", (ev) => { ev.preventDefault(); ev.stopPropagation(); open(el); });
+    return b;
+  };
+  const span = (tr) => [...tr.children].reduce((n, c) => n + (c.matches(".fb-cell") ? 0 : c.colSpan || 1), 0);
+  function mark(el) {
+    el.dataset.fbp = "";
+    if (el.matches("tr")) {   // a column of its own at the end of the table; header rows get an empty cell
+      const head = [...el.closest("table").querySelectorAll("tr")].find((r) => !r.querySelector("td"));
+      const data = !!el.querySelector("td");
+      if (data && head && span(el) < span(head)) return;   // a row spanning the table (a note, an opened detail): none
+      const c = document.createElement(data ? "td" : "th");
+      c.className = "fb-cell";
+      if (data) c.appendChild(pen(el));
+      el.appendChild(c);
+    } else if (el.matches("h1, h2")) {
+      el.appendChild(pen(el));
+    } else {   // a chart or an equation: beside its heading, else at its top right
+      const h = el.querySelector("h3, h4");
+      if (h) h.appendChild(pen(el));
+      else { el.classList.add("fb-box"); el.appendChild(pen(el)).classList.add("fb-corner"); }
+    }
   }
-  function show(el) {
-    clearTimeout(hideT);
-    if (cur !== el) { cur?.classList.remove("fb-hl"); cur = el; place(el); }
-    btn.hidden = false;
-  }
-  function hide() { hideT = setTimeout(() => { btn.hidden = true; cur?.classList.remove("fb-hl"); cur = null; }, 350); }
-
-  const fine = matchMedia("(hover: hover) and (pointer: fine)").matches;
-  if (fine) {
-    document.addEventListener("pointerover", (ev) => {
-      if (pop || picking) return;
-      if (ev.target === btn) { clearTimeout(hideT); cur?.classList.add("fb-hl"); return; }
-      const el = targetOf(ev.target);
-      el ? show(el) : hide();
+  function scan() {
+    document.querySelectorAll("main :is(" + OBJ + "):not([data-fbp])").forEach((el) => {
+      if (el.closest(SKIP) || el.parentElement.closest("[data-fb], .eqcard, .card:has(svg.chart)") && !el.matches("tr")) return;
+      if (el.matches("h1, h2") && !el.textContent.trim()) return;
+      mark(el);
     });
-    btn.addEventListener("pointerleave", () => cur?.classList.remove("fb-hl"));
   }
-  btn.addEventListener("click", () => cur && open(cur));
-
-  // ---------- the Feedback button: pick a thing by clicking it ----------
-  const go = document.createElement("button");
-  go.type = "button"; go.className = "fb-go"; go.textContent = "✎ Feedback";
-  go.title = "Send feedback: then click what it is about (or press Enter for the whole page)";
-  go.addEventListener("click", () => (picking ? stopPick() : startPick()));
-  function startPick() {
-    picking = true; btn.hidden = true; go.textContent = "Click what it's about… (Esc to cancel)"; document.body.classList.add("fb-picking");
-  }
-  function stopPick() { picking = false; go.textContent = "✎ Feedback"; document.body.classList.remove("fb-picking"); cur?.classList.remove("fb-hl"); }
-  document.addEventListener("pointermove", (ev) => {
-    if (!picking) return;
-    const el = targetOf(ev.target);
-    if (el !== cur) { cur?.classList.remove("fb-hl"); cur = el; el?.classList.add("fb-hl"); }
-  });
-  document.addEventListener("click", (ev) => {
-    if (!picking || ev.target === go) return;
-    const el = targetOf(ev.target);
-    ev.preventDefault(); ev.stopPropagation();
-    stopPick();
-    open(el || document.querySelector("main h1") || document.querySelector("main"));
-  }, true);
-  document.addEventListener("keydown", (ev) => {
-    if (ev.key === "Escape") { if (picking) stopPick(); if (pop) close(); }
-    if (ev.key === "Enter" && picking) { ev.preventDefault(); stopPick(); open(document.querySelector("main h1") || document.querySelector("main")); }
-  });
+  let queued = false;
+  new MutationObserver(() => { if (!queued) { queued = true; requestAnimationFrame(() => { queued = false; scan(); }); } })
+    .observe(document.querySelector("main") || document.body, { childList: true, subtree: true });
 
   // ---------- the box ----------
   let pop = null;
-  function close() { pop?.remove(); pop = null; cur?.classList.remove("fb-hl"); }
+  let cur = null;
+  function close() { pop?.remove(); pop = null; cur?.classList.remove("fb-hl"); cur = null; }
 
   async function open(el) {
     close();
-    const d = describe(el.matches("main") ? document.querySelector("main h1") || el : el);
-    if (el.matches("main") || (el.matches("h1"))) { d.kind = "page"; d.label = clip(txt(document.querySelector("main h1")) || document.title, 160); }
-    el.classList.add("fb-hl");
+    const d = describe(el);
+    if (el.matches("h1")) { d.kind = "page"; d.label = clip(txt(el) || document.title, 160); }
+    cur = el; el.classList.add("fb-hl");
     pop = document.createElement("div");
     pop.className = "fb-pop"; pop.setAttribute("role", "dialog"); pop.setAttribute("aria-label", "Send feedback");
     document.body.appendChild(pop);
@@ -220,7 +190,7 @@
     if (pop.getBoundingClientRect().top < 60) pop.style.top = `${scrollY + 60}px`;
     const about = `<div class="fb-about"><span class="fb-k">Feedback on ${M2.esc(KIND_LABEL[d.kind] || d.kind)}${d.id ? ` <code>${M2.esc(d.id)}</code>` : ""}</span>
         <span class="fb-l">${M2.esc(d.label || "")}</span></div>`;
-    let draft = "", month = d.month || "";
+    let draft = "";
 
     async function askSignIn(why) {
       const box = pop;
@@ -240,10 +210,8 @@
 
     function form() {
       const me = M2.fb.session();
-      const months = d.months ? `<label class="fb-row">Month <select name="month"><option value="">the whole chart</option>${
-        d.months.map((m) => `<option${m === month ? " selected" : ""}>${m}</option>`).join("")}</select></label>` : "";
       pop.innerHTML = `${about}
-        <form>${months}
+        <form>
           <textarea name="note" rows="5" maxlength="4000" required placeholder="What should the Model 2 team know about this?"></textarea>
           <input name="website" tabindex="-1" autocomplete="off" aria-hidden="true" class="fb-hp">
           <div class="fb-actions"><span class="fb-msg" role="status"></span><button type="button" class="fb-cancel">Cancel</button><button type="submit">Send</button></div>
@@ -254,7 +222,6 @@
       f.note.value = draft;
       f.note.focus();
       f.note.addEventListener("input", () => { draft = f.note.value; });
-      f.month?.addEventListener("change", () => { month = f.month.value; });
       pop.querySelector(".fb-cancel").addEventListener("click", close);
       pop.querySelector(".fb-out").addEventListener("click", async () => { await M2.fb.signOut(); askSignIn(); });
       f.addEventListener("submit", async (ev) => {
@@ -267,7 +234,7 @@
           forecast = s?.forecast || sid; world = s?.world_catalog_id || null;
         } catch (e) { /* send without it */ }
         const body = { key: M2.fb.session()?.key, note: f.note.value, website: f.website.value, channel: "site",
-          forecast_id: forecast, target_kind: d.kind, target_id: d.id, target_month: f.month?.value || null,
+          forecast_id: forecast, target_kind: d.kind, target_id: d.id, target_month: null,
           target_label: d.label, page: page(), context: { ...d.ctx, world, title: document.title } };
         try {
           await M2.fb.api("", body);
@@ -282,7 +249,7 @@
 
     M2.fb.session() ? form() : askSignIn();
   }
-  document.addEventListener("pointerdown", (ev) => { if (pop && !pop.contains(ev.target) && ev.target !== btn && ev.target !== go) close(); });
-
-  document.body.append(btn, go);
+  document.addEventListener("pointerdown", (ev) => { if (pop && !pop.contains(ev.target) && !ev.target.closest?.(".fb-pen")) close(); });
+  document.addEventListener("keydown", (ev) => { if (ev.key === "Escape" && pop) close(); });
+  scan();
 })();

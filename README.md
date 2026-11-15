@@ -55,8 +55,8 @@ client, and `llms.txt`. Both are described in `docs/mcp.md`. Before each deploy 
 page's text as `data/sets/<forecast>/pages/<page>.md` (rendered in headless Chrome; only pages whose page or data
 changed) and writes `llms.txt`, the index agents start from.
 
-`assets/feedback.js`, loaded by `site.js` on every page, lets readers send the team a note about any chart, row,
-equation or paragraph (the ✎ on hover, or the ✎ Feedback button), sent with what it is about to the hosted server's
+`assets/feedback.js`, loaded by `site.js` on every page, puts a ✎ on every chart, table row, equation, page title
+and section heading; clicking it sends the team a note with what it is about to the hosted server's
 `/feedback`; see `docs/mcp.md`, Feedback.
 
 `scripts/deploy_site.sh` pushes `site/` with its data to the private repository

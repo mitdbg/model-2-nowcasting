@@ -1,6 +1,6 @@
 <!-- Overview › Data Model, for forecast b653c9a8-4454-5e3d-8a00-0a530afd83a0; the page: https://mitdbg.github.io/model-2-nowcasting/datamodel.html?set=b653c9a8-4454-5e3d-8a00-0a530afd83a0 -->
 
-# Data Model
+# Data Model✎
 
 This diagram shows Model 2's data as related tables, grouped into families and arranged by the phase that uses them. Click a table to see its columns, its key and how it joins to the others.
 
@@ -29,5 +29,3 @@ Scores How close each run came: errors and band coverage for every scored value,
 Catalog A lasting record of every world, model version, fit and forecast, spanning all the other phases: worlds are recorded as they are built, fits and forecasts as they are made, and problems and fixes name the ones they are about. One record per item; records point to each other by id and say where the files they describe are. Every id is a UUID that says nothing about the record; readable names are separate fields.
 
 Problems, fixes and tests What the evaluation of a forecast found wrong, the possible fixes for it, the fixes chosen to be tested and what each test found. Each record has an id that never changes and names the world, fit and forecast it is about. Later: the fixes good enough to deploy.
-
-✎✎ Feedback
