@@ -1,5 +1,5 @@
 /* Feedback on anything on the site. Every chart, equation, table row, page title and section heading carries a
-   small ✎; clicking it opens a box for a note, sent with exactly what it is about: the forecast, the page, the kind
+   small speech bubble; clicking it opens a box for a note, sent with exactly what it is about: the forecast, the page, the kind
    of thing, its id, and the row's cells or the section it sits in. Elements can say what they are with
    data-fb='{"kind": ..., "id": ..., "label": ..., "context": {...}}'; M2.chart takes the same as opts.fb.
    The notes go to the hosted Model 2 server (POST /feedback), the same place as the MCP tool send_feedback.
@@ -64,7 +64,7 @@
     sector: "sector", series: "series", official_statistic: "official statistic", entity: "entity", state: "hidden state",
     observation: "observations", grouping: "grouping", parameter: "parameter", equation: "equation", problem: "problem",
     fix: "fix", test: "test" };
-  // what carries a ✎: charts (they say what they show), equations, table rows, the page title, section headings
+  // what carries a speech bubble: charts (they say what they show), equations, table rows, the page title, section headings
   const OBJ = "[data-fb], .card:has(svg.chart), .eqcard, tr, h1, h2";
   const SKIP = ".fb-pop, .keys, .infotip, .tip";
   const txt = (el) => {   // an element's text as read, without the hidden explanations of its ⓘ marks
@@ -132,10 +132,12 @@
     return { kind, id: id ?? null, label, ctx };
   }
 
-  // ---------- a ✎ on every object, kept up as pages draw and redraw their charts and tables ----------
+  // ---------- a speech bubble on every object, kept up as pages draw and redraw their charts and tables ----------
+  const BUBBLE = '<svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M2.5 3.5h11v7h-6l-3 2.5v-2.5h-2z" '
+    + 'fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>';
   const pen = (el) => {
     const b = document.createElement("button");
-    b.type = "button"; b.className = "fb-pen"; b.textContent = "✎";
+    b.type = "button"; b.className = "fb-pen"; b.innerHTML = BUBBLE;
     b.title = "Feedback on this"; b.setAttribute("aria-label", "Send feedback on this");
     b.addEventListener("click", (ev) => { ev.preventDefault(); ev.stopPropagation(); open(el); });
     return b;

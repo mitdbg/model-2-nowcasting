@@ -262,9 +262,9 @@ svg.chart polyline[stroke="var(--accent)"] { stroke: var(--fg); }
 .ai::before { content: attr(data-ai); display: block; padding: 6px 0 4px; font-size: 11.5px; font-weight: 600;
   letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); }
 .ai thead th { background: var(--ai) !important; }
-/* feedback on anything (assets/feedback.js): the ✎ on every object, the box */
-.fb-pen { font: 400 13px/1 var(--sans, inherit); color: var(--muted); background: none; border: 0; padding: 2px 4px; margin-left: 6px;
-  cursor: pointer; opacity: 0.55; vertical-align: 0.1em; border-radius: 3px; }
+/* feedback on anything (assets/feedback.js): the speech bubble on every object, the box */
+.fb-pen { display: inline-flex; color: var(--muted); background: none; border: 0; padding: 2px; margin-left: 6px;
+  cursor: pointer; opacity: 0.7; vertical-align: -0.1em; border-radius: 3px; line-height: 0; }
 .fb-pen:hover, .fb-pen:focus-visible { color: var(--accent); opacity: 1; outline: 1px solid var(--accent); }
 .fb-cell { width: 1px; padding-left: 2px !important; padding-right: 0 !important; text-align: right; white-space: nowrap; }
 .fb-cell .fb-pen { margin-left: 0; }
