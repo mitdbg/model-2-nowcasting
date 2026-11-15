@@ -49,3 +49,5 @@ Hotels  | perishable service | 20 | 12  | 6 | 4 |   | 14  | 2026-11-13 12:57
 Machinery  | make to order | 20 | 12  | 5 | 3 |   | 19  | 2026-11-13 13:00
 
 Wholesale  | distribution | 19 | 12  | 20 | 18 |   | 15  | 2026-11-13 13:42
+
+✎✎ Feedback

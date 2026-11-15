@@ -74,6 +74,8 @@ Test Order | Fix | Problem | Fix Summary | [AI generated] Status | Actual Time T
 
 0 of 32 fixes tested | 0 minutes | $0.00 | time added up over all tests, which ran in parallel
 
+✎✎ Feedback
+
 Definitions behind the page's (i) marks:
 - The fix's place in the testing plan. Fixes that were not tried have none.
 - From the start of the test to its result: making the change and running the checks.

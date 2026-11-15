@@ -78,6 +78,8 @@ Fix | Problem | Possible Fix | Likelihood of Success | Estimated Time To Test | 
 
 11C 2bdd7d64 | 11. Forecast error is mostly present already at the current month ac38cf24 | Run the filter with 200 simulated copies instead of 100 to reduce the chance part of each run's middle line. Past checks of the same fits with different filter random numbers found the filter's own randomness to be a modest part of the error. | Less Likely Than Not | about 2 hours | about $3
 
+✎✎ Feedback
+
 Definitions behind the page's (i) marks:
 - The reviewer's judgment of whether the fix would clearly reduce the problem, as the Evaluation pages show it.
 - From starting work on the fix to having the test's result: writing the change and running the checks.

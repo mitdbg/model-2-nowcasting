@@ -108,3 +108,5 @@ Each sector total above is the sum of two parts. Tracked entities are specific m
 The sector input bundle carries official sector statistics, and where one measures a sector total, the filter uses it as one more observation of that total (L16). Each chart compares the bundle's value with Model 2's total, in the statistic's units.
 
 ## Entities in this sector
+
+✎✎ Feedback

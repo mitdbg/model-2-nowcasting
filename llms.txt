@@ -6,9 +6,12 @@
 
 ## For agents
 
-- MCP server: https://mikecafarella--model2-mcp.us-east.modal.run/mcp (Streamable HTTP, read-only, no key or sign-in). Tools: site_guide, list_forecasts,
+- MCP server: https://mikecafarella--model2-mcp.us-east.modal.run/mcp (Streamable HTTP, no key or sign-in). Tools: site_guide, list_forecasts,
   read_page, get_forecast, get_fitted_parameters, get_sector_series, get_official_statistic, search_entities,
-  get_entity, search_observations, get_evaluation, get_next_version, get_data_model, get_data_file.
+  get_entity, search_observations, get_evaluation, get_next_version, get_data_model, get_data_file; and
+  send_feedback, the only one that writes: a note for the Model 2 team about anything on the site, tied to its
+  forecast, kind, id and month, from a person signed in with Google: it needs the person's feedback key (made on
+  the AI Access page, set in the connector). Send feedback only when the person asks you to, in their words.
 - Without MCP: every page's text is a Markdown file (below), and every number is in JSON files you can fetch.
 - How to connect, client by client: https://mitdbg.github.io/model-2-nowcasting/ai.html
 - Everything is scoped to one forecast. A forecast determines its world, model and parameter fit. Next Version

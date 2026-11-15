@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AI Access · Model 2</title>
-<link rel="stylesheet" href="assets/site.css?v=34b7686-1794748984">
+<link rel="stylesheet" href="assets/site.css?v=d526ad9-1794780388">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Code+Pro:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800&display=swap">
 <style>
@@ -19,13 +19,23 @@
   table.clients td { vertical-align: top; }
   table.clients .copy { margin: 4px 0 0; }
   table.tools td:first-child { font-family: var(--mono, ui-monospace, monospace); font-size: 12.5px; white-space: nowrap; }
+  .keys { max-width: 820px; }
+  .keys .who { margin: 0 0 10px; }
+  .keys .who button, .keys td button { font: inherit; color: var(--accent); background: none; border: 0; padding: 0; cursor: pointer; }
+  .keys .who button:hover, .keys td button:hover { text-decoration: underline; }
+  .keys form { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 12px; }
+  .keys form input { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 5px; padding: 6px 8px; flex: 1; min-width: 200px; max-width: 320px; }
+  .keys form button { font-family: inherit; font-weight: 600; border-radius: 5px; padding: 6px 12px; cursor: pointer; background: var(--accent); border: 1px solid var(--accent); color: var(--panel); }
+  .keys .made { border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; margin: 0 0 14px; background: var(--panel); }
+  .keys .made p { margin: 0 0 6px; }
+  .keys .err { color: var(--bad); }
   .note { max-width: 80ch; }
 </style>
 </head>
 <body>
 <main>
   <h1>AI Access</h1>
-  <p class="sub">AI agents such as Claude can read this site's pages and the data behind them. They can connect to a read-only MCP server, or read a plain-text guide to the site.</p>
+  <p class="sub">AI agents such as Claude can read this site's pages and the data behind them. They can connect to an MCP server, or read a plain-text guide to the site. Through MCP they can also send the Model 2 team feedback on anything they find.</p>
 
   <h2>Quickest: paste this into your agent</h2>
   <p>Any agent that can read web pages can start from the site's guide for agents:</p>
@@ -35,7 +45,7 @@
   <p>The Model Context Protocol lets an agent call the site's tools directly: list the forecasts, read a page, get a
   sector's forecast with its 90% range, search entities and observations, and more. The server's address:</p>
   <div class="copy"><pre id="url">https://mikecafarella--model2-mcp.us-east.modal.run/mcp</pre><button type="button" data-copy="url">Copy</button></div>
-  <p class="facts">Streamable HTTP · read-only · no key or sign-in</p>
+  <p class="facts">Streamable HTTP · reads only, except to send feedback · no key or sign-in</p>
 
   <div class="tablewrap"><table class="clients">
     <tr><th>Agent</th><th>How to add it</th></tr>
@@ -44,6 +54,11 @@
     <tr><td>Claude Code</td><td>Run in a terminal:
       <div class="copy"><pre id="c-cc">claude mcp add --transport http model2 https://mikecafarella--model2-mcp.us-east.modal.run/mcp</pre><button type="button" data-copy="c-cc">Copy</button></div></td></tr>
   </table></div>
+
+  <h2>Sending feedback from an agent</h2>
+  <p>Agents can send the Model 2 team a note about anything on the site with <code>send_feedback</code>. Every note is
+  tied to the person who sent it, so the connector needs your own feedback key. Reading needs no key.</p>
+  <div id="keys" class="keys"><p class="muted">Loading…</p></div>
 
   <h2>Check that it works</h2>
   <p>Ask your agent: <i>"Using Model 2, list the forecasts and summarize the default one."</i> It should call
@@ -68,6 +83,7 @@
     <tr><td>get_next_version</td><td>Current Problems, Possible Improvements and Improvement Testing</td></tr>
     <tr><td>get_data_model</td><td>The data model's tables, columns and joins</td></tr>
     <tr><td>get_data_file</td><td>Any of a forecast's data files, or part of one</td></tr>
+    <tr><td>send_feedback</td><td>Sends the Model 2 team a note about a page, series, entity, observation, equation or anything else, tied to exactly what it is about</td></tr>
   </table></div>
 
   <h2>Without MCP</h2>
@@ -79,22 +95,28 @@
 
   <h2>Privacy and limits</h2>
   <ul class="note">
-    <li>Read-only: no tool changes anything.</li>
+    <li>Every tool only reads, except <code>send_feedback</code>, which records a note for the Model 2 team. Agents are asked to send feedback only when you ask them to, and only with your key.</li>
     <li>The server serves the same data as this site, which is public; there is nothing to sign in to.</li>
-    <li>The server keeps no record of what agents ask, beyond its hosting platform's standard request logs.</li>
+    <li>The server keeps no record of what agents ask, beyond its hosting platform's standard request logs. It keeps the notes sent as feedback, with the sender's Google name and email.</li>
     <li>Answers are cut at about 20,000 characters, with a note saying so; agents can ask for less.</li>
     <li>The server reads this site as published, so it reflects a new version within about five minutes.</li>
     <li>The Next Version pages are written by AI agents and are not human-reviewed; the tools say so too.</li>
   </ul>
 </main>
-<script src="assets/site.js?v=34b7686-1794748984"></script>
+<script src="assets/site.js?v=d526ad9-1794780388"></script>
+<script src="assets/feedback.js?v=d526ad9-1794780388"></script>
 <script>
 (async () => {
   try {
     const meta = await M2.load("meta.json");
     M2.header(meta, "ai.html");
   } catch (e) { M2.fail(e); }
-  document.querySelectorAll("button[data-copy]").forEach((b) => b.addEventListener("click", async () => {
+  wireCopy(document);
+  keys();
+})();
+
+function wireCopy(root) {
+  root.querySelectorAll("button[data-copy]").forEach((b) => b.addEventListener("click", async () => {
     const pre = document.getElementById(b.dataset.copy);
     try {
       await navigator.clipboard.writeText(pre.textContent);
@@ -106,7 +128,46 @@
     }
     setTimeout(() => { b.textContent = "Copy"; }, 1600);
   }));
-})();
+}
+
+// your feedback keys for agents: sign in with Google, make a key, add it to your connector, revoke it
+async function keys(made, err) {
+  const box = document.getElementById("keys"), me = M2.fb.session();
+  const MCP = "https://mikecafarella--model2-mcp.us-east.modal.run/mcp";
+  if (!me) {
+    box.innerHTML = `<p>Sign in with Google to make a key. Notes your agent sends carry your Google name and email.</p><div class="gsi"></div><p class="err"></p>`;
+    try { await M2.fb.signIn(box.querySelector(".gsi")); keys(); }
+    catch (e) { box.querySelector(".err").textContent = e.message; }
+    return;
+  }
+  let list = [];
+  try { list = (await M2.fb.api("/keys", { key: me.key, action: "list" })).keys.filter((k) => k.kind === "agent"); }
+  catch (e) { if (e.status === 401) { M2.fb.keep(null); return keys(); } err = e.message; }
+  const day = (t) => (t ? t.slice(0, 10) : "never");
+  box.innerHTML = `<p class="who">Signed in as ${M2.esc(me.name || me.email)} (${M2.esc(me.email)}) · <button type="button" class="out">Sign out</button></p>
+    ${made ? `<div class="made"><p><b>Your new key.</b> It is shown only now; copy it into your connector.</p>
+      <div class="copy"><pre id="k-key">${M2.esc(made.key)}</pre><button type="button" data-copy="k-key">Copy</button></div>
+      <p>Claude Code: run in a terminal (first <code>claude mcp remove model2</code>, if you added it without a key):</p>
+      <div class="copy"><pre id="k-cc">claude mcp add --transport http model2 ${MCP} --header "Authorization: Bearer ${M2.esc(made.key)}"</pre><button type="button" data-copy="k-cc">Copy</button></div>
+      <p>Claude desktop app: use this as the connector's server address (edit the connector, or add it again):</p>
+      <div class="copy"><pre id="k-cd">${MCP}?key=${M2.esc(made.key)}</pre><button type="button" data-copy="k-cd">Copy</button></div></div>` : ""}
+    <form><input name="label" maxlength="100" placeholder="What the key is for (e.g. laptop Claude Code)"><button type="submit">Make a key</button></form>
+    ${err ? `<p class="err">${M2.esc(err)}</p>` : ""}
+    ${list.length ? `<div class="tablewrap"><table><tr><th>Key</th><th>Made</th><th>Last used</th><th></th></tr>${list.map((k) =>
+      `<tr><td>${M2.esc(k.label || "agent key")}</td><td>${day(k.created_utc)}</td><td>${day(k.last_used_utc)}</td><td><button type="button" data-revoke="${k.id}">Revoke</button></td></tr>`).join("")}</table></div>`
+      : `<p class="muted">You have no agent keys yet.</p>`}`;
+  wireCopy(box);
+  box.querySelector(".out").addEventListener("click", async () => { await M2.fb.signOut(); keys(); });
+  box.querySelector("form").addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    try { const r = await M2.fb.api("/keys", { key: me.key, action: "create", label: ev.target.label.value }); keys(r.created); }
+    catch (e) { keys(null, e.message); }
+  });
+  box.querySelectorAll("[data-revoke]").forEach((b) => b.addEventListener("click", async () => {
+    try { await M2.fb.api("/keys", { key: me.key, action: "revoke", id: b.dataset.revoke }); keys(); }
+    catch (e) { keys(null, e.message); }
+  }));
+}
 </script>
 </body>
 </html>

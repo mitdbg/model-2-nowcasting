@@ -61,3 +61,4 @@ The next as-of date sees the new observations and starts again, so the history, 
 ## Backtests
 
 A backtest repeats stages 2 and 3 at a series of past dates. Each run sees only what was known on its date, as if it had run then, so its errors show how the model would have done in real time. The scores cover the last 12 months of history, the nowcast, and forecasts 3, 6 and 12 months ahead.
+✎✎ Feedback

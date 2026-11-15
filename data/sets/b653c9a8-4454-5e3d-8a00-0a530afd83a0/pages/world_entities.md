@@ -103,3 +103,5 @@ Observations
 261 in total, 6 kinds; browse them · about each kind
 
 List price 95Satellite activity flag 95Order book 31Revenue 31Emissions 6Stated capacity 3
+
+✎✎ Feedback

@@ -70,6 +70,8 @@ Fix | Problem | Possible Fix | Likelihood of Success | Estimated Time To Test | 
 
 10C 84f9c647 | 10. Retail demand is unsettled and has the largest forecast errors 577abb57 | Update retail in more, smaller steps each month. Retail can only sell what it has on hand, so copies of the world near that limit react in opposite ways to the same sales figure, and one large step pushes them apart; several smaller steps follow the limit more closely, as the existing two-step update does in milder form. | Less Likely Than Not | about 3 hours | about $2
 
+✎✎ Feedback
+
 Definitions behind the page's (i) marks:
 - The reviewer's judgment of whether the fix would clearly reduce the problem, as the Evaluation pages show it.
 - From starting work on the fix to having the test's result: writing the change and running the checks.

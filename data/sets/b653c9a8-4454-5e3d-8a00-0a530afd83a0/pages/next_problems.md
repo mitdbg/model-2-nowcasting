@@ -202,6 +202,8 @@ What the pages cannot tell me:
 
 - How many simulated copies the filter keeps, and how often they collapse onto a few.
 
+✎✎ Feedback
+
 Definitions behind the page's (i) marks:
 - How often the model's range caught the value it was checked against. The model gives a range it expects to hold the value 90 times out of 100, so about 90 is ideal. Much lower means the model is too sure of itself (too narrow, misses too many); much higher means its ranges are wider than they need to be (wider than needed, generous).
 - How far off the model's best guess usually was, in percent (or in months of output, mo, or percentage points, pts). Forecasts are compared with the model's own estimate a year later, since the true value is not known. Smaller is better.

@@ -242,7 +242,8 @@ function tip(html, ev) {
    opts.points: [{month, y, lo, hi, label}]                            observations, with optional range
    opts.status: {month[], status[]}                                    shade nowcast and forecast months
    opts.yLabel: y-axis title, with units
-   opts.unit, opts.height, opts.yZero, opts.xFrom */
+   opts.unit, opts.height, opts.yZero, opts.xFrom
+   opts.fb:     what the chart shows, for feedback: {kind, id, label, context} (assets/feedback.js) */
 M2.chart = (el, o) => {
   const W = 560, H = o.height || 220, L = o.yLabel ? 66 : 52, R = 10, T = 8, B = 22;
   const css = getComputedStyle(document.documentElement);
@@ -317,11 +318,15 @@ M2.chart = (el, o) => {
   s += `<line class="cursor" x1="0" x2="0" y1="${T}" y2="${H - B}" stroke="var(--muted)" stroke-width="0.7" visibility="hidden"/>`;
   el.innerHTML = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img">${s}<rect x="${L}" y="${T}" width="${W - L - R}" height="${H - T - B}" fill="transparent" class="hit"/></svg>`;
   const svg = el.querySelector("svg"), cur = svg.querySelector(".cursor");
+  const host = el.closest(".card") || el;   // feedback on this chart: what it shows, its months, the month last pointed at
+  if (o.fb) host.dataset.fb = JSON.stringify(o.fb);
+  host._fbMonths = ms; host._fbMonth = null;
   svg.querySelector(".hit").addEventListener("mousemove", (ev) => {
     const pt = svg.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY;
     const p = pt.matrixTransform(svg.getScreenCTM().inverse());
     const mi = Math.round(x0 + ((p.x - L) / (W - L - R)) * (x1 - x0)), m = M2.idxMonth(mi);
     cur.setAttribute("x1", X(m)); cur.setAttribute("x2", X(m)); cur.setAttribute("visibility", "visible");
+    host._fbMonth = m;
     let h = `<b>${m}</b>`;
     (o.bands || []).forEach((b) => {
       const i = b.month.indexOf(m);
@@ -551,3 +556,11 @@ M2.OBS = {
   inventory_at_cost: ["Sector inventories at cost", "Inventories at cost (USD)", "Merchandise on hand at the end of the period for a whole sector, valued at cost.", "Finished inventory × unit cost, summed over the sector", "Census Monthly Wholesale Trade Survey"],
   market_vacancy: ["Market vacancy", "Market vacancy (share)", "Share of a market's capacity not in use over the period.", "1 − capacity in use / capacity, over the sector", "Broker market reports"],
 };
+
+// feedback on anything (assets/feedback.js), on every page that loads this file
+document.addEventListener("DOMContentLoaded", () => {
+  if (document.querySelector('script[src$="feedback.js"]')) return;   // the page loads it itself (AI Access)
+  const s = document.createElement("script");
+  s.src = new URL("feedback.js", document.currentScript?.src || document.querySelector('script[src$="site.js"]').src).href;
+  document.body.appendChild(s);
+});

@@ -117,3 +117,5 @@ Semiconductors | 96/100 | 28%  | 1,416 | generous
 Steel | 97/100 | 30%  | 2,075 | generous
 
 Wholesale | 98/100 | 23%  | 371 | generous
+
+✎✎ Feedback

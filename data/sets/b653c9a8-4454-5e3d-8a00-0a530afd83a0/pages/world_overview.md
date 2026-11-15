@@ -27,3 +27,4 @@ World844151cd-89f8-5a64-b12b-f31f12603eafNamew34-units-seed20261107 (its generat
 ## What it contains
 
 Sectors14Entities275: 115 tracked and 160 representative, covering 8,450 establishments in all — see themCompanies and sites77 companies, 114 sites, 4 ownership links between companiesObservations42,768 of 26 kinds from 35 sources, published 2010-01 to 2026-11 — see the kindsSector input bundle4 deliveries, for 2023-09-30, 2024-09-30, 2025-09-30, 2026-09-30 — see the latestSimulated months2010-01 to 2027-09
+✎✎ Feedback

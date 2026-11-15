@@ -2,7 +2,7 @@
 
 # AI Access
 
-AI agents such as Claude can read this site's pages and the data behind them. They can connect to a read-only MCP server, or read a plain-text guide to the site.
+AI agents such as Claude can read this site's pages and the data behind them. They can connect to an MCP server, or read a plain-text guide to the site. Through MCP they can also send the Model 2 team feedback on anything they find.
 
 ## Quickest: paste this into your agent
 
@@ -16,7 +16,7 @@ The Model Context Protocol lets an agent call the site's tools directly: list th
 
 https://mikecafarella--model2-mcp.us-east.modal.run/mcpCopy
 
-Streamable HTTP · read-only · no key or sign-in
+Streamable HTTP · reads only, except to send feedback · no key or sign-in
 
 Agent | How to add it
 
@@ -24,6 +24,14 @@ Claude desktop app | In Settings, open Connectors and add a custom connector. Na
 
 Claude Code | Run in a terminal:
 claude mcp add --transport http model2 https://mikecafarella--model2-mcp.us-east.modal.run/mcpCopy
+
+## Sending feedback from an agent
+
+Agents can send the Model 2 team a note about anything on the site with send_feedback. Every note is tied to the person who sent it, so the connector needs your own feedback key. Reading needs no key.
+
+Sign in with Google to make a key. Notes your agent sends carry your Google name and email.
+
+Sign in with GoogleSign in with Google. Opens in new tab
 
 ## Check that it works
 
@@ -63,6 +71,8 @@ get_data_model | The data model's tables, columns and joins
 
 get_data_file | Any of a forecast's data files, or part of one
 
+send_feedback | Sends the Model 2 team a note about a page, series, entity, observation, equation or anything else, tied to exactly what it is about
+
 ## Without MCP
 
 - llms.txt: a guide for agents to the site, its vocabulary, its forecasts, and where everything is.
@@ -73,14 +83,16 @@ get_data_file | Any of a forecast's data files, or part of one
 
 ## Privacy and limits
 
-- Read-only: no tool changes anything.
+- Every tool only reads, except send_feedback, which records a note for the Model 2 team. Agents are asked to send feedback only when you ask them to, and only with your key.
 
 - The server serves the same data as this site, which is public; there is nothing to sign in to.
 
-- The server keeps no record of what agents ask, beyond its hosting platform's standard request logs.
+- The server keeps no record of what agents ask, beyond its hosting platform's standard request logs. It keeps the notes sent as feedback, with the sender's Google name and email.
 
 - Answers are cut at about 20,000 characters, with a note saying so; agents can ask for less.
 
 - The server reads this site as published, so it reflects a new version within about five minutes.
 
 - The Next Version pages are written by AI agents and are not human-reviewed; the tools say so too.
+
+✎✎ Feedback

@@ -7,3 +7,4 @@ Model 2 estimates what is happening right now inside thousands of businesses —
 The first intellectual challenge of this project is to build a model of the economy that is as expressive as possible given our observations and accuracy constraints, but not more so.
 
 The second intellectual challenge is to build a 'model-builder' metaprocess that is proactively marshalling new sources of evidence and revising what economic model might be possible.
+✎✎ Feedback

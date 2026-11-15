@@ -82,6 +82,8 @@ Test Order | Fix | Problem | Fix Summary | [AI generated] Status | Actual Time T
 
 17 of 36 fixes tested | 41.8 hours | $31.21 | time added up over all tests, which ran in parallel
 
+✎✎ Feedback
+
 Definitions behind the page's (i) marks:
 - The fix's place in the testing plan. Fixes that were not tried have none.
 - From the start of the test to its result: making the change and running the checks.

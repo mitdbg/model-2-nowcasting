@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Sectors · Model 2</title>
-<link rel="stylesheet" href="assets/site.css?v=34b7686-1794748984">
+<link rel="stylesheet" href="assets/site.css?v=d526ad9-1794780388">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Code+Pro:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800&display=swap">
 <style>
@@ -55,7 +55,7 @@
   </div>
   </div>
 </main>
-<script src="assets/site.js?v=34b7686-1794748984"></script>
+<script src="assets/site.js?v=d526ad9-1794780388"></script>
 <script>
 (async () => {
   try {
@@ -101,14 +101,16 @@
         if (n) extra = `<span class="${inside / n >= 0.8 ? "good" : "bad"}">In band: ${M2.pct(inside / n, 0)} of ${n} months.</span>`;
       }
       M2.chart(card(totals, v, extra, undefined, fromModel(v)), { bands: [{ ...t, label: "total" }], truth: t.truth ? { month: t.month, value: t.truth } : null,
-                                         status: t, unit, yZero: !M2.isShare(v) && v !== "price" && v !== "unit_cost", yLabel: ylab(v) });
+                                         status: t, unit, yZero: !M2.isShare(v) && v !== "price" && v !== "unit_cost", yLabel: ylab(v),
+                                         fb: { kind: "series", id: `${code}/${v}`, label: `${d.short}: ${M2.SHORT_VAR[v] || v}`, context: { part: "total" } } });
       const tr = d.series[v].tracked, rp = d.series[v].representative;
       if (tr && rp && !["price", "unit_cost", "lead_time", "utilization", "load_factor"].includes(v)) {
         const tt = [[tr, "tracked", "var(--tracked)"], [rp, "representative", "var(--rep)"]]
           .filter(([c]) => c.truth).map(([c, l, col]) => ({ month: c.month, value: c.truth, color: col, label: `${l} truth` }));
         M2.chart(card(split, v, "", " Split: tracked and representative entities, which sum to the sector total."), { bands: [{ ...tr, label: "tracked", color: "var(--tracked)" },
                                           { ...rp, label: "representative", color: "var(--rep)", bandColor: "var(--rep-band, rgba(138,90,158,.16))" }],
-                                   truth: tt, status: t, unit, yZero: true, yLabel: ylab(v) });
+                                   truth: tt, status: t, unit, yZero: true, yLabel: ylab(v),
+                                   fb: { kind: "series", id: `${code}/${v}`, label: `${d.short}: ${M2.SHORT_VAR[v] || v}, tracked and representative`, context: { part: "tracked and representative" } } });
       }
     }
     document.getElementById("leg1").innerHTML = M2.legend([["var(--accent)", "median"], ["var(--band)", "90% band"], ["var(--truth)", "truth", true],
@@ -128,7 +130,7 @@
       M2.chart(el.querySelector(".ch"), {
         bands: [{ month: r.month, q50: r.m2, q05: r.m2.map((v, i) => v - 1.645 * r.sd[i]), q95: r.m2.map((v, i) => v + 1.645 * r.sd[i]), label: "Model 2" }],
         points: r.month.map((m, i) => ({ month: m, y: r.m1[i], label: `bundle: ${M2.fmt(r.m1[i])}` })),
-        yLabel: `${name} (series units)` });
+        yLabel: `${name} (series units)`, fb: { kind: "official_statistic", id: `${code}/${name}`, label: `${d.short}: official statistic ${name}` } });
     }
     const mine = ents.filter((x) => x.sector === code);
     document.getElementById("ents").innerHTML = `<tr><th>entity</th><th>kind</th><th>company</th><th>size</th><th>region</th><th class="n">observations</th><th>observation types</th></tr>` +

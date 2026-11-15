@@ -779,3 +779,5 @@ Hotels | k_0 k0 | Starting capacity: capacity in the first month, log scale.  | 
 Hotels | c_0 c0 | Starting unit cost: unit cost in the first month, log scale.  | -0.07 | 0.25  | 0.45
 
 Hotels | m_0 m0 | Starting markup: markup in the first month, log scale.  | 0.11 | 0.38  | -0.10
+
+✎✎ Feedback

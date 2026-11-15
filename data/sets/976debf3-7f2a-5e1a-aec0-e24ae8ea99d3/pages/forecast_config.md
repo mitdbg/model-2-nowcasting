@@ -266,6 +266,8 @@ Steel | 900 | 9000 | 60.0k | tonne per month
 
 Wholesale | 600.0k | 8.00M | 80.00M | usd 2017 per month
 
+✎✎ Feedback
+
 Definitions behind the page's (i) marks:
 - Normal demand (L6). The sector's demand, adjusted for prices, averaged over the first two years of the fit window and written as an index: 100 is the January 2010 level, so 108 means 8% more. The model treats this as normal: firms get orders equal to their normal output when demand is here, more when it is higher, fewer when lower.
 - Starting demand-to-capacity ratio (L3): how much demand there was for each unit of capacity when the window began. Each month the model compares the current ratio with this one. If demand has grown faster than capacity, the ratio is higher and firms run their plants harder than normal; if capacity has grown faster, they run below normal. The number itself is the log of the ratio of a demand index to capacity, so its size depends on the units and means nothing alone; only changes from it matter.

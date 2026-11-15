@@ -77,3 +77,5 @@ Semiconductors  | Industrial production, semiconductors  | 99/100 | 0.8% | 96 | 
 Steel  | Capacity utilization, iron & steel  | 95/100 | 0.5% | 96 | agrees
 
 Steel  | Industrial production, iron & steel  | 97/100 | 0.5% | 96 | agrees
+
+✎✎ Feedback

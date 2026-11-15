@@ -36,5 +36,7 @@ r  | share of lost customers rebooking (L17) | 0.299 | 0.300  | 0.300
 
 labor/unit  | employees per unit of monthly output (L29) | 0.00000517 | 0.00000500  | 0.00000500
 
+✎✎ Feedback
+
 Definitions behind the page's (i) marks:
 - This column is available because the current world is synthetic

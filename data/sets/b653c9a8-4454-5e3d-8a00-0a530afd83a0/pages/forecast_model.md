@@ -399,3 +399,5 @@ From the sector input bundlethe official sector statisticsFrom other equationsth
 - Run the filter (every run). Start 100 copies of the world, each with its own draw of the parameters. Each month, step every copy forward through the equations above with its own shocks; predict the month's observations from each copy; then move every copy toward what was actually observed, by how strongly, across copies, each state moved with the predicted observations (an ensemble Kalman filter). Last, apply the sector statistics (L16).
 
 - Run past the data. After the last observed month there is nothing to correct with, so the copies run on the equations and the drivers' draws alone: the nowcast, then the forecast. The spread of the copies gives the 90% band; the published sector bands are then widened by factors from backtests.
+
+✎✎ Feedback

@@ -669,3 +669,5 @@ Rent churn  | Share of rent lost to leases ending without renewal over the perio
 Exports  | Volume exported over the period.  | entity  | Customs and trade data  | 80 | 2 months  |
 
 Market vacancy  | Share of a market's capacity not in use over the period.  | sector  | Broker market reports  | 66 | 30 days  |
+
+✎✎ Feedback

@@ -29,3 +29,5 @@ Scores How close each run came: errors and band coverage for every scored value,
 Catalog A lasting record of every world, model version, fit and forecast, spanning all the other phases: worlds are recorded as they are built, fits and forecasts as they are made, and problems and fixes name the ones they are about. One record per item; records point to each other by id and say where the files they describe are. Every id is a UUID that says nothing about the record; readable names are separate fields.
 
 Problems, fixes and tests What the evaluation of a forecast found wrong, the possible fixes for it, the fixes chosen to be tested and what each test found. Each record has an id that never changes and names the world, fit and forecast it is about. Later: the fixes good enough to deploy.
+
+✎✎ Feedback
