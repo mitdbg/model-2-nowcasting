@@ -89,22 +89,22 @@ Continental Supply Atlanta large, southContinental Supply Chicago large, midwest
 Wholesale · representative
 Wholesale: large, midwestWholesale: large, northeastWholesale: large, southWholesale: large, westWholesale: medium, midwestWholesale: medium, northeastWholesale: medium, southWholesale: medium, westWholesale: small, midwestWholesale: small, northeastWholesale: small, southWholesale: small, west
 
-# Forecasts✎
+# Forecasts
 
 Choose a sector total or an entity from the list on the left to see its history, nowcast and forecast, with the 90% band. The filters above the list narrow it by name, sector, kind, size, region or company.
 
-# Sector✎
+# Sector
 
-## Sector totals✎
+## Sector totals
 
 Each chart shows the median and widened 90% band of a sector total, with the truth (dashed). Shading marks nowcast months (after the last observation) and forecast months (after the as-of date). The ⓘ button defines each quantity. A mostly from the model tag marks a total the observations barely reach: its estimate comes from the equations and drivers, not from data (see What the data pin down).
 
-## Tracked and representative entities✎
+## Tracked and representative entities
 
 Each sector total above is the sum of two parts. Tracked entities are specific mills, airline networks and data-center campuses that the model follows one by one, each with its own observations. Representative entities stand in for every other establishment in the sector: one per size class and region, scaled to the establishment counts in Census County Business Patterns and informed mostly by Census employment. Dashed lines show each part's truth. The bands here are unwidened, so they are too narrow (see Accuracy).
 
-## Check against official sector series✎
+## Check against official sector series
 
 The sector input bundle carries official sector statistics, and where one measures a sector total, the filter uses it as one more observation of that total (L16). Each chart compares the bundle's value with Model 2's total, in the statistic's units.
 
-## Entities in this sector✎
+## Entities in this sector

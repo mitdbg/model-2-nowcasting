@@ -1,6 +1,6 @@
 <!-- World Inputs › Sector input bundle, for forecast b653c9a8-4454-5e3d-8a00-0a530afd83a0; the page: https://mitdbg.github.io/model-2-nowcasting/world_bundle.html?set=b653c9a8-4454-5e3d-8a00-0a530afd83a0 -->
 
-# Sector input bundle✎
+# Sector input bundle
 
 Each as-of date brings one delivery of sector data from an outside source. This is the delivery for 2026-09-30.
 
@@ -12,17 +12,17 @@ Economy-wideAirlinesAutosChemicalsData centersFoodHospitalsHotelsHousingMachiner
 
 Drivers shared by every sector.
 
-### Energy cost✎
+### Energy cost
 driver
 
 the cost of energy, economy-wide · log index
 
-### General activity✎
+### General activity
 driver
 
 activity across the whole economy · log index
 
-### General prices✎
+### General prices
 driver
 
 prices across the whole economy · log index

@@ -1,6 +1,6 @@
 <!-- Overview › Data Model, for forecast 976debf3-7f2a-5e1a-aec0-e24ae8ea99d3; the page: https://mitdbg.github.io/model-2-nowcasting/datamodel.html?set=976debf3-7f2a-5e1a-aec0-e24ae8ea99d3 -->
 
-# Data Model✎
+# Data Model
 
 This diagram shows Model 2's data as related tables, grouped into families and arranged by the phase that uses them. Click a table to see its columns, its key and how it joins to the others.
 

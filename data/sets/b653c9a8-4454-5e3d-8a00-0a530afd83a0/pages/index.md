@@ -1,6 +1,6 @@
 <!-- Overview › Introduction, for forecast b653c9a8-4454-5e3d-8a00-0a530afd83a0; the page: https://mitdbg.github.io/model-2-nowcasting/index.html?set=b653c9a8-4454-5e3d-8a00-0a530afd83a0 -->
 
-# A fine-grained model of the economy✎
+# A fine-grained model of the economy
 
 Model 2 estimates what is happening right now inside thousands of businesses — how much each can make, how much it is making, what it charges, what it holds in stock and how far behind it is on orders — from scattered, late and noisy public information. Official statistics about industries arrive weeks or months late and say little about individual firms. Bits of information about firms arrive all the time, though: a quarterly financial report, an announced new plant, a satellite image of a parking lot, a price list, a pollution report that hints at how hard a plant is running. Each bit is partial and imprecise. Model 2 aims to combine them into one consistent picture, month by month, with an honest statement of how unsure it is.
 

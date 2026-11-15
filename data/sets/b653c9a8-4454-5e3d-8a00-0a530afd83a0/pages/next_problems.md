@@ -1,72 +1,72 @@
 <!-- Next Version › Current Problems, for forecast b653c9a8-4454-5e3d-8a00-0a530afd83a0; the page: https://mitdbg.github.io/model-2-nowcasting/next_problems.html?set=b653c9a8-4454-5e3d-8a00-0a530afd83a0 -->
 
-# Current Problems✎
+# Current Problems
 
 This analysis was written by an AI evaluator that saw only the Evaluation pages that need no ground truth. It had no access to the true values, the model's code, or how the model was developed. This analysis has not been human-reviewed.
 
 Overall assessment. Taken one entity at a time, the model fits well: 89% of its entity parameters are narrowed by the data, and its forecasts usually land within about 2% of its own later estimates. The trouble is in how the parts add up and how they are linked. The filter is unsettled in several sectors, the sector totals for Machinery and Oil and gas disagree with official statistics, and the model's stated uncertainty is uneven: too wide for most observations and forecasts, too narrow for capacity and sector totals. The main headline check, forecasts against later estimates, flatters the model, because many of the quantities it scores come mostly from the model itself rather than from data.
 
-## Weakest sectors (weakest first)✎
+## Weakest sectors (weakest first)
 
-# | Sector | Forecasts in range  | Forecast gap  | Observations in range  | Official statistics agreeing  | Worst official statistic  | Parameters learned  | Median sd ratio  | Mostly from the model  | Unsettled  | Note |
+# | Sector | Forecasts in range  | Forecast gap  | Observations in range  | Official statistics agreeing  | Worst official statistic  | Parameters learned  | Median sd ratio  | Mostly from the model  | Unsettled  | Note
 
-1 | Machinery | 96 (wider than needed) | 3.9% | 93 (generous) | 1 of 2 | Production: 26, 13.4% off (disagrees) | 88% | 0.47 | Input inventory; Shipments; Unit cost | Finished inventory 177.00; Output 10.90; Utilization 4.69; New orders 2.36 | Second-worst forecast gap; starting markup learned for 38% of entities | ✎
+1 | Machinery | 96 (wider than needed) | 3.9% | 93 (generous) | 1 of 2 | Production: 26, 13.4% off (disagrees) | 88% | 0.47 | Input inventory; Shipments; Unit cost | Finished inventory 177.00; Output 10.90; Utilization 4.69; New orders 2.36 | Second-worst forecast gap; starting markup learned for 38% of entities
 
-2 | Oil and gas | 98 (wider than needed) | 2.5% | 90 | 0 of 2 | Production: 4, 3.2% off (disagrees) | 94% | 0.43 | Input inventory; New orders; Phantom orders | none | – | ✎
+2 | Oil and gas | 98 (wider than needed) | 2.5% | 90 | 0 of 2 | Production: 4, 3.2% off (disagrees) | 94% | 0.43 | Input inventory; New orders; Phantom orders | none | –
 
-3 | Hotels | 84 (too narrow) | 1.7% | 95 (generous) | 1 of 2 | Employees: 31, 1.3% off (disagrees) | 97% | 0.34 | New orders; Lead time; Order book; Shipments | none | The only sector whose forecast ranges are too narrow | ✎
+3 | Hotels | 84 (too narrow) | 1.7% | 95 (generous) | 1 of 2 | Employees: 31, 1.3% off (disagrees) | 97% | 0.34 | New orders; Lead time; Order book; Shipments | none | The only sector whose forecast ranges are too narrow
 
-4 | Retail | 90 | 4.6% | 95 (generous) | 2 of 2 | Retail sales: 93, 2.8% off (agrees) | 94% | 0.44 | none | Order book 2.27; New orders 2.27; Shipments 1.86; Lost demand 1.42; Load factor 1.37 | Worst forecast gap | ✎
+4 | Retail | 90 | 4.6% | 95 (generous) | 2 of 2 | Retail sales: 93, 2.8% off (agrees) | 94% | 0.44 | none | Order book 2.27; New orders 2.27; Shipments 1.86; Lost demand 1.42; Load factor 1.37 | Worst forecast gap
 
-5 | Wholesale | 100 (wider than needed) | 1.9% | 79 (misses too many) | none published | – | 81% | 0.49 | Shipments; Order book; New orders; Lead time | none | The only sector whose observations miss too many; capacity drift learned for no entity; no official statistic | ✎
+5 | Wholesale | 100 (wider than needed) | 1.9% | 79 (misses too many) | none published | – | 81% | 0.49 | Shipments; Order book; New orders; Lead time | none | The only sector whose observations miss too many; capacity drift learned for no entity; no official statistic
 
-6 | Hospitals | 97 (wider than needed) | 1.5% | 98 (generous) | 1 of 2 | Employees: 69, 0.7% off (close, range too tight) | 85% | 0.51 | Lead time; New orders; Shipments; Order book; Utilization | Lost demand 2.71 | Highest median sd ratio; starting markup learned for 25% of entities | ✎
+6 | Hospitals | 97 (wider than needed) | 1.5% | 98 (generous) | 1 of 2 | Employees: 69, 0.7% off (close, range too tight) | 85% | 0.51 | Lead time; New orders; Shipments; Order book; Utilization | Lost demand 2.71 | Highest median sd ratio; starting markup learned for 25% of entities
 
-7 | Data centers | 93 (wider than needed) | 1.5% | 96 (generous) | none published | – | 94% | 0.34 | Lead time; Overdue orders; Phantom orders; Order book; Shipments; Unit cost | New orders 2.74 | No official statistic | ✎
+7 | Data centers | 93 (wider than needed) | 1.5% | 96 (generous) | none published | – | 94% | 0.34 | Lead time; Overdue orders; Phantom orders; Order book; Shipments; Unit cost | New orders 2.74 | No official statistic
 
-8 | Semiconductors | 98 (wider than needed) | 3.0% | 96 (generous) | 2 of 2 | Utilization: 87, 1.1% off (agrees) | 86% | 0.43 | Input inventory | Finished inventory 8.34 | Lead-time bias learned for no entity | ✎
+8 | Semiconductors | 98 (wider than needed) | 3.0% | 96 (generous) | 2 of 2 | Utilization: 87, 1.1% off (agrees) | 86% | 0.43 | Input inventory | Finished inventory 8.34 | Lead-time bias learned for no entity
 
-9 | Autos | 95 (wider than needed) | 2.8% | 94 (generous) | 1 of 2 | Production: 79, 1.0% off (close, range too tight) | 87% | 0.27 | Input inventory | none | Capacity drift learned for 38% of entities | ✎
+9 | Autos | 95 (wider than needed) | 2.8% | 94 (generous) | 1 of 2 | Production: 79, 1.0% off (close, range too tight) | 87% | 0.27 | Input inventory | none | Capacity drift learned for 38% of entities
 
-10 | Housing | 100 (wider than needed) | 1.6% | 98 (generous) | 1 of 1 | Housing completions: 97, 0.4% off (agrees) | 96% | 0.30 | Input inventory; Finished inventory | New orders 4.84 | – | ✎
+10 | Housing | 100 (wider than needed) | 1.6% | 98 (generous) | 1 of 1 | Housing completions: 97, 0.4% off (agrees) | 96% | 0.30 | Input inventory; Finished inventory | New orders 4.84 | –
 
 The stronger sectors are Food (3.0% forecast gap, official statistics agree), Airlines (New orders 1.32 and Lost demand 1.25 above 1.2), Chemicals (Finished inventory 1.27) and, strongest, Steel. Steel shows 100/100 with a 1.4% gap, 97/100 on both official statistics, and only New orders 1.03 and Input inventory 1.00 coming from the model; its weak point is the emissions slope b, informative for only 18% of entities.
 
-## Weakest hidden quantities (weakest first)✎
+## Weakest hidden quantities (weakest first)
 
-# | Quantity | Forecasts in range  | Forecast gap  | Sectors mostly from the model  | Unsettled sectors  | Note |
+# | Quantity | Forecasts in range  | Forecast gap  | Sectors mostly from the model  | Unsettled sectors  | Note
 
-1 | New orders | 100 (wider than needed) | 1.8% | 5 of 14: Steel; Hotels; Hospitals; Oil and gas; Wholesale | Housing 4.84; Data centers 2.74; Machinery 2.36; Retail 2.27; Airlines 1.32 | Pinned by data (0.5 or less) in no sector | ✎
+1 | New orders | 100 (wider than needed) | 1.8% | 5 of 14: Steel; Hotels; Hospitals; Oil and gas; Wholesale | Housing 4.84; Data centers 2.74; Machinery 2.36; Retail 2.27; Airlines 1.32 | Pinned by data (0.5 or less) in no sector
 
-2 | Finished inventory | 97 (wider than needed) | 0.14 mo | 2 of 10: Housing; Food | Machinery 177.00; Semiconductors 8.34; Chemicals 1.27 | Observations: finished inventory 80/100, sector inventories 43/100 | ✎
+2 | Finished inventory | 97 (wider than needed) | 0.14 mo | 2 of 10: Housing; Food | Machinery 177.00; Semiconductors 8.34; Chemicals 1.27 | Observations: finished inventory 80/100, sector inventories 43/100
 
-3 | Input inventory | 100 (wider than needed) | 3.3% | 7 of 8: Machinery; Oil and gas; Housing; Steel; Autos; Semiconductors; Chemicals | none | In effect not observed anywhere | ✎
+3 | Input inventory | 100 (wider than needed) | 3.3% | 7 of 8: Machinery; Oil and gas; Housing; Steel; Autos; Semiconductors; Chemicals | none | In effect not observed anywhere
 
-4 | Lost demand | 99 (wider than needed) | 0.00 mo | 0 of 5 | Hospitals 2.71; Retail 1.42; Airlines 1.25 | A gap of zero suggests it rarely moves at all | ✎
+4 | Lost demand | 99 (wider than needed) | 0.00 mo | 0 of 5 | Hospitals 2.71; Retail 1.42; Airlines 1.25 | A gap of zero suggests it rarely moves at all
 
-5 | Order book | 99 (wider than needed) | 2.3% | 4 of 14: Hospitals; Hotels; Data centers; Wholesale | Retail 2.27 | – | ✎
+5 | Order book | 99 (wider than needed) | 2.3% | 4 of 14: Hospitals; Hotels; Data centers; Wholesale | Retail 2.27 | –
 
-6 | Shipments | 99 (wider than needed) | 1.4% | 5 of 14: Machinery; Hospitals; Hotels; Wholesale; Data centers | Retail 1.86 | Observations: Census shipments 78/100 | ✎
+6 | Shipments | 99 (wider than needed) | 1.4% | 5 of 14: Machinery; Hospitals; Hotels; Wholesale; Data centers | Retail 1.86 | Observations: Census shipments 78/100
 
-7 | Capacity in use | 67 (too narrow) | 0.8% | 0 of 1 | none | Overconfident; worst hit rate | ✎
+7 | Capacity in use | 67 (too narrow) | 0.8% | 0 of 1 | none | Overconfident; worst hit rate
 
-8 | Lead time | 100 (wider than needed) | 5.4% | 4 of 14: Data centers; Hotels; Hospitals; Wholesale | none | – | ✎
+8 | Lead time | 100 (wider than needed) | 5.4% | 4 of 14: Data centers; Hotels; Hospitals; Wholesale | none | –
 
-9 | Capacity announced | 100 (wider than needed) | 10.2% | 0 of 3 | none | Largest gap | ✎
+9 | Capacity announced | 100 (wider than needed) | 10.2% | 0 of 3 | none | Largest gap
 
-10 | Overdue / Phantom orders | 100 (wider than needed) / 99 (wider than needed) | 0.00 mo / 0.00 mo | Overdue orders: 1 of 9: Data centers / Phantom orders: 2 of 9: Data centers; Oil and gas | Overdue orders: none / Phantom orders: none | – | ✎
+10 | Overdue / Phantom orders | 100 (wider than needed) / 99 (wider than needed) | 0.00 mo / 0.00 mo | Overdue orders: 1 of 9: Data centers / Phantom orders: 2 of 9: Data centers; Oil and gas | Overdue orders: none / Phantom orders: none | –
 
-11 | Capacity | 81 (too narrow) | 1.8% | 0 of 14 | none | Overconfident | ✎
+11 | Capacity | 81 (too narrow) | 1.8% | 0 of 14 | none | Overconfident
 
-12 | Utilization | 91 | 1.8 pts | 1 of 14: Hospitals | Machinery 4.69 | – | ✎
+12 | Utilization | 91 | 1.8 pts | 1 of 14: Hospitals | Machinery 4.69 | –
 
-13 | Unit cost | 93 (wider than needed) | 2.0% | 3 of 14: Machinery; Data centers; Food | none | – | ✎
+13 | Unit cost | 93 (wider than needed) | 2.0% | 3 of 14: Machinery; Data centers; Food | none | –
 
-14 | Output | 98 (wider than needed) | 1.5% | 0 of 14 | Machinery 10.90 | Official industrial production misses badly in Machinery and Oil and gas | ✎
+14 | Output | 98 (wider than needed) | 1.5% | 0 of 14 | Machinery 10.90 | Official industrial production misses badly in Machinery and Oil and gas
 
-15 | Price | 99 (wider than needed) | 2.1% | 0 of 14 | none | Strongest | ✎
+15 | Price | 99 (wider than needed) | 2.1% | 0 of 14 | none | Strongest
 
-## Problems✎
+## Problems
 
 ### 1. Adding data makes some estimates less certain
 
