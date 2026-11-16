@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>What the data pin down · Model 2</title>
-<link rel="stylesheet" href="assets/site.css?v=f79d0aa-1794790075">
+<link rel="stylesheet" href="assets/site.css?v=b92e572-1794797634">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Code+Pro:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800&display=swap">
 <style>
@@ -57,7 +57,11 @@
   <div class="example" id="example"></div>
   <p class="sub">Only tracked entities have their own parameters; representative entities take their group's averages.
   Part of the narrowing comes from the pull toward the entity's group average (L14), so a sparsely observed entity can
-  look informative because it borrowed from similar entities.</p>
+  look informative because it borrowed from similar entities. The <b>stricter sd ratio</b> removes that part: it divides
+  the width after fitting by the width the parameter would have from its group average alone (the spread of entities
+  around their group's average). Below 0.8, the entity's own observations narrowed its range beyond what its group
+  already says. The two ratios differ only for the parameters pooled toward the group average; observation parameters
+  and starting states have no group average, so their two ratios are the same.</p>
   <div class="tiles2" id="tiles"></div>
 
   <h2>Entity parameters</h2>
@@ -83,7 +87,7 @@
   <div class="tablewrap"><table class="pgrid" id="grid"></table></div>
 
 </main>
-<script src="assets/site.js?v=f79d0aa-1794790075"></script>
+<script src="assets/site.js?v=b92e572-1794797634"></script>
 <script>
 (async () => {
   try {
@@ -93,6 +97,8 @@
     const pr = q.param_rows, info = q.param_info;
     const rows = pr.param.map((_, i) => Object.fromEntries(Object.keys(pr).map((k) => [k, pr[k][i]])));
     const INF = 0.8, isInf = (x) => x.sd_ratio < INF;
+    // stricter: against the group average alone (sets built before it have only the ratio against the prior)
+    const sg = (x) => x.sd_ratio_group ?? x.sd_ratio, isStr = (x) => sg(x) < INF;
     const sym = (n) => M2.esc(info[n]?.symbol || n).replace(/\^([\p{L}\w]+)/gu, "<sup>$1</sup>").replace(/_([\p{L}\w]+)/gu, "<sub>$1</sub>");
     const means = (n) => M2.esc(M2.PARAM?.[n] || info[n]?.description || n);
     const lab = (x) => isInf(x) ? `<span class="lab inf">Informative</span>` : `<span class="lab uninf">Uninformative</span>`;
@@ -114,11 +120,12 @@
         Ranges are 90% ranges. The fitted range is ${ex.sd_ratio.toFixed(2)} times as wide as the prior's, so the sd ratio is
         ${ex.sd_ratio.toFixed(2)} and the parameter is ${lab(ex)}.`;
     }
-    const nInf = rows.filter(isInf).length;
+    const nInf = rows.filter(isInf).length, nStr = rows.filter(isStr).length;
     document.getElementById("tiles").innerHTML =
       `<div class="tile"><div class="v">${rows.length.toLocaleString()}</div><div class="l">entity parameters fitted</div></div>
        <div class="tile"><div class="v good">${nInf.toLocaleString()}</div><div class="l">informative (${pct(nInf / rows.length)})</div></div>
-       <div class="tile"><div class="v warn">${(rows.length - nInf).toLocaleString()}</div><div class="l">uninformative (${pct(1 - nInf / rows.length)})</div></div>`;
+       <div class="tile"><div class="v warn">${(rows.length - nInf).toLocaleString()}</div><div class="l">uninformative (${pct(1 - nInf / rows.length)})</div></div>
+       <div class="tile"><div class="v">${nStr.toLocaleString()}</div><div class="l">informative by the stricter ratio (${pct(nStr / rows.length)})</div></div>`;
 
     // views, with a sector filter (and, for every parameter, parameter and label filters)
     const F = { v: M2.param("v") || "param", s: M2.param("s") || "", p: M2.param("p") || "", l: M2.param("l") || "" };
@@ -133,32 +140,37 @@
       const xs = rows.filter((x) => (!F.s || F.v === "sector" || x.sector === F.s));
       const t = document.getElementById("ptab"), more = document.getElementById("more");
       more.textContent = "";
-      const stat = (g) => { const k = g.filter(isInf).length; return { n: g.length, k, med: median(g.map((x) => x.sd_ratio)) }; };
+      const stat = (g) => { const k = g.filter(isInf).length;
+        return { n: g.length, k, med: median(g.map((x) => x.sd_ratio)), ks: g.filter(isStr).length, meds: median(g.map(sg)) }; };
       if (F.v === "param") {
         const g = [...group(xs, (x) => x.param)].map(([p, g]) => [p, stat(g)]).sort((a, b) => a[1].k / a[1].n - b[1].k / b[1].n);
-        t.innerHTML = `<tr><th>parameter</th><th>meaning</th><th class="n">entities</th><th>informative</th><th class="n"></th><th class="n">median sd ratio</th></tr>` +
+        t.innerHTML = `<tr><th>parameter</th><th>meaning</th><th class="n">entities</th><th>informative</th><th class="n"></th><th class="n">median sd ratio</th>
+          <th class="n">informative, stricter</th><th class="n">median stricter ratio</th></tr>` +
           g.map(([p, s]) => `<tr><td class="sym">${sym(p)}</td><td>${means(p)}</td><td class="n">${s.n}</td><td>${split(s.k, s.n)}</td>
-            <td class="n">${s.k} of ${s.n}</td><td class="n">${s.med.toFixed(2)}</td></tr>`).join("");
+            <td class="n">${s.k} of ${s.n}</td><td class="n">${s.med.toFixed(2)}</td><td class="n">${s.ks} of ${s.n}</td><td class="n">${s.meds.toFixed(2)}</td></tr>`).join("");
         more.textContent = "Least informed first.";
       } else if (F.v === "sector") {
         const g = [...group(xs, (x) => x.sector)].sort((a, b) => short[a[0]].localeCompare(short[b[0]]));
-        t.innerHTML = `<tr><th>sector</th><th class="n">parameters</th><th>informative</th><th class="n"></th><th class="n">median sd ratio</th><th>least informed parameter</th></tr>` +
+        t.innerHTML = `<tr><th>sector</th><th class="n">parameters</th><th>informative</th><th class="n"></th><th class="n">median sd ratio</th>
+          <th class="n">informative, stricter</th><th class="n">median stricter ratio</th><th>least informed parameter, stricter</th></tr>` +
           g.map(([c, g]) => { const s = stat(g);
-            const worst = [...group(g, (x) => x.param)].map(([p, h]) => [p, h.filter(isInf).length / h.length]).sort((a, b) => a[1] - b[1])[0];
+            const worst = [...group(g, (x) => x.param)].map(([p, h]) => [p, h.filter(isStr).length / h.length]).sort((a, b) => a[1] - b[1])[0];
             return `<tr><td><a href="#" data-s="${c}">${M2.esc(short[c])}</a></td><td class="n">${s.n}</td><td>${split(s.k, s.n)}</td><td class="n">${pct(s.k / s.n)}</td>
-              <td class="n">${s.med.toFixed(2)}</td><td><span class="sym">${sym(worst[0])}</span> <span class="muted">${means(worst[0])}, ${pct(worst[1])} informative</span></td></tr>`; }).join("");
+              <td class="n">${s.med.toFixed(2)}</td><td class="n">${pct(s.ks / s.n)}</td><td class="n">${s.meds.toFixed(2)}</td>
+              <td><span class="sym">${sym(worst[0])}</span> <span class="muted">${means(worst[0])}, ${pct(worst[1])} informative</span></td></tr>`; }).join("");
         more.textContent = "Click a sector to see its parameters.";
       } else if (F.v === "entity") {
         const g = [...group(xs, (x) => x.entity)].map(([e, g]) => [g[0], stat(g)]).sort((a, b) => a[1].k / a[1].n - b[1].k / b[1].n || a[0].name.localeCompare(b[0].name));
-        t.innerHTML = `<tr><th>entity</th><th>sector</th><th class="n">parameters</th><th>informative</th><th class="n"></th><th class="n">median sd ratio</th></tr>` +
+        t.innerHTML = `<tr><th>entity</th><th>sector</th><th class="n">parameters</th><th>informative</th><th class="n"></th><th class="n">median sd ratio</th>
+          <th class="n">informative, stricter</th></tr>` +
           g.map(([x, s]) => `<tr><td><a href="entity.html?e=${encodeURIComponent(x.entity)}">${M2.esc(x.name)}</a></td><td>${M2.esc(short[x.sector])}</td>
-            <td class="n">${s.n}</td><td>${split(s.k, s.n)}</td><td class="n">${s.k} of ${s.n}</td><td class="n">${s.med.toFixed(2)}</td></tr>`).join("");
+            <td class="n">${s.n}</td><td>${split(s.k, s.n)}</td><td class="n">${s.k} of ${s.n}</td><td class="n">${s.med.toFixed(2)}</td><td class="n">${s.ks} of ${s.n}</td></tr>`).join("");
         more.textContent = "Least informed first. Each entity's page lists its parameters with their ranges.";
       } else {
         const ys = xs.filter((x) => (!F.p || x.param === F.p) && (!F.l || (F.l === "inf") === isInf(x))).sort((a, b) => b.sd_ratio - a.sd_ratio);
-        t.innerHTML = `<tr><th>entity</th><th>sector</th><th>parameter</th><th>meaning</th><th class="n">sd ratio</th><th></th></tr>` +
+        t.innerHTML = `<tr><th>entity</th><th>sector</th><th>parameter</th><th>meaning</th><th class="n">sd ratio</th><th></th><th class="n">stricter ratio</th></tr>` +
           ys.slice(0, 400).map((x) => `<tr><td><a href="entity.html?e=${encodeURIComponent(x.entity)}">${M2.esc(x.name)}</a></td><td>${M2.esc(short[x.sector])}</td>
-            <td class="sym">${sym(x.param)}</td><td class="muted">${means(x.param)}</td><td class="n">${x.sd_ratio.toFixed(2)}</td><td>${lab(x)}</td></tr>`).join("");
+            <td class="sym">${sym(x.param)}</td><td class="muted">${means(x.param)}</td><td class="n">${x.sd_ratio.toFixed(2)}</td><td>${lab(x)}</td><td class="n">${sg(x).toFixed(2)}</td></tr>`).join("");
         more.textContent = `${ys.length.toLocaleString()} parameters, least informed first${ys.length > 400 ? "; the first 400 are shown" : ""}.`;
       }
       history.replaceState(null, "", "?" + Object.entries(F).filter(([k, v]) => v && !(k === "v" && v === "param")).map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join("&"));

@@ -16,7 +16,7 @@ before the data (prior)
 0.0533 to 0.203
 Ranges are 90% ranges. The fitted range is 0.46 times as wide as the prior's, so the sd ratio is 0.46 and the parameter is Informative.
 
-Only tracked entities have their own parameters; representative entities take their group's averages. Part of the narrowing comes from the pull toward the entity's group average (L14), so a sparsely observed entity can look informative because it borrowed from similar entities.
+Only tracked entities have their own parameters; representative entities take their group's averages. Part of the narrowing comes from the pull toward the entity's group average (L14), so a sparsely observed entity can look informative because it borrowed from similar entities. The stricter sd ratio removes that part: it divides the width after fitting by the width the parameter would have from its group average alone (the spread of entities around their group's average). Below 0.8, the entity's own observations narrowed its range beyond what its group already says. The two ratios differ only for the parameters pooled toward the group average; observation parameters and starting states have no group average, so their two ratios are the same.
 
 1,408
 
@@ -30,53 +30,57 @@ informative (91%)
 
 uninformative (9%)
 
+1,284
+
+informative by the stricter ratio (91%)
+
 ## Entity parameters
 
 By parameter By sector By entity Every parameter
 
 Sector
 
-parameter | meaning | entities | informative |  | median sd ratio
+parameter | meaning | entities | informative |  | median sd ratio  | informative, stricter | median stricter ratio
 
-b (emissions) | Emissions slope: percent change in emissions per percent change in output. | 47 |   | 26 of 47 | 0.78
+b (emissions) | Emissions slope: percent change in emissions per percent change in output. | 47 |   | 26 of 47 | 0.78 | 26 of 47 | 0.78
 
-listing gap | List-price gap: log list price minus log transaction price. | 11 |   | 7 of 11 | 0.55
+listing gap | List-price gap: log list price minus log transaction price. | 11 |   | 7 of 11 | 0.55 | 7 of 11 | 0.55
 
-m0 | Starting markup: markup in the first month, log scale. | 115 |   | 74 of 115 | 0.62
+m0 | Starting markup: markup in the first month, log scale. | 115 |   | 74 of 115 | 0.62 | 74 of 115 | 0.62
 
-δ | Capacity drift: monthly change in capacity outside announced projects (L1). | 90 |   | 58 of 90 | 0.74
+δ | Capacity drift: monthly change in capacity outside announced projects (L1). | 90 |   | 58 of 90 | 0.74 | 58 of 90 | 0.74
 
-c0 | Starting unit cost: unit cost in the first month, log scale. | 115 |   | 89 of 115 | 0.29
+c0 | Starting unit cost: unit cost in the first month, log scale. | 115 |   | 89 of 115 | 0.29 | 89 of 115 | 0.29
 
-α | Normal utilization: utilization in a month of normal demand, logit scale (L3). | 105 |   | 105 of 105 | 0.35
+α | Normal utilization: utilization in a month of normal demand, logit scale (L3). | 105 |   | 105 of 105 | 0.35 | 105 of 105 | 0.35
 
-β | Demand response: how far utilization rises with demand pressure (L3). | 105 |   | 105 of 105 | 0.56
+β | Demand response: how far utilization rises with demand pressure (L3). | 105 |   | 105 of 105 | 0.56 | 105 of 105 | 0.56
 
-w | pass-through of input cost to unit cost (L4) | 115 |   | 115 of 115 | 0.49
+w | pass-through of input cost to unit cost (L4) | 115 |   | 115 of 115 | 0.49 | 115 of 115 | 0.49
 
-μ | Normal markup: price over unit cost in a normal month, log scale (L5). | 115 |   | 115 of 115 | 0.46
+μ | Normal markup: price over unit cost in a normal month, log scale (L5). | 115 |   | 115 of 115 | 0.46 | 115 of 115 | 0.46
 
-õ | Order level: new orders relative to the level that keeps the order book steady, log scale (L6). | 115 |   | 115 of 115 | 0.17
+õ | Order level: new orders relative to the level that keeps the order book steady, log scale (L6). | 115 |   | 115 of 115 | 0.17 | 115 of 115 | 0.17
 
-βO | Order response: elasticity of new orders to real demand (L6). | 115 |   | 115 of 115 | 0.51
+βO | Order response: elasticity of new orders to real demand (L6). | 115 |   | 115 of 115 | 0.51 | 115 of 115 | 0.51
 
-ℓ | Normal order-book cover: months of output the order book holds in a normal month (L8–L9). | 115 |   | 115 of 115 | 0.40
+ℓ | Normal order-book cover: months of output the order book holds in a normal month (L8–L9). | 115 |   | 115 of 115 | 0.40 | 115 of 115 | 0.40
 
-a (emissions) | Emissions level: log emissions at the reference output. | 47 |   | 47 of 47 | 0.04
+a (emissions) | Emissions level: log emissions at the reference output. | 47 |   | 47 of 47 | 0.04 | 47 of 47 | 0.04
 
-k0 | Starting capacity: capacity in the first month, log scale. | 115 |   | 115 of 115 | 0.05
+k0 | Starting capacity: capacity in the first month, log scale. | 115 |   | 115 of 115 | 0.05 | 115 of 115 | 0.05
 
-lead-time bias | Lead-time bias: quoted lead time over the model's lead time, log scale. | 11 |   | 11 of 11 | 0.40
+lead-time bias | Lead-time bias: quoted lead time over the model's lead time, log scale. | 11 |   | 11 of 11 | 0.40 | 11 of 11 | 0.40
 
-unorm | Normal occupancy: share of capacity leased in a normal month (L18). | 10 |   | 10 of 10 | 0.29
+unorm | Normal occupancy: share of capacity leased in a normal month (L18). | 10 |   | 10 of 10 | 0.29 | 10 of 10 | 0.29
 
-õA | Announcement rate: capacity announced per unit of capacity, relative to replacement, log scale (L19). | 25 |   | 25 of 25 | 0.27
+õA | Announcement rate: capacity announced per unit of capacity, relative to replacement, log scale (L19). | 25 |   | 25 of 25 | 0.27 | 25 of 25 | 0.27
 
-z0 | Starting utilization: utilization in the first month relative to normal, logit scale. | 10 |   | 10 of 10 | 0.43
+z0 | Starting utilization: utilization in the first month relative to normal, logit scale. | 10 |   | 10 of 10 | 0.43 | 10 of 10 | 0.43
 
-lfnorm | Normal load factor: share of seat-miles sold in a normal month (L17). | 22 |   | 22 of 22 | 0.30
+lfnorm | Normal load factor: share of seat-miles sold in a normal month (L17). | 22 |   | 22 of 22 | 0.30 | 22 of 22 | 0.30
 
-export share | Export share: share of shipments exported. | 5 |   | 5 of 5 | 0.08
+export share | Export share: share of shipments exported. | 5 |   | 5 of 5 | 0.08 | 5 of 5 | 0.08
 
 Least informed first.
 

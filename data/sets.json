@@ -1,5 +1,5 @@
 {
- "default": "976debf3-7f2a-5e1a-aec0-e24ae8ea99d3",
+ "default": "0c0a014b-d739-5e72-95a6-0b4ec4f3753e",
  "sets": [
   {
    "id": "b653c9a8-4454-5e3d-8a00-0a530afd83a0",
@@ -42,6 +42,27 @@
    "model": "f9fc9a9b-a8c5-5b55-ad69-2e9a0f746b52",
    "model_commit": "4659a39",
    "fit_catalog_id": "686d981a-645e-5417-863a-7bc252f90d2d"
+  },
+  {
+   "id": "0c0a014b-d739-5e72-95a6-0b4ec4f3753e",
+   "world": "w35-ppi-seed20261115",
+   "world_catalog_id": "2d7f80cf-c24e-5124-9dcb-12c1a33de767",
+   "world_kind": "synthetic",
+   "forecast": "0c0a014b-d739-5e72-95a6-0b4ec4f3753e",
+   "as_of": "2026-09-30",
+   "run": "2026-09-30__20261116T023149Z",
+   "made_utc": "2026-11-16T02:31:49Z",
+   "fit": "fit_2026q3:2026-09-30",
+   "time_grid": {
+    "frequency": "monthly",
+    "history_start": "2018-10",
+    "last_observed": "2026-09",
+    "forecast_end": "2027-09"
+   },
+   "built_utc": "2026-11-16T02:39:59Z",
+   "model": "064715e9-2cf1-5576-83ca-43afe7c8a722",
+   "model_commit": "76f9a8f",
+   "fit_catalog_id": "1f5f88f2-eccb-5b05-929e-cbfab7ac5081"
   }
  ]
 }
