@@ -27,11 +27,7 @@ claude mcp add --transport http model2 https://mikecafarella--model2-mcp.us-east
 
 ## Sending feedback from an agent
 
-Agents can send the Model 2 team a note about anything on the site with send_feedback. Every note is tied to the person who sent it, so the connector needs your own feedback key. Reading needs no key.
-
-Sign in with Google to make a key. Notes your agent sends carry your Google name and email.
-
-Sign in with GoogleSign in with Google. Opens in new tab
+Agents can send the Model 2 team a note about anything on the site with send_feedback, with no key or sign-in. Ask your agent in your own words, for example: “Tell the Model 2 team that Cardinal Airways’ capacity looks too low in 2025.” The agent works out exactly which chart, row or number you mean and sends that with your note.
 
 ## Check that it works
 
@@ -83,11 +79,11 @@ send_feedback | Sends the Model 2 team a note about a page, series, entity, obse
 
 ## Privacy and limits
 
-- Every tool only reads, except send_feedback, which records a note for the Model 2 team. Agents are asked to send feedback only when you ask them to, and only with your key.
+- Every tool only reads, except send_feedback, which records a note for the Model 2 team. Agents are asked to send feedback only when you ask them to.
 
 - The server serves the same data as this site, which is public; there is nothing to sign in to.
 
-- The server keeps no record of what agents ask, beyond its hosting platform's standard request logs. It keeps the notes sent as feedback, with the sender's Google name and email.
+- The server keeps no record of what agents ask, beyond its hosting platform's standard request logs. It keeps the notes sent as feedback: from the site with the sender's Google name and email, from agents with only the agent's name.
 
 - Answers are cut at about 20,000 characters, with a note saying so; agents can ask for less.
 
