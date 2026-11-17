@@ -64,20 +64,21 @@ M2.param = (k) => new URLSearchParams(location.search).get(k);
 
 M2.esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
-M2.PAGES = [["index.html", "Overview"], ["world_overview.html", "World Inputs"], ["forecast_overview.html", "Model and Forecast"],
+M2.PAGES = [["index.html", "Overview"], ["world_overview.html", "Inputs"], ["forecast_overview.html", "Model and Forecast"],
             ["eval_revisions.html", "Evaluation"], ["next_problems.html", "Next Version"],
             ["ai.html", "AI Access"]];
 // Pages shown as sub-tabs under a top-level tab, chosen near the top of the page.
 M2.SUBPAGES = {"index.html": [["index.html", "Introduction"], ["howitworks.html", "How It Works"], ["datamodel.html", "Data Model"], ["forecast_model.html", "Model Structure"]],
   "world_overview.html": [["world_overview.html", "Introduction"], ["world_entities.html", "Entities"], ["world_observations.html", "Observations"], ["world_bundle.html", "Sector input delivery"],
                           ["forecast_config.html", "Model Configuration"]],
-  "forecast_overview.html": [["forecast_overview.html", "Introduction"], ["forecast_fit.html", "Fitted Parameters"], ["sector.html", "Forecasts"]],
+  "forecast_overview.html": [["forecast_overview.html", "Introduction"], ["forecast_computed.html", "Values Computed From Input Data"],
+                             ["forecast_fit.html", "Fitted Parameters"], ["sector.html", "Forecasts"]],
   "next_problems.html": [["next_problems.html", "Current Problems"], ["next_improvements.html", "Possible Improvements"],
                          ["next_testing.html", "Improvement Testing"]],
   "eval_revisions.html": [["eval_revisions.html", "Forecasts against later estimates"], ["eval_observations.html", "Observations against the model"], ["eval_official.html", "Sector totals against official statistics"], ["evaluation.html", "What the data pin down"], ["accuracy.html", "Against ground truth"]]};
 // Pages about one world of the bundle: they show the world picker.
 M2.PER_WORLD = new Set(["world_entities.html", "world_observations.html", "world_bundle.html", "groupings.html",
-                        "forecast_config.html", "forecast_fit.html", "sector.html", "entity.html"]);
+                        "forecast_computed.html", "forecast_fit.html", "sector.html", "entity.html"]);
 // Tabs being rewritten for world bundles: for now they show one world, and say so.
 M2.IN_PROGRESS = new Set(["eval_revisions.html", "next_problems.html"]);
 // Pages reached through a sub-tab without being one: they light up that sub-tab.

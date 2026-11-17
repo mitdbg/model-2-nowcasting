@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Model Configuration · Model 2</title>
-<link rel="stylesheet" href="assets/site.css?v=82c376c-1794941581">
+<link rel="stylesheet" href="assets/site.css?v=3393707-1794944119">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Code+Pro:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800&display=swap">
 <style>
@@ -35,22 +35,15 @@
   are computed once from the data at the start of the fit window and then held fixed.</p>
   <p class="sub">The configuration also includes starting ranges for parameters that will be learned during model
   fitting.</p>
-  <p class="sub">The configuration is the same for every world of the bundle. The values computed from the data are each
-  world's own, so this page shows one world at a time.</p>
+  <p class="sub">The configuration is the same for every world of the bundle. The few fixed values computed from each
+  world's own data are on <a href="forecast_computed.html">Model and Forecast, Values Computed From Input Data</a>.</p>
 
   <h2>Fixed values in the equations</h2>
-  <p>The symbols marked "Fixed, not learned" on Model Structure, sector by sector. Here D̄ is shown as a demand index (January 2010 = 100), K₀ in the sector's own
-  units and shipping time in days. Hover
-  over (or tap) the ⓘ beside a value for what it means.</p>
+  <p>The symbols marked "Fixed, not learned" on Model Structure that are set by hand or from outside sources, sector by
+  sector. Hover over (or tap) the ⓘ beside a value for what it means.</p>
   <div class="cmp tablewrap"><table id="fixed"></table></div>
   <ul class="sub">
-    <li><span class="sym c-fix">D̄</span>: average real sector demand over the fit window's first two years (L6). Orders move with demand
-      against this level.</li>
-    <li><span class="sym c-fix">x̄</span>: the sector's demand pressure at the start of the window: that average demand against the starting
-      capacity (L3). Utilization rises when pressure is above it.</li>
-    <li><span class="sym c-fix">K₀</span>: sector capacity at the start of the window (L6). An entity's share of orders follows its
-      share of capacity measured against it.</li>
-    <li><span class="sym c-fix">transit</span>: shipping time in months, from geography (L13), part of every quoted lead time.</li>
+    <li><span class="sym c-fix">transit</span>: shipping time, from geography (L13), part of every quoted lead time; shown in days.</li>
     <li>Congestion (L13), the extra wait as utilization nears full: <b id="kc"></b>.</li>
   </ul>
 
@@ -86,7 +79,7 @@
   representative entities that stand for untracked establishments.</p>
   <div class="cmp tablewrap"><table id="estab"></table></div>
 </main>
-<script src="assets/site.js?v=82c376c-1794941581"></script>
+<script src="assets/site.js?v=3393707-1794944119"></script>
 <script>
 (async () => {
   try {
@@ -99,71 +92,14 @@
     const row = (k, v) => v == null || v === "" ? "" : `<span class="k">${k}</span><span>${v}</span>`;
     const sym = (s) => M2.esc(s).replace(/\^([\p{L}\w]+)/gu, "<sup>$1</sup>").replace(/_([\p{L}\w]+)/gu, "<sub>$1</sub>");
 
-    // a plain reading of each sector's fixed values: how demand and capacity have moved since the window began,
-    // what that does to demand pressure against its fixed starting level, and how long goods take to ship
-    const ch = (v) => { const p = Math.round(100 * (Math.exp(v) - 1)); return p === 0 ? "unchanged" : `${p > 0 ? "up" : "down"} ${Math.abs(p)}%`; };
-    const start = meta.time_grid?.history_start;
-    const UNITS = { seat_mile: "seat-miles", patient_day: "patient-days", room_night: "room-nights", usd_2017: "in 2017 dollars",
-      MW: "MW", boe: "barrels of oil equivalent", tonne: "tonnes", vehicle: "vehicles", home: "homes", wafer: "wafers" };
-    // capacity with its unit, as a reader would say it: "3.19M tonnes/month", "$4.66B/month (2017 dollars)", "2,724 MW"
-    const capText = (v, un) => un === "usd_2017" ? `$${M2.fmt(v)}/month <span class="muted">(2017 dollars)</span>`
-      : un === "MW" ? `${M2.fmt(v)} MW` : `${M2.fmt(v)} <span class="muted">${UNITS[un] || unit(un)}/month</span>`;
-    const index = (d) => (100 * Math.exp(d)).toFixed(1);
     const SERVICE = new Set(["perishable_service", "contracted_capacity"]);
-    // the demand drivers are indexes set to 0 (log) in January 2010; the window starts at history_start
-    const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    const mon = (m) => m ? `${MON[+m.slice(5, 7) - 1]} ${m.slice(0, 4)}` : "";
-    const plus = (m, k) => { const t = +m.slice(0, 4) * 12 + (+m.slice(5, 7) - 1) + k; return `${Math.floor(t / 12)}-${String(t % 12 + 1).padStart(2, "0")}`; };
-    const pc = (v) => { const p = Math.round(1000 * (Math.exp(v) - 1)) / 10; return `${Math.abs(p)}% ${p >= 0 ? "above" : "below"}`; };
-    // what each fixed value does in the sector now: the effect, through the sector's typical fitted responses
-    // (median over tracked entities), of where demand and capacity stand at the last observed month
-    const expit = (z) => 1 / (1 + Math.exp(-z));
-    const pct1 = (v) => `${Math.abs(Math.round(100 * (Math.exp(v) - 1)))}%`;
-    const explain = (s) => {
-      const u = UNITS[s.unit] || unit(s.unit), when = mon(s.last);
-      const have = s.D_now != null && s.K_now != null;
-      const dD = have ? s.D_now - s.Dbar : null, dK = have ? Math.log(s.K_now / s.K0) : null;
-      // D̄: orders are balanced at this demand level; demand away from it moves orders by β^O
-      let D = `From ${mon(start)} to ${mon(plus(start, 23))} this sector's demand, adjusted for prices, averaged ${index(s.Dbar)} (January 2010 = 100).`
-        + ` That is its normal demand: at this level firms get orders equal to their normal output, and each 1% more demand adds about ${f(s.betaO, 2)}% to their orders.`;
-      if (have && s.betaO != null) {
-        const o = s.betaO * dD;
-        D += Math.abs(Math.exp(o) - 1) < 0.01 ? ` In ${when} demand is ${index(s.D_now)}, close to normal, so orders run near normal on that account.`
-          : ` In ${when} demand is ${index(s.D_now)}, ${pct1(dD)} ${dD > 0 ? "above" : "below"} normal, so orders run about ${pct1(o)} ${o > 0 ? "above" : "below"} normal on that account.`;
-      }
-      // x̄: utilization is normal at this demand pressure; pressure away from it moves utilization by β
-      let x;
-      if (s.template === "contracted_capacity") x = `Not used here: a data center's utilization is set by how much is leased, not by how hard its sites run.`;
-      else {
-        const un = s.alpha != null ? expit(s.alpha) : null;
-        x = `The ratio of demand to capacity when the window began. At this ratio the sector's firms run at their normal rate${un != null ? `, about ${Math.round(100 * un)}% of capacity` : ""}; a higher ratio makes them run harder.`;
-        if (have && s.beta != null && un != null) {
-          const dx = dD - dK, du = expit(s.alpha + s.beta * dx) - un, pts = Math.round(1000 * du) / 10;
-          const why = `demand ${ch(dD)}, capacity ${ch(dK)}`;
-          x += Math.abs(Math.exp(dx) - 1) < 0.02 ? ` By ${when} the ratio is about the same (${why}), so firms run near their normal rate on that account.`
-            : ` By ${when} the ratio is ${pct1(dx)} ${dx > 0 ? "higher" : "lower"} (${why}), so on that account firms run about ${Math.abs(pts) < 0.5 ? "the same" : `${Math.abs(pts)} points ${pts > 0 ? "above" : "below"}`} their normal rate.`;
-        }
-        x += ` (The number itself only marks the starting point: it depends on the units and means nothing alone.)`;
-      }
-      // K₀: the yardstick for each firm's share of orders
-      const K = `The sector's capacity when the window began: ${M2.fmt(s.K0)} ${u}${s.unit === "MW" ? "" : " a month"}. It is the yardstick for market share: a firm whose capacity`
-        + ` grows 10% faster than the sector's since then gets about 10% more orders.`
-        + (have ? ` By ${when} the sector had ${M2.fmt(s.K_now)} (${Math.abs(dK) < 0.01 ? "about the same" : `${dK >= 0 ? "up" : "down"} ${pct1(dK)}`}).` : "");
-      const t = s.transit ? `About ${Math.round(30 * s.transit)} days of shipping, part of every quoted lead time.`
-        : SERVICE.has(s.template) ? "Nothing is shipped: the service is used where it is sold." : "The model counts no shipping time for this sector.";
-      return { D, x, K, t };
-    };
+    const transitText = (s) => s.transit ? `About ${Math.round(30 * s.transit)} days of shipping, part of every quoted lead time.`
+      : SERVICE.has(s.template) ? "Nothing is shipped: the service is used where it is sold." : "The model counts no shipping time for this sector.";
     document.getElementById("fixed").innerHTML = `<tr><th>sector</th>
       <th>template</th>
-      <th class="n"><span class="sym c-fix">D̄</span> <span class="muted">(index)</span>${M2.info("Normal demand (L6). The sector's demand, adjusted for prices, averaged over the first two years of the fit window and written as an index: 100 is the January 2010 level, so 108 means 8% more. The model treats this as normal: firms get orders equal to their normal output when demand is here, more when it is higher, fewer when lower.")}</th>
-      <th class="n"><span class="sym c-fix">x̄</span>${M2.info("Starting demand-to-capacity ratio (L3): how much demand there was for each unit of capacity when the window began. Each month the model compares the current ratio with this one. If demand has grown faster than capacity, the ratio is higher and firms run their plants harder than normal; if capacity has grown faster, they run below normal. The number itself is the log of the ratio of a demand index to capacity, so its size depends on the units and means nothing alone; only changes from it matter.")}</th>
-      <th class="n"><span class="sym c-fix">K₀</span>${M2.info("The sector's capacity at the start of the window: the most all its firms together could produce in a month. It is the yardstick for market share: a firm's share of orders follows its capacity measured against it (L6).")}</th>
       <th class="n"><span class="sym c-fix">transit</span> <span class="muted">(days)</span>${M2.info("Shipping time (L13): added to every lead time a firm quotes, so it is part of how long a customer waits.")}</th></tr>` +
-      secs.map((s) => { const e = explain(s);
-        return `<tr><td><a href="sector.html?s=${s.code}">${M2.esc(short[s.code])}</a></td><td class="muted">${s.template.replace(/_/g, " ")}</td>
-        <td class="n">${index(s.Dbar)}${M2.info(e.D)}</td><td class="n">${f(s.xbar)}${M2.info(e.x)}</td>
-        <td class="n">${capText(s.K0, s.unit)}${M2.info(e.K)}</td>
-        <td class="n">${Math.round(30 * (s.transit || 0))}${M2.info(e.t)}</td></tr>`; }).join("");
+      secs.map((s) => `<tr><td><a href="sector.html?s=${s.code}">${M2.esc(short[s.code])}</a></td><td class="muted">${s.template.replace(/_/g, " ")}</td>
+        <td class="n">${Math.round(30 * (s.transit || 0))}${M2.info(transitText(s))}</td></tr>`).join("");
     const r = c.run, bi = r.band_inflation;
     document.getElementById("kc").textContent = r.lead_time_congestion === "on" ? "on (κ_C = 1)" : "off (κ_C = 0)";
     document.getElementById("runkv").innerHTML = [
@@ -175,7 +111,7 @@
       row("Starting stocks", `each copy starts its order book, input inventory and project pipeline spread by ${r.initial_stock_sd} (log) around the fitted start`),
       row("Order level in the filter", `moves with a spread of ${r.order_level_sd} (log) where a sector lets the filter correct it`),
       row("Sector input delivery", `at most ${r.staleness_days} days older than the as-of date; an older one stops the run`),
-      row("Band widening", bi ? `published sector bands widened ${bi.smoothed}× in history, ${bi.nowcast}× in the nowcast and ${bi.forecast}× in the forecast. <span class="muted">The model's own 90% bands held too little of the truth in a backtest on this world; these factors bring the published bands to about 90% (see <a href="accuracy.html">Against ground truth</a>).</span>` : "none"),
+      row("Band widening", bi ? `published sector bands widened ${bi.smoothed}× in history, ${bi.nowcast}× in the nowcast and ${bi.forecast}× in the forecast. <span class="muted">The model's own 90% bands held too little of the truth in an earlier backtest; these factors bring the published bands to about 90% (see <a href="accuracy.html">Against ground truth</a>).</span>` : "none"),
       row("Order book in the filter", secs.filter((s) => s.filter_order_book.length).map((s) => `${M2.esc(short[s.code])} (${s.filter_order_book.join(", ")})`).join("; ") || "no sector"),
     ].join("");
     const ft = c.fit;
