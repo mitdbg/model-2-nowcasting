@@ -36,33 +36,34 @@ The site's list of forecasts is https://mitdbg.github.io/model-2-nowcasting/data
 
 - b653c9a8-4454-5e3d-8a00-0a530afd83a0: computed 2026-11-10, as of 2026-09-30, covers 2018-10 to 2027-09, world 844151cd-89f8-5a64-b12b-f31f12603eaf (synthetic, w34-units-seed20261107); data under https://mitdbg.github.io/model-2-nowcasting/data/sets/b653c9a8-4454-5e3d-8a00-0a530afd83a0/
 - 976debf3-7f2a-5e1a-aec0-e24ae8ea99d3: computed 2026-11-13, as of 2026-09-30, covers 2018-10 to 2027-09, world fa0bb576-6164-5022-8c81-57f6bc8908de (synthetic, w34-units-seed20261112); data under https://mitdbg.github.io/model-2-nowcasting/data/sets/976debf3-7f2a-5e1a-aec0-e24ae8ea99d3/
-- 0c0a014b-d739-5e72-95a6-0b4ec4f3753e (default): computed 2026-11-16, as of 2026-09-30, covers 2018-10 to 2027-09, world 2d7f80cf-c24e-5124-9dcb-12c1a33de767 (synthetic, w35-ppi-seed20261115); data under https://mitdbg.github.io/model-2-nowcasting/data/sets/0c0a014b-d739-5e72-95a6-0b4ec4f3753e/
+- 0c0a014b-d739-5e72-95a6-0b4ec4f3753e: computed 2026-11-16, as of 2026-09-30, covers 2018-10 to 2027-09, world 2d7f80cf-c24e-5124-9dcb-12c1a33de767 (synthetic, w35-ppi-seed20261115); data under https://mitdbg.github.io/model-2-nowcasting/data/sets/0c0a014b-d739-5e72-95a6-0b4ec4f3753e/
+- 958bc61e-85e2-5352-970c-bb52c97226a3 (default): computed 2026-11-17, as of 2026-09-30, covers 2018-10 to 2027-09, world 2edf3773-c47e-5ffe-b2a0-4b048d75b836 (synthetic, w36-margin-seed20261117); data under https://mitdbg.github.io/model-2-nowcasting/data/sets/958bc61e-85e2-5352-970c-bb52c97226a3/
 
 ## Pages (text of the default forecast's pages; other forecasts: the same path under their data folder)
 
-- [Overview › Introduction](https://mitdbg.github.io/model-2-nowcasting/data/sets/0c0a014b-d739-5e72-95a6-0b4ec4f3753e/pages/index.md): What Model 2 is and why.
-- [Overview › How It Works](https://mitdbg.github.io/model-2-nowcasting/data/sets/0c0a014b-d739-5e72-95a6-0b4ec4f3753e/pages/howitworks.md): The stages: manage worlds and forecasts, build a world, run it forward, score, improve.
-- [Overview › Data Model](https://mitdbg.github.io/model-2-nowcasting/data/sets/0c0a014b-d739-5e72-95a6-0b4ec4f3753e/pages/datamodel.md): Every data table, its columns, keys and joins.
-- [Overview › Model Structure](https://mitdbg.github.io/model-2-nowcasting/data/sets/0c0a014b-d739-5e72-95a6-0b4ec4f3753e/pages/forecast_model.md): The equations, drawn per kind of business, and the parameters.
-- [World Inputs › Introduction](https://mitdbg.github.io/model-2-nowcasting/data/sets/0c0a014b-d739-5e72-95a6-0b4ec4f3753e/pages/world_overview.md): What a world is, its kinds of input, synthetic against real; this world's facts.
-- [World Inputs › Entities](https://mitdbg.github.io/model-2-nowcasting/data/sets/0c0a014b-d739-5e72-95a6-0b4ec4f3753e/pages/world_entities.md): The businesses in this world, tracked and representative.
-- [World Inputs › Observations](https://mitdbg.github.io/model-2-nowcasting/data/sets/0c0a014b-d739-5e72-95a6-0b4ec4f3753e/pages/world_observations.md): Every published reading, by kind, source and subject.
-- [World Inputs › Sector input bundle](https://mitdbg.github.io/model-2-nowcasting/data/sets/0c0a014b-d739-5e72-95a6-0b4ec4f3753e/pages/world_bundle.md): Each sector's drivers and official statistics, as draws.
-- [World Inputs › Model Configuration](https://mitdbg.github.io/model-2-nowcasting/data/sets/0c0a014b-d739-5e72-95a6-0b4ec4f3753e/pages/forecast_config.md): Fixed values and starting ranges for the learned parameters.
-- [Model and Forecast › Introduction](https://mitdbg.github.io/model-2-nowcasting/data/sets/0c0a014b-d739-5e72-95a6-0b4ec4f3753e/pages/forecast_overview.md): This forecast and the parameter fit it uses.
-- [Model and Forecast › Fitted Parameters](https://mitdbg.github.io/model-2-nowcasting/data/sets/0c0a014b-d739-5e72-95a6-0b4ec4f3753e/pages/forecast_fit.md): Each sector's fitted parameters (and ground truth on a synthetic world).
-- [Model and Forecast › Forecasts](https://mitdbg.github.io/model-2-nowcasting/data/sets/0c0a014b-d739-5e72-95a6-0b4ec4f3753e/pages/sector.md): Sector totals and entities over time, with 90% bands; ?s=SECTOR, entity.html?e=ID.
-- [Evaluation › Forecasts against later estimates](https://mitdbg.github.io/model-2-nowcasting/data/sets/0c0a014b-d739-5e72-95a6-0b4ec4f3753e/pages/eval_revisions.md): How far forecasts moved once later data came in.
-- [Evaluation › Observations against the model](https://mitdbg.github.io/model-2-nowcasting/data/sets/0c0a014b-d739-5e72-95a6-0b4ec4f3753e/pages/eval_observations.md): Each observation against the model's prediction.
-- [Evaluation › Sector totals against official statistics](https://mitdbg.github.io/model-2-nowcasting/data/sets/0c0a014b-d739-5e72-95a6-0b4ec4f3753e/pages/eval_official.md): The model's totals against official series.
-- [Evaluation › What the data pin down](https://mitdbg.github.io/model-2-nowcasting/data/sets/0c0a014b-d739-5e72-95a6-0b4ec4f3753e/pages/evaluation.md): Which quantities and parameters the data determine.
-- [Evaluation › Against ground truth](https://mitdbg.github.io/model-2-nowcasting/data/sets/0c0a014b-d739-5e72-95a6-0b4ec4f3753e/pages/accuracy.md): Errors against the true values (synthetic worlds only).
-- [Next Version › Current Problems](https://mitdbg.github.io/model-2-nowcasting/data/sets/0c0a014b-d739-5e72-95a6-0b4ec4f3753e/pages/next_problems.md): An AI evaluator's analysis of what is wrong.
-- [Next Version › Possible Improvements](https://mitdbg.github.io/model-2-nowcasting/data/sets/0c0a014b-d739-5e72-95a6-0b4ec4f3753e/pages/next_improvements.md): Proposed fixes, with odds, time and cost.
-- [Next Version › Improvement Testing](https://mitdbg.github.io/model-2-nowcasting/data/sets/0c0a014b-d739-5e72-95a6-0b4ec4f3753e/pages/next_testing.md): Every possible fix and what testing it found.
-- [AI Access › AI Access](https://mitdbg.github.io/model-2-nowcasting/data/sets/0c0a014b-d739-5e72-95a6-0b4ec4f3753e/pages/ai.md): How AI agents connect to this site (MCP, llms.txt).
+- [Overview › Introduction](https://mitdbg.github.io/model-2-nowcasting/data/sets/958bc61e-85e2-5352-970c-bb52c97226a3/pages/index.md): What Model 2 is and why.
+- [Overview › How It Works](https://mitdbg.github.io/model-2-nowcasting/data/sets/958bc61e-85e2-5352-970c-bb52c97226a3/pages/howitworks.md): The stages: manage worlds and forecasts, build a world, run it forward, score, improve.
+- [Overview › Data Model](https://mitdbg.github.io/model-2-nowcasting/data/sets/958bc61e-85e2-5352-970c-bb52c97226a3/pages/datamodel.md): Every data table, its columns, keys and joins.
+- [Overview › Model Structure](https://mitdbg.github.io/model-2-nowcasting/data/sets/958bc61e-85e2-5352-970c-bb52c97226a3/pages/forecast_model.md): The equations, drawn per kind of business, and the parameters.
+- [World Inputs › Introduction](https://mitdbg.github.io/model-2-nowcasting/data/sets/958bc61e-85e2-5352-970c-bb52c97226a3/pages/world_overview.md): What a world is, its kinds of input, synthetic against real; this world's facts.
+- [World Inputs › Entities](https://mitdbg.github.io/model-2-nowcasting/data/sets/958bc61e-85e2-5352-970c-bb52c97226a3/pages/world_entities.md): The businesses in this world, tracked and representative.
+- [World Inputs › Observations](https://mitdbg.github.io/model-2-nowcasting/data/sets/958bc61e-85e2-5352-970c-bb52c97226a3/pages/world_observations.md): Every published reading, by kind, source and subject.
+- [World Inputs › Sector input bundle](https://mitdbg.github.io/model-2-nowcasting/data/sets/958bc61e-85e2-5352-970c-bb52c97226a3/pages/world_bundle.md): Each sector's drivers and official statistics, as draws.
+- [World Inputs › Model Configuration](https://mitdbg.github.io/model-2-nowcasting/data/sets/958bc61e-85e2-5352-970c-bb52c97226a3/pages/forecast_config.md): Fixed values and starting ranges for the learned parameters.
+- [Model and Forecast › Introduction](https://mitdbg.github.io/model-2-nowcasting/data/sets/958bc61e-85e2-5352-970c-bb52c97226a3/pages/forecast_overview.md): This forecast and the parameter fit it uses.
+- [Model and Forecast › Fitted Parameters](https://mitdbg.github.io/model-2-nowcasting/data/sets/958bc61e-85e2-5352-970c-bb52c97226a3/pages/forecast_fit.md): Each sector's fitted parameters (and ground truth on a synthetic world).
+- [Model and Forecast › Forecasts](https://mitdbg.github.io/model-2-nowcasting/data/sets/958bc61e-85e2-5352-970c-bb52c97226a3/pages/sector.md): Sector totals and entities over time, with 90% bands; ?s=SECTOR, entity.html?e=ID.
+- [Evaluation › Forecasts against later estimates](https://mitdbg.github.io/model-2-nowcasting/data/sets/958bc61e-85e2-5352-970c-bb52c97226a3/pages/eval_revisions.md): How far forecasts moved once later data came in.
+- [Evaluation › Observations against the model](https://mitdbg.github.io/model-2-nowcasting/data/sets/958bc61e-85e2-5352-970c-bb52c97226a3/pages/eval_observations.md): Each observation against the model's prediction.
+- [Evaluation › Sector totals against official statistics](https://mitdbg.github.io/model-2-nowcasting/data/sets/958bc61e-85e2-5352-970c-bb52c97226a3/pages/eval_official.md): The model's totals against official series.
+- [Evaluation › What the data pin down](https://mitdbg.github.io/model-2-nowcasting/data/sets/958bc61e-85e2-5352-970c-bb52c97226a3/pages/evaluation.md): Which quantities and parameters the data determine.
+- [Evaluation › Against ground truth](https://mitdbg.github.io/model-2-nowcasting/data/sets/958bc61e-85e2-5352-970c-bb52c97226a3/pages/accuracy.md): Errors against the true values (synthetic worlds only).
+- [Next Version › Current Problems](https://mitdbg.github.io/model-2-nowcasting/data/sets/958bc61e-85e2-5352-970c-bb52c97226a3/pages/next_problems.md): An AI evaluator's analysis of what is wrong.
+- [Next Version › Possible Improvements](https://mitdbg.github.io/model-2-nowcasting/data/sets/958bc61e-85e2-5352-970c-bb52c97226a3/pages/next_improvements.md): Proposed fixes, with odds, time and cost.
+- [Next Version › Improvement Testing](https://mitdbg.github.io/model-2-nowcasting/data/sets/958bc61e-85e2-5352-970c-bb52c97226a3/pages/next_testing.md): Every possible fix and what testing it found.
+- [AI Access › AI Access](https://mitdbg.github.io/model-2-nowcasting/data/sets/958bc61e-85e2-5352-970c-bb52c97226a3/pages/ai.md): How AI agents connect to this site (MCP, llms.txt).
 
-## Data files (under a forecast's data folder, e.g. https://mitdbg.github.io/model-2-nowcasting/data/sets/0c0a014b-d739-5e72-95a6-0b4ec4f3753e/)
+## Data files (under a forecast's data folder, e.g. https://mitdbg.github.io/model-2-nowcasting/data/sets/958bc61e-85e2-5352-970c-bb52c97226a3/)
 
 - `meta.json`: the forecast's as-of date, months covered, copies, band widening and sectors
 - `world.json`: the world: kind (synthetic or real), generator, seed, counts

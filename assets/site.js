@@ -533,6 +533,7 @@ M2.OBS = {
   satellite_binary: ["Satellite activity flag", "Probability of activity seen (%)", "Whether a satellite image shows the site active (for example a plume or heat).", "Utilization, through a fixed curve per sensor", "Sentinel-2 and Landsat, per-site pipeline"],
   satellite_index: ["Satellite activity index", "Activity index", "Activity index measured from satellite data (heat, emissions).", "Utilization, through a fixed line per sensor", "VIIRS thermal, Sentinel-5P"],
   price: ["Price", "Price (USD/{u})", "Transaction price per unit.", "Price (unit cost + markup)", "Trade press, company releases (airline yield)"],
+  margin_change: ["Margin price index", "Change in the trade margin (log)", "Monthly change in a whole sector's margin per unit: selling price minus what the goods cost the seller.", "Price − unit cost, averaged over the sector", "BLS producer price index for wholesale trade"],
   list_price: ["List price", "List price (USD/{u})", "Published list price per unit.", "Price plus the entity's list-price gap", "Price surveys, mill price sheets"],
   raw_inventory: ["Input inventory", "Input inventory (input units)", "Raw materials on hand at the end of the period.", "Input inventory", "Balance-sheet notes"],
   finished_inventory: ["Finished inventory", "Finished inventory ({u})", "Finished goods on hand at the end of the period.", "Finished inventory", "Balance-sheet notes"],
