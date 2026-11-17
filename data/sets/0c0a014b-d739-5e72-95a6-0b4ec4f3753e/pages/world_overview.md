@@ -1,4 +1,4 @@
-<!-- World Inputs › Introduction, for forecast 0c0a014b-d739-5e72-95a6-0b4ec4f3753e; the page: https://mitdbg.github.io/model-2-nowcasting/world_overview.html?set=0c0a014b-d739-5e72-95a6-0b4ec4f3753e; inputs ce64f7db4ca35424 -->
+<!-- World Inputs › Introduction, for forecast 0c0a014b-d739-5e72-95a6-0b4ec4f3753e; the page: https://mitdbg.github.io/model-2-nowcasting/world_overview.html?set=0c0a014b-d739-5e72-95a6-0b4ec4f3753e; inputs bd6fd7c9bcb0fbd4 -->
 
 # Overview of World Bundle 93ddada0-f18c-5557-b72c-893268fa1a2e
 

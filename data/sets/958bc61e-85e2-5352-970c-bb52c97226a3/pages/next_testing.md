@@ -1,4 +1,4 @@
-<!-- Next Version › Improvement Testing, for forecast 958bc61e-85e2-5352-970c-bb52c97226a3; the page: https://mitdbg.github.io/model-2-nowcasting/next_testing.html?set=958bc61e-85e2-5352-970c-bb52c97226a3; inputs bcbcef0142ec9f39 -->
+<!-- Next Version › Improvement Testing, for forecast 958bc61e-85e2-5352-970c-bb52c97226a3; the page: https://mitdbg.github.io/model-2-nowcasting/next_testing.html?set=958bc61e-85e2-5352-970c-bb52c97226a3; inputs 6d42e8b30a21943f -->
 
 World shown World seed 20261117 (the bundle's only world)
 

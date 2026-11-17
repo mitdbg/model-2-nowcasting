@@ -40,6 +40,8 @@ M2.choice = () => (M2._choice ||= M2.sets().then((idx) => {
   return { fs, member, set: member?.set || idx.default };
 }));
 M2.currentSet = async () => (await M2.choice()).set;
+// one world's forecast at the forecast set's last as-of date (its built set is named by that forecast)
+M2.forecastName = (m) => `Forecast ${(m.set || "").slice(0, 8)}, ${m.seed != null ? `world seed ${m.seed}` : `world ${(m.world_catalog_id || "").slice(0, 8)}`}`;
 M2.worldName = (m) => (m.seed != null ? `World seed ${m.seed}` : `World ${(m.world_catalog_id || "").slice(0, 8)}`);
 M2.load = async (path) => {
   const set = await M2.currentSet();
@@ -155,19 +157,22 @@ M2.GROUPING_KINDS = {
   custom: ["Custom", "entities entered by hand"],
 };
 
-// Under the sub-tabs: on a page about one world, which world of the bundle it shows (a picker when the bundle
-// has several); on a tab still being rewritten for world bundles, a note saying it shows one world for now.
+// Under the sub-tabs: on a page about one world, which world of the bundle it shows, and on a page about one
+// forecast (Model and Forecast), which forecast: one per world (a picker when the bundle has several); on a tab
+// still being rewritten for world bundles, a note saying it shows one world for now.
 M2.bundleNotes = (page, ch) => {
   const top = Object.keys(M2.SUBPAGES).find((t) => M2.SUBPAGES[t].some(([h]) => h === page)) || page;
   const progress = M2.IN_PROGRESS.has(top), perWorld = M2.PER_WORLD.has(page) || progress;
   if (!perWorld || !ch.member) return;
+  const forecast = top === "forecast_overview.html";
   const ms = ch.fs.members, built = ms.filter((m) => m.set);
   const key = (m) => String(m.seed ?? m.world_catalog_id);
+  const name = (m) => forecast ? M2.forecastName(m) : M2.worldName(m);
   const pick = ms.length === 1
-    ? `<b>${M2.esc(M2.worldName(ch.member))}</b> <span class="muted">(the bundle's only world)</span>`
-    : `<select id="worldsel" aria-label="World shown">${ms.map((m) => `<option value="${M2.esc(key(m))}"${m === ch.member ? " selected" : ""}${m.set ? "" : " disabled"}>${M2.esc(M2.worldName(m))}${m.set ? "" : " (not built)"}</option>`).join("")}</select>
-       <span class="muted">${built.length} of ${ms.length} worlds in this bundle</span>`;
-  const html = `<div class="worldpick"><span class="k">World shown</span> ${pick}</div>` + (progress
+    ? `<b>${M2.esc(name(ch.member))}</b> <span class="muted">(${forecast ? "the set's only forecast" : "the bundle's only world"})</span>`
+    : `<select id="worldsel" aria-label="${forecast ? "Forecast" : "World"} shown">${ms.map((m) => `<option value="${M2.esc(key(m))}"${m === ch.member ? " selected" : ""}${m.set ? "" : " disabled"}>${M2.esc(name(m))}${m.set ? "" : " (not built)"}</option>`).join("")}</select>
+       <span class="muted">${forecast ? `one forecast for each of the bundle's ${ms.length} worlds` : `${built.length} of ${ms.length} worlds in this bundle`}</span>`;
+  const html = `<div class="worldpick"><span class="k">${forecast ? "Forecast" : "World"} shown</span> ${pick}</div>` + (progress
     ? `<p class="note"><b>In progress.</b> This tab is being rewritten to describe every world of the bundle together. For now
        it describes one world, chosen above.</p>` : "");
   const sub = document.querySelector("main > .subtabs");

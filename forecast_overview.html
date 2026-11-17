@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Model and Forecast · Model 2</title>
-<link rel="stylesheet" href="assets/site.css?v=f1f4148-1794919627">
+<link rel="stylesheet" href="assets/site.css?v=ea4e0f3-1794924809">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Code+Pro:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800&display=swap">
 <style>
@@ -35,7 +35,7 @@
   the round kept. <span id="secsw"></span></p>
   <div class="tablewrap"><table id="secs"></table></div>
 </main>
-<script src="assets/site.js?v=f1f4148-1794919627"></script>
+<script src="assets/site.js?v=ea4e0f3-1794924809"></script>
 <script>
 (async () => {
   try {
@@ -100,8 +100,8 @@
           <td>${M2.esc(when(x.fit?.fitted_utc) || "")}</td><td class="n">${mins(x.fit?.compute)}</td>
           <td>${link(m, "forecast_fit.html", "parameters")} · ${link(m, "sector.html", "forecasts")}</td></tr>`;
       }).join("");
-    document.getElementById("secsh").textContent = fs.size > 1 ? `The fit, sector by sector: ${M2.worldName(me)}` : "The fit, sector by sector";
-    if (fs.size > 1) document.getElementById("secsw").textContent = "This table shows one world; another row's links above show another.";
+    document.getElementById("secsh").textContent = fs.size > 1 ? `The fit, sector by sector: ${M2.forecastName(me)}` : "The fit, sector by sector";
+    if (fs.size > 1) document.getElementById("secsw").textContent = "This table shows one forecast's fit; another row's links above show another forecast.";
     const spark = (m, best) => {
       if (!m.length) return "";
       const W = 120, H = 26, lo = Math.min(...m.slice(1)), hi = Math.max(...m);   // round 0 is the prior start, often far below

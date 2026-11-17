@@ -1,6 +1,6 @@
-<!-- Model and Forecast › Forecasts, for forecast 976debf3-7f2a-5e1a-aec0-e24ae8ea99d3; the page: https://mitdbg.github.io/model-2-nowcasting/sector.html?set=976debf3-7f2a-5e1a-aec0-e24ae8ea99d3; inputs 24c6b12d7625467c -->
+<!-- Model and Forecast › Forecasts, for forecast 976debf3-7f2a-5e1a-aec0-e24ae8ea99d3; the page: https://mitdbg.github.io/model-2-nowcasting/sector.html?set=976debf3-7f2a-5e1a-aec0-e24ae8ea99d3; inputs a73aba2c871040df -->
 
-World shown World seed 20261112 (the bundle's only world)
+Forecast shown Forecast 976debf3, world seed 20261112 (the set's only forecast)
 
 Sector  Show  Size  Region  Company
 
