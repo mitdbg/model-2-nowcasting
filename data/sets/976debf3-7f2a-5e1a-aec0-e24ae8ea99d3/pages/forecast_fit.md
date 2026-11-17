@@ -1,4 +1,4 @@
-<!-- Model and Forecast › Fitted Parameters, for forecast 976debf3-7f2a-5e1a-aec0-e24ae8ea99d3; the page: https://mitdbg.github.io/model-2-nowcasting/forecast_fit.html?set=976debf3-7f2a-5e1a-aec0-e24ae8ea99d3 -->
+<!-- Model and Forecast › Fitted Parameters, for forecast 976debf3-7f2a-5e1a-aec0-e24ae8ea99d3; the page: https://mitdbg.github.io/model-2-nowcasting/forecast_fit.html?set=976debf3-7f2a-5e1a-aec0-e24ae8ea99d3; inputs fa30a1ab8a8df9e7 -->
 
 World shown World seed 20261112 (the bundle's only world)
 

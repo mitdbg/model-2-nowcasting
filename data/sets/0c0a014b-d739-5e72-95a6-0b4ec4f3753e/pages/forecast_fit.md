@@ -1,8 +1,10 @@
-<!-- Model and Forecast › Fitted Parameters, for forecast 0c0a014b-d739-5e72-95a6-0b4ec4f3753e; the page: https://mitdbg.github.io/model-2-nowcasting/forecast_fit.html?set=0c0a014b-d739-5e72-95a6-0b4ec4f3753e -->
+<!-- Model and Forecast › Fitted Parameters, for forecast 0c0a014b-d739-5e72-95a6-0b4ec4f3753e; the page: https://mitdbg.github.io/model-2-nowcasting/forecast_fit.html?set=0c0a014b-d739-5e72-95a6-0b4ec4f3753e; inputs 1d7f7d281b1c9c0d -->
+
+World shown World seed 20261115 (the bundle's only world)
 
 # Fitted Parameters
 
-The sector parameters of the current fit, one sector at a time. If the world is synthetic, this table shows the parameter's ground truth value.
+The sector parameters of the world shown, from its fit at the last as-of date (Overview lists every world's fit), one sector at a time. If the world is synthetic, this table shows each parameter's ground truth value.
 
 AirlinesAutosChemicalsData centersFoodHospitalsHotelsHousingMachineryOil and gasRetailSemiconductorsSteelWholesale
 

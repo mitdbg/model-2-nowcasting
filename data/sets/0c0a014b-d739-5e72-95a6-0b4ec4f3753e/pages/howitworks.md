@@ -1,4 +1,4 @@
-<!-- Overview › How It Works, for forecast 0c0a014b-d739-5e72-95a6-0b4ec4f3753e; the page: https://mitdbg.github.io/model-2-nowcasting/howitworks.html?set=0c0a014b-d739-5e72-95a6-0b4ec4f3753e -->
+<!-- Overview › How It Works, for forecast 0c0a014b-d739-5e72-95a6-0b4ec4f3753e; the page: https://mitdbg.github.io/model-2-nowcasting/howitworks.html?set=0c0a014b-d739-5e72-95a6-0b4ec4f3753e; inputs f55c3edb9f1517e5 -->
 
 # How It Works
 
@@ -28,7 +28,7 @@ A world is everything the model can see:
 
 - Observations are published readings about an entity or a grouping, each with the date it became public.
 
-- The sector input bundle arrives once per as-of date with each sector's drivers (demand, price, input cost) and statistics, as ensemble draws.
+- The sector input delivery arrives once per as-of date with each sector's drivers (demand, price, input cost) and statistics, as ensemble draws.
 
 A synthetic world is generated from known parameters, so it comes with the true values of every hidden state; the model never sees them. A real world is built from public sources and has no such truth. The current synthetic world keeps the same entities throughout, with one change of ownership in 2019.
 
@@ -36,7 +36,7 @@ A synthetic world is generated from known parameters, so it comes with the true 
 
 A run is self-contained and uses only what was known at its date T:
 
-- Gather the registry as recorded by T, the observations published by T, and the input bundle for T.
+- Gather the registry as recorded by T, the observations published by T, and the input delivery for T.
 
 - Fit the parameters from the history up to T, once a quarter for each sector, starting from the priors and settings in the configuration. Later runs in the same quarter reuse those parameters.
 

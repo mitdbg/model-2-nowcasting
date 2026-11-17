@@ -1,4 +1,8 @@
-<!-- Evaluation › Against ground truth, for forecast 976debf3-7f2a-5e1a-aec0-e24ae8ea99d3; the page: https://mitdbg.github.io/model-2-nowcasting/accuracy.html?set=976debf3-7f2a-5e1a-aec0-e24ae8ea99d3 -->
+<!-- Evaluation › Against ground truth, for forecast 976debf3-7f2a-5e1a-aec0-e24ae8ea99d3; the page: https://mitdbg.github.io/model-2-nowcasting/accuracy.html?set=976debf3-7f2a-5e1a-aec0-e24ae8ea99d3; inputs c7cb81ec0f354fa4 -->
+
+World shown World seed 20261112 (the bundle's only world)
+
+In progress. This tab is being rewritten to describe every world of the bundle together. For now it describes one world, chosen above.
 
 # Against ground truth
 

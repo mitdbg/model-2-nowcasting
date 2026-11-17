@@ -1,8 +1,12 @@
-<!-- Evaluation › Sector totals against official statistics, for forecast 0c0a014b-d739-5e72-95a6-0b4ec4f3753e; the page: https://mitdbg.github.io/model-2-nowcasting/eval_official.html?set=0c0a014b-d739-5e72-95a6-0b4ec4f3753e -->
+<!-- Evaluation › Sector totals against official statistics, for forecast 0c0a014b-d739-5e72-95a6-0b4ec4f3753e; the page: https://mitdbg.github.io/model-2-nowcasting/eval_official.html?set=0c0a014b-d739-5e72-95a6-0b4ec4f3753e; inputs bb7388ba04107b14 -->
+
+World shown World seed 20261115 (the bundle's only world)
+
+In progress. This tab is being rewritten to describe every world of the bundle together. For now it describes one world, chosen above.
 
 # Sector totals against official statistics
 
-Official statistics measure whole sectors: industrial production, capacity utilization, retail sales, employment. The sector input bundle carries them, and where one measures the same thing as a sector total the model adds up from its entities, the two can be compared month by month. The model's total is converted into the statistic's units and given a range from how much its copies of the world disagree, widened by the statistic's own uncertainty: the amount the model allows the official value to be off when it pulls its total toward it. A model whose entities add up to the official picture keeps the statistic inside that range.
+Official statistics measure whole sectors: industrial production, capacity utilization, retail sales, employment. The sector input delivery carries them, and where one measures the same thing as a sector total the model adds up from its entities, the two can be compared month by month. The model's total is converted into the statistic's units and given a range from how much its copies of the world disagree, widened by the statistic's own uncertainty: the amount the model allows the official value to be off when it pulls its total toward it. A model whose entities add up to the official picture keeps the statistic inside that range.
 
 The model uses these statistics as it runs (L16): they pull its totals toward the official values. So agreement is partly built in, and a persistent gap is a strong sign: even when pulled, the model's entities cannot reproduce what the official numbers say.
 

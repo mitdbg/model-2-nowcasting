@@ -1,4 +1,8 @@
-<!-- Evaluation › Forecasts against later estimates, for forecast 0c0a014b-d739-5e72-95a6-0b4ec4f3753e; the page: https://mitdbg.github.io/model-2-nowcasting/eval_revisions.html?set=0c0a014b-d739-5e72-95a6-0b4ec4f3753e -->
+<!-- Evaluation › Forecasts against later estimates, for forecast 0c0a014b-d739-5e72-95a6-0b4ec4f3753e; the page: https://mitdbg.github.io/model-2-nowcasting/eval_revisions.html?set=0c0a014b-d739-5e72-95a6-0b4ec4f3753e; inputs a3c7c7d7c31b8944 -->
+
+World shown World seed 20261115 (the bundle's only world)
+
+In progress. This tab is being rewritten to describe every world of the bundle together. For now it describes one world, chosen above.
 
 # Forecasts against later estimates
 

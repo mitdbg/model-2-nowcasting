@@ -1,20 +1,24 @@
-<!-- Model and Forecast › Introduction, for forecast 0c0a014b-d739-5e72-95a6-0b4ec4f3753e; the page: https://mitdbg.github.io/model-2-nowcasting/forecast_overview.html?set=0c0a014b-d739-5e72-95a6-0b4ec4f3753e -->
+<!-- Model and Forecast › Introduction, for forecast 0c0a014b-d739-5e72-95a6-0b4ec4f3753e; the page: https://mitdbg.github.io/model-2-nowcasting/forecast_overview.html?set=0c0a014b-d739-5e72-95a6-0b4ec4f3753e; inputs d2e8d8df76c4b0c9 -->
 
-# Overview of Forecast 0c0a014b-d739-5e72-95a6-0b4ec4f3753e
+# Overview of Forecast Set db6f9ad4-a7ab-53a5-99d8-49763fd33bbc
 
-A forecast is made in two steps.
+A forecast set is one model's forecasts on every world of a world bundle: for each world, a parameter fit and a forecast at each as-of date, all made with the same model (the same code and configuration). Comparing the worlds shows which results hold across worlds and which come from one world's random draws; a new version of the model makes a new forecast set on the same worlds, so the two compare world by world.
 
-First a parameter fit sets the model's parameters (such as how fast each entity's capacity drifts, or how strongly its prices follow its costs) from the observations known on the as-of date. Then the filter runs every entity forward month by month with those parameters, correcting its hidden states with each month's observations, to the last observed month (history), the months since (nowcast) and a year ahead (forecast).
+Each forecast is made in two steps. First a parameter fit sets the model's parameters (such as how fast each entity's capacity drifts, or how strongly its prices follow its costs) from the observations known on the as-of date. Then the filter runs every entity forward month by month with those parameters, correcting its hidden states with each month's observations, to the last observed month (history), the months since (nowcast) and a year ahead (forecast).
 
-It runs 100 copies of the world at once, each with its own random shocks and its own draw of the uncertain parameters; their spread gives the 90% band.
+Each forecast runs 100 copies of its world at once, each with its own random shocks and its own draw of the uncertain parameters; their spread gives the 90% band.
 
-## This forecast
+## This forecast set
 
-Forecast0c0a014b-d739-5e72-95a6-0b4ec4f3753eAs-of date2026-09-30 (uses only what was published by then)World2d7f80cf-c24e-5124-9dcb-12c1a33de767 (synthetic, w35-ppi-seed20261115)Computed2026-11-16 at 02:31 UTC, in 2.4 minutesMonths coveredhistory 2018-10 to 2026-09; nowcast to the as-of date; forecast to 2027-09 (12 months past the last observed month)Copies of the world100, each run with its own shocks and parameter drawObservations used19,948, inside the 8-year window (22,887 older ones fall outside it; 48 could not be tied to any entity or grouping)Band wideningthe published sector bands are widened 2.55× in history, 2.31× in the nowcast and 1.86× in the forecast, because the model's own 90% bands held too little of the truth in backtests (see Evaluation, Against ground truth). Entity bands are not widened.Random seed12345
+Forecast setdb6f9ad4-a7ab-53a5-99d8-49763fd33bbcWorld bundle93ddada0-f18c-5557-b72c-893268fa1a2e (one world)Model064715e9-2cf1-5576-83ca-43afe7c8a722 (code version 76f9a8f; the same for every world)As-of dates2023-09-30, 2024-09-30, 2025-09-30, 2026-09-30 (each forecast uses only what was published by its date)Completeyes: every world has a forecast at every as-of dateMonths coveredhistory 2018-10 to 2026-09; nowcast to the as-of date; forecast to 2027-09 (12 months past the last observed month, at the last as-of date)Copies of each world100 in each forecast, each run with its own shocks and parameter drawBand wideningthe published sector bands are widened 2.55× in history, 2.31× in the nowcast and 1.86× in the forecast, because the model's own 90% bands held too little of the truth in backtests (see Evaluation, Against ground truth). Entity bands are not widened.
 
-## The parameter fit it uses
+## Its forecasts
 
-Fit1f5f88f2-eccb-5b05-929e-cbfab7ac5081Computed2026-11-16 at 02:22 UTCData up to2026-09-30 (the fit, too, uses only what was published by the as-of date)What it covers274 entities in 168 groups (sector × size class × region), across 14 sectorsNumbers fitted1,408 for single entities (each with an uncertainty, which the filter's copies draw from) and 247 shared by a whole sector; plus each group's average entityCopies of the world24 while fitting (fewer than the forecast's 100, to save time)
+One row per world of the bundle: its forecast at the last as-of date, and the parameter fit that forecast uses. The links show that world's fitted parameters and forecasts.
+
+world | seed | forecast | computed  | time | observations used | fit | fitted | fit time | show
+
+2d7f80cf  | 20261115  | 0c0a014b  | 2026-11-16 at 02:31 UTC | 2.4 min  | 19,948  | 1f5f88f2  | 2026-11-16 at 02:22 UTC |   | parameters · forecasts
 
 ## The fit, sector by sector
 
