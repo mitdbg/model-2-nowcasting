@@ -1,5 +1,5 @@
 {
- "default": "958bc61e-85e2-5352-970c-bb52c97226a3",
+ "default": "e05174ab-92f2-5d55-9c37-d06ebf3ce165",
  "sets": [
   {
    "id": "b653c9a8-4454-5e3d-8a00-0a530afd83a0",
@@ -84,6 +84,111 @@
    "model": "9c358ba9-79b3-57c0-bea1-ccbf572f2b00",
    "model_commit": "9d8600c",
    "fit_catalog_id": "6a4c7649-fa29-5933-b546-fa7d1da659de"
+  },
+  {
+   "id": "e05174ab-92f2-5d55-9c37-d06ebf3ce165",
+   "world": "w36-margin-seed2026111701",
+   "world_catalog_id": "164b4da3-02bd-531b-9dd2-46ac06e703ed",
+   "world_kind": "synthetic",
+   "forecast": "e05174ab-92f2-5d55-9c37-d06ebf3ce165",
+   "as_of": "2026-09-30",
+   "run": "2026-09-30__20261117T150552Z",
+   "made_utc": "2026-11-17T15:05:52Z",
+   "fit": "fit_2026q3:2026-09-30",
+   "time_grid": {
+    "frequency": "monthly",
+    "history_start": "2018-10",
+    "last_observed": "2026-08",
+    "forecast_end": "2027-09"
+   },
+   "built_utc": "2026-11-17T18:34:40Z",
+   "model": "14c87df2-0003-5af7-807f-94cad8198845",
+   "model_commit": "ea4e0f3",
+   "fit_catalog_id": "67c7d1ef-dd3f-5f31-928e-3b9e40cc9269"
+  },
+  {
+   "id": "9913b093-0e9e-570c-8a80-85802c3e6197",
+   "world": "w36-margin-seed2026111702",
+   "world_catalog_id": "443daf3f-d7af-5be7-b903-85a8fdbf3a61",
+   "world_kind": "synthetic",
+   "forecast": "9913b093-0e9e-570c-8a80-85802c3e6197",
+   "as_of": "2026-09-30",
+   "run": "2026-09-30__20261117T155730Z",
+   "made_utc": "2026-11-17T15:57:30Z",
+   "fit": "fit_2026q3:2026-09-30",
+   "time_grid": {
+    "frequency": "monthly",
+    "history_start": "2018-10",
+    "last_observed": "2026-08",
+    "forecast_end": "2027-09"
+   },
+   "built_utc": "2026-11-17T18:37:28Z",
+   "model": "14c87df2-0003-5af7-807f-94cad8198845",
+   "model_commit": "ea4e0f3",
+   "fit_catalog_id": "7691f907-9d0a-5bb2-83cf-b5bba3765e39"
+  },
+  {
+   "id": "c288b02e-1d8d-5a88-89a8-2b7bb3a5ca84",
+   "world": "w36-margin-seed2026111703",
+   "world_catalog_id": "96dceaa9-c9cc-5835-b78e-5d36c09aa477",
+   "world_kind": "synthetic",
+   "forecast": "c288b02e-1d8d-5a88-89a8-2b7bb3a5ca84",
+   "as_of": "2026-09-30",
+   "run": "2026-09-30__20261117T155711Z",
+   "made_utc": "2026-11-17T15:57:11Z",
+   "fit": "fit_2026q3:2026-09-30",
+   "time_grid": {
+    "frequency": "monthly",
+    "history_start": "2018-10",
+    "last_observed": "2026-09",
+    "forecast_end": "2027-09"
+   },
+   "built_utc": "2026-11-17T18:40:15Z",
+   "model": "14c87df2-0003-5af7-807f-94cad8198845",
+   "model_commit": "ea4e0f3",
+   "fit_catalog_id": "f1171ddb-892c-5595-b199-cbe3b8648bf2"
+  },
+  {
+   "id": "c2b0f986-4fc0-5f99-aeef-7b800ddfc096",
+   "world": "w36-margin-seed2026111704",
+   "world_catalog_id": "e8b09131-f559-5630-addb-4f9a53926270",
+   "world_kind": "synthetic",
+   "forecast": "c2b0f986-4fc0-5f99-aeef-7b800ddfc096",
+   "as_of": "2026-09-30",
+   "run": "2026-09-30__20261117T163324Z",
+   "made_utc": "2026-11-17T16:33:24Z",
+   "fit": "fit_2026q3:2026-09-30",
+   "time_grid": {
+    "frequency": "monthly",
+    "history_start": "2018-10",
+    "last_observed": "2026-08",
+    "forecast_end": "2027-09"
+   },
+   "built_utc": "2026-11-17T18:43:04Z",
+   "model": "14c87df2-0003-5af7-807f-94cad8198845",
+   "model_commit": "ea4e0f3",
+   "fit_catalog_id": "4fbee7bb-0c31-5532-8abc-2d0ec0087935"
+  },
+  {
+   "id": "95b8660e-19a8-5f67-bd12-40e75a011154",
+   "world": "w36-margin-seed2026111705",
+   "world_catalog_id": "e072b86c-ed10-5e71-b585-61ef2b69a75f",
+   "world_kind": "synthetic",
+   "forecast": "95b8660e-19a8-5f67-bd12-40e75a011154",
+   "as_of": "2026-09-30",
+   "run": "2026-09-30__20261117T161105Z",
+   "made_utc": "2026-11-17T16:11:05Z",
+   "fit": "fit_2026q3:2026-09-30",
+   "time_grid": {
+    "frequency": "monthly",
+    "history_start": "2018-10",
+    "last_observed": "2026-08",
+    "forecast_end": "2027-09"
+   },
+   "built_utc": "2026-11-17T18:45:45Z",
+   "model": "14c87df2-0003-5af7-807f-94cad8198845",
+   "model_commit": "ea4e0f3",
+   "fit_catalog_id": "32d5e9e9-e943-50cd-b51e-0f3cc96305b1"
   }
  ],
  "forecast_sets": [
@@ -226,7 +331,70 @@
      "set": "958bc61e-85e2-5352-970c-bb52c97226a3"
     }
    ]
+  },
+  {
+   "id": "38a0cf1a-8b2f-579f-8d7b-c391036e3a7f",
+   "name": "forecasts--w36-margin--5-worlds--seeds-2026111701-2026111702-2026111703-2026111704-2026111705--model--14c87df2",
+   "world_bundle": "2ca91773-e0b9-5d10-a633-37dd1d165a3a",
+   "world_bundle_name": "bundle--w36-margin--5-worlds--seeds-2026111701-2026111702-2026111703-2026111704-2026111705",
+   "kind": "synthetic",
+   "generator": "w36-margin",
+   "misspecification": null,
+   "size": 5,
+   "as_of": [
+    "2023-09-30",
+    "2024-09-30",
+    "2025-09-30",
+    "2026-09-30"
+   ],
+   "complete": true,
+   "model": "14c87df2-0003-5af7-807f-94cad8198845",
+   "model_commit": "ea4e0f3",
+   "made_utc": "2026-11-17T16:33:24Z",
+   "time_grid": {
+    "frequency": "monthly",
+    "history_start": "2018-10",
+    "last_observed": "2026-08",
+    "forecast_end": "2027-09"
+   },
+   "members": [
+    {
+     "world_catalog_id": "164b4da3-02bd-531b-9dd2-46ac06e703ed",
+     "world": "w36-margin-seed2026111701",
+     "seed": 2026111701,
+     "run": "bundle__20261117T141603Z__seed2026111701",
+     "set": "e05174ab-92f2-5d55-9c37-d06ebf3ce165"
+    },
+    {
+     "world_catalog_id": "443daf3f-d7af-5be7-b903-85a8fdbf3a61",
+     "world": "w36-margin-seed2026111702",
+     "seed": 2026111702,
+     "run": "bundle__20261117T141603Z__seed2026111702",
+     "set": "9913b093-0e9e-570c-8a80-85802c3e6197"
+    },
+    {
+     "world_catalog_id": "96dceaa9-c9cc-5835-b78e-5d36c09aa477",
+     "world": "w36-margin-seed2026111703",
+     "seed": 2026111703,
+     "run": "bundle__20261117T141603Z__seed2026111703",
+     "set": "c288b02e-1d8d-5a88-89a8-2b7bb3a5ca84"
+    },
+    {
+     "world_catalog_id": "e8b09131-f559-5630-addb-4f9a53926270",
+     "world": "w36-margin-seed2026111704",
+     "seed": 2026111704,
+     "run": "bundle__20261117T141603Z__seed2026111704",
+     "set": "c2b0f986-4fc0-5f99-aeef-7b800ddfc096"
+    },
+    {
+     "world_catalog_id": "e072b86c-ed10-5e71-b585-61ef2b69a75f",
+     "world": "w36-margin-seed2026111705",
+     "seed": 2026111705,
+     "run": "bundle__20261117T141603Z__seed2026111705",
+     "set": "95b8660e-19a8-5f67-bd12-40e75a011154"
+    }
+   ]
   }
  ],
- "default_forecast_set": "569b458e-ce80-51a1-8156-09d83bb60353"
+ "default_forecast_set": "38a0cf1a-8b2f-579f-8d7b-c391036e3a7f"
 }

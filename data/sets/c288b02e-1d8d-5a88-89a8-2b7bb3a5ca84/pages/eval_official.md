@@ -1,0 +1,83 @@
+<!-- Evaluation › Sector totals against official statistics, for forecast c288b02e-1d8d-5a88-89a8-2b7bb3a5ca84; the page: https://mitdbg.github.io/model-2-nowcasting/eval_official.html?set=c288b02e-1d8d-5a88-89a8-2b7bb3a5ca84; inputs 15a69e3e2c4956aa -->
+
+World shown  5 of 5 worlds in this bundle
+
+In progress. This tab is being rewritten to describe every world of the bundle together. For now it describes one world, chosen above.
+
+# Sector totals against official statistics
+
+Official statistics measure whole sectors: industrial production, capacity utilization, retail sales, employment. The sector input delivery carries them, and where one measures the same thing as a sector total the model adds up from its entities, the two can be compared month by month. The model's total is converted into the statistic's units and given a range from how much its copies of the world disagree, widened by the statistic's own uncertainty: the amount the model allows the official value to be off when it pulls its total toward it. A model whose entities add up to the official picture keeps the statistic inside that range.
+
+The model uses these statistics as it runs (L16): they pull its totals toward the official values. So agreement is partly built in, and a persistent gap is a strong sign: even when pulled, the model's entities cannot reproduce what the official numbers say.
+
+Official statistic
+
+the model's total, in the statistic's unitsits range (90%)the official value, inside the rangeoutside it
+
+Steel, industrial production, iron & steel (IPG3311A2S): the official value is inside the model's range in 96 of 96 months, and the typical gap is 0.5%. agrees
+
+### Does the model agree with the official numbers?
+
+82 of every 100
+
+months, the official value fell inside the model's range (2,112 months over 22 statistics).
+
+A well-sized 90% range would hold about 90. 15 of the 22 statistics agree; the others either fall just outside a range that is too tight, or genuinely disagree (see the table).
+
+### How big is the gap?
+
+about 0.8%
+
+typical gap between the model's total and the official value, for the typical statistic.
+
+Gaps run from 0.3% to 32.5%. A small gap with a poor score means the model's range is too tight, not that its total is far off.
+
+## Statistic by statistic
+
+The same two questions for each official statistic. A statistic can be close to the model's total and still fall outside its range when the range is very tight: then the model is more certain about that total than it should be.
+
+sector | official statistic | Does the model agree?  | How big is the gap? | months |
+
+Airlines  | Revenue passenger-miles, millions  | 97/100 | 1.1% | 96 | agrees
+
+Autos  | Capacity utilization, motor vehicles & parts  | 95/100 | 0.5% | 96 | agrees
+
+Autos  | Industrial production, motor vehicles & parts  | 99/100 | 0.7% | 96 | agrees
+
+Chemicals  | Capacity utilization, chemicals  | 76/100 | 0.6% | 96 | close, range too tight
+
+Chemicals  | Industrial production, chemicals  | 99/100 | 0.7% | 96 | agrees
+
+Food  | Capacity utilization, food, beverage & tobacco  | 98/100 | 0.8% | 96 | agrees
+
+Food  | Industrial production, food, beverage & tobacco  | 99/100 | 0.7% | 96 | agrees
+
+Hospitals  | All employees, hospitals  | 99/100 | 0.6% | 96 | agrees
+
+Hospitals  | PPI hospitals  | 100/100 | 0.5% | 96 | agrees
+
+Hotels  | All employees, accommodation  | 67/100 | 2.0% | 96 | disagrees
+
+Hotels  | CPI lodging away from home  | 75/100 | 1.9% | 96 | disagrees
+
+Housing  | New housing units completed, thousands SAAR  | 99/100 | 0.8% | 96 | agrees
+
+Machinery  | Capacity utilization, machinery  | 9/100 | 22.4% | 96 | disagrees
+
+Machinery  | Industrial production, machinery  | 1/100 | 32.5% | 96 | disagrees
+
+Oil and gas  | Capacity utilization, oil & gas extraction  | 74/100 | 1.0% | 96 | close, range too tight
+
+Oil and gas  | Industrial production, oil & gas extraction  | 28/100 | 4.9% | 96 | disagrees
+
+Retail  | CPI commodities less food  | 100/100 | 0.6% | 96 | agrees
+
+Retail  | Retail sales, general merchandise stores, $ millions  | 97/100 | 3.0% | 96 | agrees
+
+Semiconductors  | Capacity utilization, computer & electronic products  | 99/100 | 1.2% | 96 | agrees
+
+Semiconductors  | Industrial production, semiconductors  | 100/100 | 1.1% | 96 | agrees
+
+Steel  | Capacity utilization, iron & steel  | 100/100 | 0.3% | 96 | agrees
+
+Steel  | Industrial production, iron & steel  | 100/100 | 0.5% | 96 | agrees
