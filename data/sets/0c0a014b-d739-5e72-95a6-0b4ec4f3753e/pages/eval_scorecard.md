@@ -1,32 +1,30 @@
-<!-- Evaluation › Scorecard, for forecast 0c0a014b-d739-5e72-95a6-0b4ec4f3753e; the page: https://mitdbg.github.io/model-2-nowcasting/eval_scorecard.html?set=0c0a014b-d739-5e72-95a6-0b4ec4f3753e; inputs 06f5fc28147567ed -->
+<!-- Evaluation › Scorecard, for forecast 0c0a014b-d739-5e72-95a6-0b4ec4f3753e; the page: https://mitdbg.github.io/model-2-nowcasting/eval_scorecard.html?set=0c0a014b-d739-5e72-95a6-0b4ec4f3753e; inputs 94286fa3a72abfed -->
 
 # Scorecard
 
 No ground truth is available for real worlds, so a real bundle has no scorecard; the other Evaluation pages check it without the truth.
 
-How close the forecasts came to the truth, on every world of the bundle. The backtest runs the model at each as-of date using only what was published by then and scores every sector total against the world's truth. Each number below is computed for each world, then averaged over the worlds; the range and each world's own value show whether a result holds across worlds or comes from one world's random draws. Every sector and quantity counts equally.
-
-- Errors are the typical distance between the forecast's median and the truth, at the nowcast (the as-of date's own months) unless the row says otherwise, averaged over the four as-of dates. Most quantities are scored as a percentage error; utilization and load factor in percentage points; quantities often near zero (finished inventory, overdue orders, phantom orders, lost demand) in months of the sector's output, since a percentage of a number near zero says little.
+How close the forecasts came to the truth, on every world of the bundle. The backtest runs the model at each as-of date using only what was published by then and scores every sector total against the world's truth. Each number below is computed for each world, then averaged over the worlds; the range shows whether a result holds across worlds or comes from one world's random draws. Every sector and quantity counts equally.
 
 - A sector and quantity fails when its error is above 25% (or 25 points), or above one month of output for the quantities scored in months.
 
 ## The bundle's scores
 
-measure | bundle mean | range over worlds  | each world | what it measures
+measure | bundle mean | range over worlds  | what it measures
 
-Core quantities, nowcast error | 3.0%  | –  | 20261115: 3.0%  | output, capacity, utilization, shipments, price, unit cost, load factor
+Core quantities, nowcast error | 3.0%  | –  | output, capacity, utilization, shipments, price, unit cost, load factor
 
-Orders, nowcast error | 10.5%  | –  | 20261115: 10.5%  | new orders, order book, lead time
+Orders, nowcast error | 10.5%  | –  | new orders, order book, lead time
 
-Inputs and pipeline, nowcast error | 6.0%  | –  | 20261115: 6.0%  | input inventory, capacity announced, under construction and in use
+Inputs and pipeline, nowcast error | 6.0%  | –  | input inventory, capacity announced, under construction and in use
 
-Quantities near zero, nowcast error | 0.34 mo  | –  | 20261115: 0.34 mo  | finished inventory, overdue orders, phantom orders, lost demand (months of output)
+Quantities near zero, nowcast error | 0.34 mo  | –  | finished inventory, overdue orders, phantom orders, lost demand (months of output)
 
-Core quantities, error 12 months ahead | 4.6%  | –  | 20261115: 4.6%  | the core quantities forecast a year past the last observed month
+Core quantities, error 12 months ahead | 4.6%  | –  | the core quantities forecast a year past the last observed month
 
-Coverage of the 90% bands | 92%  | –  | 20261115: 92%  | share of nowcast values with the truth inside the published 90% band; about 90% is right, much less is overconfident
+Coverage of the 90% bands | 92%  | –  | share of nowcast values with the truth inside the published 90% band; about 90% is right, much less is overconfident
 
-Failures | 10 of 179  | –  | 20261115: 10 of 179  | sectors and quantities above the failure line, at the nowcast
+Failures | 10 of 179  | –  | sectors and quantities above the failure line, at the nowcast
 
 ## By sector
 

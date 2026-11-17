@@ -3,11 +3,10 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Scorecard · Model 2</title>
-<link rel="stylesheet" href="assets/site.css?v=422f9d2-1794945854">
+<link rel="stylesheet" href="assets/site.css?v=ffa8a02-1794946322">
 <style>
   main > p, main > ul { max-width: 90ch; }
   .score td.v { font-size: 17px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .score td.w { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 13px; }
   .score td.what { max-width: 52ch; }
   .grid td.n, .grid th.n { white-space: nowrap; }
   .grid td .k { color: var(--muted); font-size: 12px; margin-left: 4px; }
@@ -21,15 +20,10 @@
   <div id="truthonly">
   <p class="sub">How close the forecasts came to the truth, on every world of the bundle. The backtest runs the model at
   each as-of date using only what was published by then and scores every sector total against the world's truth. Each
-  number below is computed for each world, then averaged over the worlds; the range and each world's own value show
-  whether a result holds across worlds or comes from one world's random draws. Every sector and quantity counts
+  number below is computed for each world, then averaged over the worlds; the range shows whether a result holds
+  across worlds or comes from one world's random draws. Every sector and quantity counts
   equally.</p>
   <ul class="plain sub">
-    <li>Errors are the typical distance between the forecast's median and the truth, at the nowcast (the as-of date's
-      own months) unless the row says otherwise, averaged over the four as-of dates. Most quantities are scored as a
-      percentage error; utilization and load factor in percentage points; quantities often near zero (finished
-      inventory, overdue orders, phantom orders, lost demand) in months of the sector's output, since a percentage of a
-      number near zero says little.</li>
     <li>A sector and quantity <b>fails</b> when its error is above 25% (or 25 points), or above one month of output for
       the quantities scored in months.</li>
   </ul>
@@ -48,7 +42,7 @@
   <div class="tablewrap"><table id="cells" class="grid"></table></div>
   </div>
 </main>
-<script src="assets/site.js?v=422f9d2-1794945854"></script>
+<script src="assets/site.js?v=ffa8a02-1794946322"></script>
 <script>
 // quantity groups: one unit each, so their errors can be averaged
 const GROUPS = [
@@ -112,12 +106,11 @@ const fmt = (v, g, q) => v == null ? "–" : g === "months" ? `${v.toFixed(2)} m
         per.map((p) => p.fails), (v) => (v == null ? "–" : `${Math.round(v)} of ${per[0].cells}`)],
     ];
     document.getElementById("score").innerHTML = `<tr><th>measure</th><th class="n">bundle mean</th><th class="n">range over worlds</th>
-      <th>each world${N > 1 ? " (by seed)" : ""}</th><th>what it measures</th></tr>` +
+      <th>what it measures</th></tr>` +
       rows.map(([name, what, vals, f]) => {
         const v = vals.filter((x) => x != null), lo = Math.min(...v), hi = Math.max(...v);
         return `<tr><td><b>${M2.esc(name)}</b></td><td class="n v">${f(mean(vals))}</td>
           <td class="n">${N > 1 && v.length ? `${f(lo)} to ${f(hi)}` : "–"}</td>
-          <td class="w">${vals.map((x, i) => `${M2.esc(label(scored[i]))}: ${f(x)}`).join("<br>")}</td>
           <td class="what muted">${M2.esc(what)}</td></tr>`;
       }).join("");
 
