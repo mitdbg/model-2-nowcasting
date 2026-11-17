@@ -1,8 +1,10 @@
 <!-- World Inputs › Entities, for forecast 976debf3-7f2a-5e1a-aec0-e24ae8ea99d3; the page: https://mitdbg.github.io/model-2-nowcasting/world_entities.html?set=976debf3-7f2a-5e1a-aec0-e24ae8ea99d3 -->
 
+World shown World seed 20261112 (the bundle's only world)
+
 # Entities
 
-The world has 275 entities in 14 sectors. 115 tracked entities are specific sites or networks, run by 75 companies, each with observations of its own. 160 representative entities stand for the other 8,233 establishments, one for each sector, size class and region, sized by the Census establishment counts.
+This world has 275 entities in 14 sectors. 115 tracked entities are specific sites or networks, run by 75 companies, each with observations of its own. 160 representative entities stand for the other 8,233 establishments, one for each sector, size class and region, sized by the Census establishment counts.
 
 Every entity By sector Groupings
 

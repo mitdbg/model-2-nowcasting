@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>How It Works · Model 2</title>
-<link rel="stylesheet" href="assets/site.css?v=9d8600c-1794896387">
+<link rel="stylesheet" href="assets/site.css?v=f1f4148-1794919189">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Code+Pro:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800&display=swap">
-<link rel="stylesheet" href="assets/datamodel.css?v=9d8600c-1794896387">
+<link rel="stylesheet" href="assets/datamodel.css?v=f1f4148-1794919189">
 <style>
   .hiw-fig { margin: 16px 0 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px; overflow-x: auto; }
   .hiw-fig svg { display: block; width: 100%; min-width: 760px; height: auto; }
@@ -74,7 +74,7 @@
       </a>
       <a href="datamodel.html?t=drivers">
         <rect x="32" y="240" width="218" height="68" rx="6" fill="var(--dm-3)" fill-opacity="0.2" stroke="var(--dm-3)"/>
-        <text x="44" y="262" class="n">Sector input bundle</text>
+        <text x="44" y="262" class="n">Sector input delivery</text>
         <text x="44" y="280" class="q">drivers and statistics as</text>
         <text x="44" y="296" class="q">draws, one per as-of date</text>
       </a>
@@ -92,7 +92,7 @@
       <rect x="306" y="96" width="340" height="72" rx="6" fill="var(--chip)" stroke="var(--muted)" stroke-opacity="0.6"/>
       <text x="318" y="118" class="n">Gather what was known at T</text>
       <text x="318" y="138" class="q">registry as recorded by T, observations</text>
-      <text x="318" y="154" class="q">published by T, the input bundle for T</text>
+      <text x="318" y="154" class="q">published by T, the input delivery for T</text>
       <a href="datamodel.html?t=fit_runs">
         <rect x="306" y="192" width="340" height="72" rx="6" fill="var(--dm-4)" fill-opacity="0.2" stroke="var(--dm-4)"/>
         <text x="318" y="214" class="n">Parameter fitting</text>
@@ -187,7 +187,7 @@
     planned, built, go idle or close, and a company can sell a plant. Each run uses the entities active on its date,
     as the registry knew them then.</li>
     <li><b>Observations</b> are published readings about an entity or a grouping, each with the date it became public.</li>
-    <li><b>The sector input bundle</b> arrives once per as-of date with each sector's drivers (demand, price, input
+    <li><b>The sector input delivery</b> arrives once per as-of date with each sector's drivers (demand, price, input
     cost) and statistics, as ensemble draws.</li>
   </ul>
   <p>A <b>synthetic world</b> is generated from known parameters, so it comes with the true values of every hidden
@@ -197,7 +197,7 @@
   <h2>2 · Run the world forward</h2>
   <p>A run is self-contained and uses only what was known at its date T:</p>
   <ol>
-    <li><b>Gather</b> the registry as recorded by T, the observations published by T, and the input bundle for T.</li>
+    <li><b>Gather</b> the registry as recorded by T, the observations published by T, and the input delivery for T.</li>
     <li><b>Fit the parameters</b> from the history up to T, once a quarter for each sector, starting from the
     priors and settings in the configuration. Later runs in the same
     quarter reuse those parameters.</li>
@@ -236,7 +236,7 @@
   it had run then, so its errors show how the model would have done in real time. The scores cover the last 12 months
   of history, the nowcast, and forecasts 3, 6 and 12 months ahead.</p>
 </main>
-<script src="assets/site.js?v=9d8600c-1794896387"></script>
+<script src="assets/site.js?v=f1f4148-1794919189"></script>
 <script>
 (async () => {
   try {

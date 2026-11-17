@@ -4,17 +4,17 @@
 
 Model 2 describes every entity by a handful of hidden states, such as its capacity, its order book and its unit cost, that change month by month. One set of equations moves them forward a month at a time.
 
-Drivers from the sector input bundle push them; parameters set how strongly, and how fast each state returns to normal; and random shocks each month account for the events the equations don't describe, such as an outage, a strike or a surprise order. Observation equations say what each kind of observation would read, given the states.
+Drivers from the sector input delivery push them; parameters set how strongly, and how fast each state returns to normal; and random shocks each month account for the events the equations don't describe, such as an outage, a strike or a surprise order. Observation equations say what each kind of observation would read, given the states.
 
 Every equation is per entity, and t is the month. Sector quantities (the drivers, real demand D, sector capacity K) are the same for every entity in a sector. Not every equation applies to every sector: each sector's template switches parts on or off. Equations marked with template names apply only to those templates; unmarked ones apply to all. The tags (L1, L2, …) number the equations; the rest of the site uses them too.
 
-Every symbol in an equation is colored by where it comes from, and the rows under the equation describe each one, using the same colors: Computed here what the equation works out; Learned by the fit a parameter the fit estimates from past observations, per entity or per sector; From the sector input bundle a driver, taken as given; From other equations last month's level, or a value another equation worked out this month; Fixed, not learned a constant set from the data or known in advance; Random shock drawn afresh each month.
+Every symbol in an equation is colored by where it comes from, and the rows under the equation describe each one, using the same colors: Computed here what the equation works out; Learned by the fit a parameter the fit estimates from past observations, per entity or per sector; From the sector input delivery a driver, taken as given; From other equations last month's level, or a value another equation worked out this month; Fixed, not learned a constant set from the data or known in advance; Random shock drawn afresh each month.
 
 ## One month at a glance
 
 a value from this month last month's level, carried forward
 
-driver, from the sector input bundle hidden state, or a quantity the model works out from the states
+driver, from the sector input delivery hidden state, or a quantity the model works out from the states
 
 The chain for a factory that makes goods to order; hover over (or tap) a box for its equation. Demand brings orders into the order book; capacity and utilization set output; orders falling due are shipped from output and stock, and what cannot be shipped stays in the book as overdue. Solid arrows carry this month's values, so they never point left; dashed arrows carry last month's, so they never point right; each state also builds on its own last value, which the popups list. Observations are not drawn: after this step, the filter corrects the states with the month's observations (see How the forecast is made).
 
@@ -70,9 +70,9 @@ A driver is a sector-wide series that pushes the entities but that Model 2 does 
 
 - input cost π: the cost of what the sector buys to make its output
 
-These three series, and the official sector statistics of L16, are the only values the equations take from the bundle. Nothing about a driver is learned; what the fit learns is how strongly each entity responds to it, for example βO for demand (L6) and w for input cost (L4).
+These three series, and the official sector statistics of L16, are the only values the equations take from the sector input delivery. Nothing about a driver is learned; what the fit learns is how strongly each entity responds to it, for example βO for demand (L6) and w for input cost (L4).
 
-They arrive in the sector input bundle, month by month: history up to the last month published, then a nowcast and a forecast. Nobody knows those later months exactly, and even history is sometimes revised, so each driver comes not as one series but as 100 draws. A draw is one complete, plausible path of the series over every month, consistent with what was known on the as-of date. The draws agree where the series is well known and fan out where it is not, so their spread is the driver's uncertainty. Draw number j of each driver comes from the same scenario, so demand, price and input cost move together as they would in one possible economy.
+They arrive in the sector input delivery, month by month: history up to the last month published, then a nowcast and a forecast. Nobody knows those later months exactly, and even history is sometimes revised, so each driver comes not as one series but as 100 draws. A draw is one complete, plausible path of the series over every month, consistent with what was known on the as-of date. The draws agree where the series is well known and fan out where it is not, so their spread is the driver's uncertainty. Draw number j of each driver comes from the same scenario, so demand, price and input cost move together as they would in one possible economy.
 
 The forecast runs as many copies of the world as there are draws, and copy j uses draw j. A copy fed a weak-demand draw sees fewer orders than one fed a strong-demand draw, so the drivers' uncertainty widens the forecast's 90% band along with the model's own shocks.
 
@@ -116,7 +116,7 @@ xt = Dt − log Kt−1
 
 D is real sector demand: a demand series in dollars rises with prices as well as volume, so it is divided by the price driver. x is demand pressure, demand against the sector's own capacity K (the sum over its entities, from last month).
 
-Computed hereDt real sector demand; xt demand pressureFrom the sector input bundledt the demand driver; prt the price driverFrom other equationsKt−1 last month's sector capacity, the sum of its entities' capacity (L15)
+Computed hereDt real sector demand; xt demand pressureFrom the sector input deliverydt the demand driver; prt the price driverFrom other equationsKt−1 last month's sector capacity, the sum of its entities' capacity (L15)
 
 ### Capacity drifts, with rare jumps L1most templates
 
@@ -141,7 +141,7 @@ ct = ct−1 + w Δπt + νt
 
 A change in the sector's input-cost driver passes through at rate w, roughly the input's share of cost. ν covers energy, labor and the entity's other cost changes.
 
-Computed herect unit cost (log)Learned by the fitw pass-through of input cost, per entityFrom the sector input bundleΔπt this month's change in the input-cost driverFrom other equationsct−1 last month's unit cost (L4)Random shockνt the Greek letter nu: energy, labor and other cost changes; its typical size is learned per sector
+Computed herect unit cost (log)Learned by the fitw pass-through of input cost, per entityFrom the sector input deliveryΔπt this month's change in the input-cost driverFrom other equationsct−1 last month's unit cost (L4)Random shockνt the Greek letter nu: energy, labor and other cost changes; its typical size is learned per sector
 
 ### Markup returns to normal, higher when tight L5
 
@@ -161,7 +161,7 @@ Genuine orders start from the balanced level Obal (the entity's normal output at
 
 The share term is a change from the original design, which let orders ignore the entity's own capacity: an entity that lost capacity for good then kept receiving the same orders, and its order book grew without bound.
 
-Computed hereOgent genuine orders; Ot orders placed, genuine plus phantomLearned by the fitõ offset from balance, per entity; βO response to real demand, per entity; k0 starting capacity, per entity; ω order inflation, per sector; Obal normal orders: normal output at the starting capacity, worked out from the entity's learned parameters; LTnorm normal lead time, worked out from the entity's learned parametersFrom other equationsDt real demand, from the bundle's drivers (L2); kt−1 last month's capacity (L1); Kt−1 last month's sector capacity (L15); LTt−1 last month's lead time (L13)Fixed, not learnedD̄ average real demand over the fit window's first two years; K0 sector capacity at the window startRandom shockεOt order surprise, mean 1; its typical size is learned per sector
+Computed hereOgent genuine orders; Ot orders placed, genuine plus phantomLearned by the fitõ offset from balance, per entity; βO response to real demand, per entity; k0 starting capacity, per entity; ω order inflation, per sector; Obal normal orders: normal output at the starting capacity, worked out from the entity's learned parameters; LTnorm normal lead time, worked out from the entity's learned parametersFrom other equationsDt real demand, from the delivery's drivers (L2); kt−1 last month's capacity (L1); Kt−1 last month's sector capacity (L15); LTt−1 last month's lead time (L13)Fixed, not learnedD̄ average real demand over the fit window's first two years; K0 sector capacity at the window startRandom shockεOt order surprise, mean 1; its typical size is learned per sector
 
 ### Cancellations L7where order inflation is on
 
@@ -388,9 +388,9 @@ Computed hereXtotalt a sector totalFrom other equationsXt the same quantity for 
 
 ### Checked against official sector series L16
 
-The sector input bundle also carries sector statistics, such as industrial production. Where one measures a sector total, the filter treats it as one more observation of that total, with noise equal to the statistic's own uncertainty plus 1%. It corrects states, not parameters, and it mostly moves the representative entities, which have the least other data.
+The sector input delivery also carries sector statistics, such as industrial production. Where one measures a sector total, the filter treats it as one more observation of that total, with noise equal to the statistic's own uncertainty plus 1%. It corrects states, not parameters, and it mostly moves the representative entities, which have the least other data.
 
-From the sector input bundlethe official sector statisticsFrom other equationsthe sector totals (L15)
+From the sector input deliverythe official sector statisticsFrom other equationsthe sector totals (L15)
 
 ## How the forecast is made
 

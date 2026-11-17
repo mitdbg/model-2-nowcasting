@@ -294,3 +294,9 @@ svg.chart polyline[stroke="var(--accent)"] { stroke: var(--fg); }
 .fb-gsi { min-height: 36px; }
 .fb-done { margin: 4px 0; color: var(--good); font-weight: 600; }
 @media print { .fb-pen, .fb-cell, .fb-pop { display: none !important; } }
+
+/* World bundles: which world of the bundle a page about one world shows */
+.worldpick { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 10px; margin: 0 0 12px; font-size: 14px; }
+.worldpick .k { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
+.worldpick select { font: inherit; }
+tr.on td { background: var(--band); }

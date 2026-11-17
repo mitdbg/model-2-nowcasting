@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital@0;1&display=swap">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Code+Pro:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800&display=swap">
-<link rel="stylesheet" href="assets/site.css?v=9d8600c-1794896387">
+<link rel="stylesheet" href="assets/site.css?v=f1f4148-1794919189">
 <style>
   main > p, main > ul, main > ol { max-width: 78ch; }
   main > .eqcard, main > figure, main > .tablewrap { max-width: 1000px; }
@@ -79,7 +79,7 @@
   <h1>Model Structure</h1>
   <p class="sub">Model 2 describes every entity by a handful of <b>hidden states</b>, such as its capacity, its order
   book and its unit cost, that change month by month. One set of equations moves them forward a month at a time.</p>
-  <p class="sub"><b>Drivers</b> from the sector input bundle push them; <b>parameters</b> set how strongly, and how fast each state
+  <p class="sub"><b>Drivers</b> from the sector input delivery push them; <b>parameters</b> set how strongly, and how fast each state
   returns to normal; and random <b>shocks</b> each month account for the events the equations don't describe, such as an outage, a strike or a surprise order. <b>Observation equations</b> say what each kind of
   observation would read, given the states.</p>
   <p class="sub">Every equation is per entity, and <span class="sym">t</span> is the month. Sector quantities (the
@@ -91,7 +91,7 @@
   describe each one, using the same colors:
   <span class="src-inline"><span class="k c-out">Computed here</span> what the equation works out;
   <span class="k c-lrn">Learned by the fit</span> a parameter the fit estimates from past observations, per entity or per
-  sector; <span class="k c-bnd">From the sector input bundle</span> a driver, taken as given;
+  sector; <span class="k c-bnd">From the sector input delivery</span> a driver, taken as given;
   <span class="k c-oth">From other equations</span> last month's level, or a value another equation worked out this
   month; <span class="k c-fix">Fixed, not learned</span> a constant set from the data or known in advance;
   <span class="k c-shk">Random shock</span> drawn afresh each month.</span></p>
@@ -110,7 +110,7 @@
         a value from this month</span><span><svg width="34" height="10" aria-hidden="true"><line x1="0" y1="5" x2="34" y2="5" style="stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 4 3"/></svg>
         last month's level, carried forward</span></p>
       <p class="key"><span><svg width="28" height="16" aria-hidden="true"><rect x="1" y="1" width="26" height="14" rx="3" style="fill: var(--band2); stroke: var(--accent)"/></svg>
-        driver, from the sector input bundle</span><span><svg width="28" height="16" aria-hidden="true"><rect x="1" y="1" width="26" height="14" rx="3" style="fill: var(--panel); stroke: var(--line)"/></svg>
+        driver, from the sector input delivery</span><span><svg width="28" height="16" aria-hidden="true"><rect x="1" y="1" width="26" height="14" rx="3" style="fill: var(--panel); stroke: var(--line)"/></svg>
         hidden state, or a quantity the model works out from the states</span></p>
       <p>The chain for a factory that makes goods to order; hover over (or tap) a box for its equation. Demand brings
       orders into the order book; capacity and utilization set output; orders falling due are shipped from output and
@@ -163,9 +163,9 @@
     <li>input cost <span class="sym">π</span>: the cost of what the sector buys to make its output</li>
   </ul>
   <p>These three series, and the official sector statistics of L16, are the only values the equations take from the
-  bundle. Nothing about a driver is learned; what the fit learns is how strongly each entity responds to it, for
+  sector input delivery. Nothing about a driver is learned; what the fit learns is how strongly each entity responds to it, for
   example β<sup>O</sup> for demand (L6) and <span class="sym">w</span> for input cost (L4).</p>
-  <p>They arrive in the <a href="world_bundle.html">sector input bundle</a>, month by month: history up to the last
+  <p>They arrive in the <a href="world_bundle.html">sector input delivery</a>, month by month: history up to the last
   month published, then a nowcast and a forecast. Nobody knows those later months exactly, and even history is
   sometimes revised, so each driver comes not as one series but as 100 <b>draws</b>. A draw is one complete, plausible
   path of the series over every month, consistent with what was known on the as-of date. The draws agree where the
@@ -212,7 +212,7 @@
     <p><span class="sym">D</span> is real sector demand: a demand series in dollars rises with prices as well as volume, so
     it is divided by the price driver. <span class="sym">x</span> is demand pressure, demand against the sector's own
     capacity <span class="sym">K</span> (the sum over its entities, from last month).</p>
-    <div class="src"><span class="k c-out">Computed here</span><span><span class="c-out">D<sub>t</sub></span> real sector demand; <span class="c-out">x<sub>t</sub></span> demand pressure</span><span class="k c-bnd">From the sector input bundle</span><span><span class="c-bnd">d<sub>t</sub></span> the demand driver; <span class="c-bnd">pr<sub>t</sub></span> the price driver</span><span class="k c-oth">From other equations</span><span><span class="c-oth">K<sub>t−1</sub></span> last month's sector capacity, the sum of its entities' capacity (L15)</span></div>
+    <div class="src"><span class="k c-out">Computed here</span><span><span class="c-out">D<sub>t</sub></span> real sector demand; <span class="c-out">x<sub>t</sub></span> demand pressure</span><span class="k c-bnd">From the sector input delivery</span><span><span class="c-bnd">d<sub>t</sub></span> the demand driver; <span class="c-bnd">pr<sub>t</sub></span> the price driver</span><span class="k c-oth">From other equations</span><span><span class="c-oth">K<sub>t−1</sub></span> last month's sector capacity, the sum of its entities' capacity (L15)</span></div>
   </div>
   <div class="eqcard"><h3>Capacity drifts, with rare jumps <span class="tag">L1</span><span class="when">most templates</span></h3>
     <div class="eq"><span class="c-out">k<sub>t</sub></span> = <span class="c-oth">k<sub>t−1</sub></span> + <span class="c-lrn">δ</span> + <span class="c-shk">J<sub>t</sub></span></div>
@@ -233,7 +233,7 @@
     <div class="eq"><span class="c-out">c<sub>t</sub></span> = <span class="c-oth">c<sub>t−1</sub></span> + <span class="c-lrn">w</span> Δ<span class="c-bnd">π<sub>t</sub></span> + <span class="c-shk">ν<sub>t</sub></span></div>
     <p>A change in the sector's input-cost driver passes through at rate <span class="sym">w</span>, roughly the input's
     share of cost. ν covers energy, labor and the entity's other cost changes.</p>
-    <div class="src"><span class="k c-out">Computed here</span><span><span class="c-out">c<sub>t</sub></span> unit cost (log)</span><span class="k c-lrn">Learned by the fit</span><span><span class="c-lrn">w</span> pass-through of input cost, per entity</span><span class="k c-bnd">From the sector input bundle</span><span><span class="c-bnd">Δπ<sub>t</sub></span> this month's change in the input-cost driver</span><span class="k c-oth">From other equations</span><span><span class="c-oth">c<sub>t−1</sub></span> last month's unit cost (L4)</span><span class="k c-shk">Random shock</span><span><span class="c-shk">ν<sub>t</sub></span> the Greek letter nu: energy, labor and other cost changes; its typical size is learned per sector</span></div>
+    <div class="src"><span class="k c-out">Computed here</span><span><span class="c-out">c<sub>t</sub></span> unit cost (log)</span><span class="k c-lrn">Learned by the fit</span><span><span class="c-lrn">w</span> pass-through of input cost, per entity</span><span class="k c-bnd">From the sector input delivery</span><span><span class="c-bnd">Δπ<sub>t</sub></span> this month's change in the input-cost driver</span><span class="k c-oth">From other equations</span><span><span class="c-oth">c<sub>t−1</sub></span> last month's unit cost (L4)</span><span class="k c-shk">Random shock</span><span><span class="c-shk">ν<sub>t</sub></span> the Greek letter nu: energy, labor and other cost changes; its typical size is learned per sector</span></div>
   </div>
   <div class="eqcard"><h3>Markup returns to normal, higher when tight <span class="tag">L5</span></h3>
     <div class="eq"><span class="c-out">m<sub>t</sub></span> = <span class="c-lrn">μ</span> + <span class="c-lrn">φ<sub>m</sub></span> (<span class="c-oth">m<sub>t−1</sub></span> − <span class="c-lrn">μ</span>) + <span class="c-lrn">γ</span> <span class="c-oth">h<sub>t−1</sub></span> + <span class="c-shk">ζ<sub>t</sub></span><br>
@@ -254,7 +254,7 @@
     <p>The share term is a change from the
     original design, which let orders ignore the entity's own capacity: an entity that lost capacity for good then kept
     receiving the same orders, and its order book grew without bound.</p>
-    <div class="src"><span class="k c-out">Computed here</span><span><span class="c-out">O<sup>gen</sup><sub>t</sub></span> genuine orders; <span class="c-out">O<sub>t</sub></span> orders placed, genuine plus phantom</span><span class="k c-lrn">Learned by the fit</span><span><span class="c-lrn">õ</span> offset from balance, per entity; <span class="c-lrn">β<sup>O</sup></span> response to real demand, per entity; <span class="c-lrn">k<sub>0</sub></span> starting capacity, per entity; <span class="c-lrn">ω</span> order inflation, per sector; <span class="c-lrn">O<sup>bal</sup></span> normal orders: normal output at the starting capacity, worked out from the entity's learned parameters; <span class="c-lrn">LT<sup>norm</sup></span> normal lead time, worked out from the entity's learned parameters</span><span class="k c-oth">From other equations</span><span><span class="c-oth">D<sub>t</sub></span> real demand, from the bundle's drivers (L2); <span class="c-oth">k<sub>t−1</sub></span> last month's capacity (L1); <span class="c-oth">K<sub>t−1</sub></span> last month's sector capacity (L15); <span class="c-oth">LT<sub>t−1</sub></span> last month's lead time (L13)</span><span class="k c-fix">Fixed, not learned</span><span><span class="c-fix">D̄</span> average real demand over the fit window's first two years; <span class="c-fix">K<sub>0</sub></span> sector capacity at the window start</span><span class="k c-shk">Random shock</span><span><span class="c-shk">ε<sup>O</sup><sub>t</sub></span> order surprise, mean 1; its typical size is learned per sector</span></div>
+    <div class="src"><span class="k c-out">Computed here</span><span><span class="c-out">O<sup>gen</sup><sub>t</sub></span> genuine orders; <span class="c-out">O<sub>t</sub></span> orders placed, genuine plus phantom</span><span class="k c-lrn">Learned by the fit</span><span><span class="c-lrn">õ</span> offset from balance, per entity; <span class="c-lrn">β<sup>O</sup></span> response to real demand, per entity; <span class="c-lrn">k<sub>0</sub></span> starting capacity, per entity; <span class="c-lrn">ω</span> order inflation, per sector; <span class="c-lrn">O<sup>bal</sup></span> normal orders: normal output at the starting capacity, worked out from the entity's learned parameters; <span class="c-lrn">LT<sup>norm</sup></span> normal lead time, worked out from the entity's learned parameters</span><span class="k c-oth">From other equations</span><span><span class="c-oth">D<sub>t</sub></span> real demand, from the delivery's drivers (L2); <span class="c-oth">k<sub>t−1</sub></span> last month's capacity (L1); <span class="c-oth">K<sub>t−1</sub></span> last month's sector capacity (L15); <span class="c-oth">LT<sub>t−1</sub></span> last month's lead time (L13)</span><span class="k c-fix">Fixed, not learned</span><span><span class="c-fix">D̄</span> average real demand over the fit window's first two years; <span class="c-fix">K<sub>0</sub></span> sector capacity at the window start</span><span class="k c-shk">Random shock</span><span><span class="c-shk">ε<sup>O</sup><sub>t</sub></span> order surprise, mean 1; its typical size is learned per sector</span></div>
   </div>
   <div class="eqcard"><h3>Cancellations <span class="tag">L7</span><span class="when">where order inflation is on</span></h3>
     <div class="eq"><span class="c-out">X<sub>t</sub></span> = min( <span class="c-oth">B<sup>sched</sup><sub>t−1</sub></span> (1 − 1/<span class="c-lrn">ℓ</span>),&nbsp; <span class="c-oth">P<sub>t−1</sub></span> · min(1, <span class="c-lrn">χ</span> · max(0, log(<span class="c-oth">LT<sub>t−2</sub></span> / <span class="c-oth">LT<sub>t−1</sub></span>))) )</div>
@@ -383,11 +383,11 @@
     <div class="src"><span class="k c-out">Computed here</span><span><span class="c-out">X<sup>total</sup><sub>t</sub></span> a sector total</span><span class="k c-oth">From other equations</span><span><span class="c-oth">X<sub>t</sub></span> the same quantity for each of the sector's entities (L1–L13, L17–L22)</span></div>
   </div>
   <div class="eqcard"><h3>Checked against official sector series <span class="tag">L16</span></h3>
-    <p>The sector input bundle also carries sector statistics, such as industrial production. Where one measures a sector
+    <p>The sector input delivery also carries sector statistics, such as industrial production. Where one measures a sector
     total, the filter treats it as one more observation of that total, with noise equal to the statistic's own
     uncertainty plus 1%. It corrects states, not parameters, and it mostly moves the representative entities, which have
     the least other data.</p>
-    <div class="src"><span class="k c-bnd">From the sector input bundle</span><span>the official sector statistics</span><span class="k c-oth">From other equations</span><span>the sector totals (L15)</span></div>
+    <div class="src"><span class="k c-bnd">From the sector input delivery</span><span>the official sector statistics</span><span class="k c-oth">From other equations</span><span>the sector totals (L15)</span></div>
   </div>
 
   <h2 id="filter">How the forecast is made</h2>
@@ -407,7 +407,7 @@
   </ol>
 </main>
 <div class="eqtip" id="eqtip" hidden></div>
-<script src="assets/site.js?v=9d8600c-1794896387"></script>
+<script src="assets/site.js?v=f1f4148-1794919189"></script>
 <script>
 // One month's chain of equations, drawn for a template's modules (src/firm_model/templates.py):
 // pipeline (capacity built through L19–L22), occ (output is capacity in use, L18), stock (finished stock),

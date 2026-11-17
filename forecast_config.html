@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Model Configuration · Model 2</title>
-<link rel="stylesheet" href="assets/site.css?v=9d8600c-1794896387">
+<link rel="stylesheet" href="assets/site.css?v=f1f4148-1794919189">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Code+Pro:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800&display=swap">
 <style>
@@ -35,6 +35,8 @@
   are computed once from the data at the start of the fit window and then held fixed.</p>
   <p class="sub">The configuration also includes starting ranges for parameters that will be learned during model
   fitting.</p>
+  <p class="sub">The configuration is the same for every world of the bundle. The values computed from the data are each
+  world's own, so this page shows one world at a time.</p>
 
   <h2>Fixed values in the equations</h2>
   <p>The symbols marked "Fixed, not learned" on Model Structure, sector by sector. Here D̄ is shown as a demand index (January 2010 = 100), K₀ in the sector's own
@@ -84,7 +86,7 @@
   representative entities that stand for untracked establishments.</p>
   <div class="cmp tablewrap"><table id="estab"></table></div>
 </main>
-<script src="assets/site.js?v=9d8600c-1794896387"></script>
+<script src="assets/site.js?v=f1f4148-1794919189"></script>
 <script>
 (async () => {
   try {
@@ -172,7 +174,7 @@
       row("Orders follow capacity share", r.order_share === "capacity" ? `yes (L6). <span class="muted">Without it, an entity's orders ignore its own capacity, so an entity that loses capacity for good keeps its orders and its order book grows without bound.</span>` : "no: L6 as first written"),
       row("Starting stocks", `each copy starts its order book, input inventory and project pipeline spread by ${r.initial_stock_sd} (log) around the fitted start`),
       row("Order level in the filter", `moves with a spread of ${r.order_level_sd} (log) where a sector lets the filter correct it`),
-      row("Sector input bundle", `at most ${r.staleness_days} days older than the as-of date; an older one stops the run`),
+      row("Sector input delivery", `at most ${r.staleness_days} days older than the as-of date; an older one stops the run`),
       row("Band widening", bi ? `published sector bands widened ${bi.smoothed}× in history, ${bi.nowcast}× in the nowcast and ${bi.forecast}× in the forecast. <span class="muted">The model's own 90% bands held too little of the truth in a backtest on this world; these factors bring the published bands to about 90% (see <a href="accuracy.html">Against ground truth</a>).</span>` : "none"),
       row("Order book in the filter", secs.filter((s) => s.filter_order_book.length).map((s) => `${M2.esc(short[s.code])} (${s.filter_order_book.join(", ")})`).join("; ") || "no sector"),
     ].join("");
@@ -215,8 +217,8 @@
         .map(([k, v]) => `<tr><td>${M2.esc(M2.OBS[k]?.[0] || k)}</td><td class="n">${v}</td></tr>`).join("") +
       `<tr><td colspan="2" class="muted">Satellite yes/no readings have no noise size: they are a probability, set by each sensor's curve.</td></tr>`;
     document.getElementById("recon").innerHTML = `<tr><th>sector</th>
-      <th>statistic${M2.info("The official series, by its code in the sector input bundle.")}</th>
-      <th class="n">floor${M2.info("Extra uncertainty, as a fraction of the statistic's value, combined with the uncertainty the bundle gives it, so the model never treats the statistic as exact. A larger floor makes the model follow it less closely.")}</th>
+      <th>statistic${M2.info("The official series, by its code in the sector input delivery.")}</th>
+      <th class="n">floor${M2.info("Extra uncertainty, as a fraction of the statistic's value, combined with the uncertainty the delivery gives it, so the model never treats the statistic as exact. A larger floor makes the model follow it less closely.")}</th>
       <th class="n">widened${M2.info("How much the statistic's uncertainty is multiplied when it already includes tracked companies' own reports, so the same information is not counted twice.")}</th></tr>` +
       secs.flatMap((s) => s.reconciliation.map((x) => `<tr><td>${M2.esc(short[s.code])}</td><td class="mono">${M2.esc(x.series)}</td>
         <td class="n">${x.floor != null ? M2.pct(x.floor, 0) : "–"}</td><td class="n">${x.contains_tracked ? `${x.inflate}×` : "–"}</td></tr>`)).join("");

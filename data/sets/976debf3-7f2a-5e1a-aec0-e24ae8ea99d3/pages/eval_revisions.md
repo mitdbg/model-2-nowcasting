@@ -1,5 +1,9 @@
 <!-- Evaluation › Forecasts against later estimates, for forecast 976debf3-7f2a-5e1a-aec0-e24ae8ea99d3; the page: https://mitdbg.github.io/model-2-nowcasting/eval_revisions.html?set=976debf3-7f2a-5e1a-aec0-e24ae8ea99d3 -->
 
+World shown World seed 20261112 (the bundle's only world)
+
+In progress. This tab is being rewritten to describe every world of the bundle together. For now it describes one world, chosen above.
+
 # Forecasts against later estimates
 
 A forecast can be checked without knowing the truth: wait, and see what the model says about the same months once more data has come in. At each as-of date of the backtest the model forecast a year ahead; a year later the next run estimated those months again, with a year more observations. That later estimate is not the truth, only a better-informed guess, but a good forecast should land close to it.

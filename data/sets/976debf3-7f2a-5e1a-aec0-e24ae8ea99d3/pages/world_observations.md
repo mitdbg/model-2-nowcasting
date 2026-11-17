@@ -1,8 +1,10 @@
 <!-- World Inputs › Observations, for forecast 976debf3-7f2a-5e1a-aec0-e24ae8ea99d3; the page: https://mitdbg.github.io/model-2-nowcasting/world_observations.html?set=976debf3-7f2a-5e1a-aec0-e24ae8ea99d3 -->
 
+World shown World seed 20261112 (the bundle's only world)
+
 # Observations
 
-The world publishes 42,769 observations of 26 kinds from 35 sources, from 2010-02 to 2026-11. Each is one reading about an entity or a grouping of entities, covering a month or a quarter, and published some time after. A forecast run sees only observations published on or before its date.
+This world publishes 42,769 observations of 26 kinds from 35 sources, from 2010-02 to 2026-11. Each is one reading about an entity or a grouping of entities, covering a month or a quarter, and published some time after. A forecast run sees only observations published on or before its date.
 
 Every observation Kinds
 

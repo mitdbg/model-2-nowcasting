@@ -1,5 +1,7 @@
 <!-- Model and Forecast › Forecasts, for forecast 976debf3-7f2a-5e1a-aec0-e24ae8ea99d3; the page: https://mitdbg.github.io/model-2-nowcasting/sector.html?set=976debf3-7f2a-5e1a-aec0-e24ae8ea99d3 -->
 
+World shown World seed 20261112 (the bundle's only world)
+
 Sector  Show  Size  Region  Company
 
 14 sector totals, 275 entities Clear
@@ -105,6 +107,6 @@ Each sector total above is the sum of two parts. Tracked entities are specific m
 
 ## Check against official sector series
 
-The sector input bundle carries official sector statistics, and where one measures a sector total, the filter uses it as one more observation of that total (L16). Each chart compares the bundle's value with Model 2's total, in the statistic's units.
+The sector input delivery carries official sector statistics, and where one measures a sector total, the filter uses it as one more observation of that total (L16). Each chart compares the delivery's value with Model 2's total, in the statistic's units.
 
 ## Entities in this sector

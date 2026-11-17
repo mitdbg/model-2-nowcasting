@@ -3,21 +3,44 @@
 
 const M2 = {};
 
-// The site shows one set at a time: a world and a forecast made on it (data/sets/<id>/), listed in
-// data/sets.json. The set comes from ?set= in the address, else the one last chosen in this
-// browser, else the default; the picker at the top right changes it.
+// The site describes one forecast set at a time: a world bundle (one or more worlds made by the same
+// generator) and one model's forecasts on every world of it, listed in data/sets.json "forecast_sets".
+// Pages about one world (its entities, observations, fitted parameters, forecasts) show one world of the
+// bundle at a time: its built set (data/sets/<id>/, the world and its forecast). The forecast set comes
+// from ?set= in the address (a forecast set, or one world's set, which picks its forecast set too), else
+// the one last chosen in this browser, else the default; the world from ?world= (its seed or id), else the
+// one last chosen, else the bundle's first. The picker at the top right changes the forecast set, the
+// world picker under the sub-tabs the world.
 // data files are always revalidated with the server (an unchanged one comes back "not modified"):
 // Pages lets browsers reuse them for 10 minutes, which would pair a new page with old data
 M2.fetch = (url) => fetch(url, { cache: "no-cache" });
 M2.sets = () => (M2._sets ||= M2.fetch("data/sets.json").then((r) => (r.ok ? r.json() : { default: null, sets: [] })));
-M2.currentSet = async () => {
-  const idx = await M2.sets(), ids = new Set(idx.sets.map((x) => x.id));
-  let saved = null;
-  try { saved = localStorage.getItem("m2.set"); } catch (e) { /* storage blocked: use the default */ }
-  const asked = M2.param("set");
-  if (asked && ids.has(asked)) { try { localStorage.setItem("m2.set", asked); } catch (e) { /* ignore */ } return asked; }
-  return saved && ids.has(saved) ? saved : idx.default;
-};
+M2.store = (k, v) => { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { /* storage blocked */ } return null; };
+// {fs: the forecast set shown (null on data without forecast sets), member: its world shown, set: that world's set id}
+M2.choice = () => (M2._choice ||= M2.sets().then((idx) => {
+  const fsets = idx.forecast_sets || [], ids = new Set(idx.sets.map((x) => x.id));
+  const built = (fs) => fs.members.filter((m) => m.set);
+  const holding = (sid) => fsets.filter((fs) => fs.members.some((m) => m.set === sid)).at(-1);
+  const pickMember = (fs, want) => {
+    const ms = built(fs);
+    return ms.find((m) => want && (String(m.seed) === want || m.world_catalog_id === want || m.set === want)) || ms[0];
+  };
+  const asked = M2.param("set"), world = M2.param("world");
+  let fs = null, member = null;
+  if (asked && fsets.some((x) => x.id === asked)) fs = fsets.find((x) => x.id === asked);
+  else if (asked && ids.has(asked)) { fs = holding(asked); member = fs && pickMember(fs, asked); }
+  if (!fs) fs = fsets.find((x) => x.id === M2.store("m2.fset")) || fsets.find((x) => x.id === idx.default_forecast_set) || fsets.at(-1);
+  if (!fs) {   // data from before forecast sets: one world's set, as the site used to choose it
+    const saved = M2.store("m2.set");
+    const sid = asked && ids.has(asked) ? asked : saved && ids.has(saved) ? saved : idx.default;
+    return { fs: null, member: null, set: sid };
+  }
+  member ||= pickMember(fs, world || M2.store("m2.world"));
+  if (asked || world) { M2.store("m2.fset", fs.id); if (member) M2.store("m2.world", String(member.seed ?? member.world_catalog_id)); }
+  return { fs, member, set: member?.set || idx.default };
+}));
+M2.currentSet = async () => (await M2.choice()).set;
+M2.worldName = (m) => (m.seed != null ? `World seed ${m.seed}` : `World ${(m.world_catalog_id || "").slice(0, 8)}`);
 M2.load = async (path) => {
   const set = await M2.currentSet();
   const url = set ? `data/sets/${encodeURIComponent(set)}/${path}` : `data/${path}`;
@@ -25,6 +48,15 @@ M2.load = async (path) => {
   if (!r.ok) throw new Error(`${url}: ${r.status}`);
   return r.json();
 };
+
+// one world's data file, for pages that show every world of the bundle
+M2.loadFor = async (set, path) => {
+  const r = await M2.fetch(`data/sets/${encodeURIComponent(set)}/${path}`);
+  if (!r.ok) throw new Error(`${set}/${path}: ${r.status}`);
+  return r.json();
+};
+// a link to a page showing one world of the forecast set
+M2.worldHref = (page, fs, m) => `${page}?set=${encodeURIComponent(fs.id)}&world=${encodeURIComponent(String(m.seed ?? m.world_catalog_id))}`;
 
 M2.param = (k) => new URLSearchParams(location.search).get(k);
 
@@ -35,12 +67,17 @@ M2.PAGES = [["index.html", "Overview"], ["world_overview.html", "World Inputs"],
             ["ai.html", "AI Access"]];
 // Pages shown as sub-tabs under a top-level tab, chosen near the top of the page.
 M2.SUBPAGES = {"index.html": [["index.html", "Introduction"], ["howitworks.html", "How It Works"], ["datamodel.html", "Data Model"], ["forecast_model.html", "Model Structure"]],
-  "world_overview.html": [["world_overview.html", "Introduction"], ["world_entities.html", "Entities"], ["world_observations.html", "Observations"], ["world_bundle.html", "Sector input bundle"],
+  "world_overview.html": [["world_overview.html", "Introduction"], ["world_entities.html", "Entities"], ["world_observations.html", "Observations"], ["world_bundle.html", "Sector input delivery"],
                           ["forecast_config.html", "Model Configuration"]],
   "forecast_overview.html": [["forecast_overview.html", "Introduction"], ["forecast_fit.html", "Fitted Parameters"], ["sector.html", "Forecasts"]],
   "next_problems.html": [["next_problems.html", "Current Problems"], ["next_improvements.html", "Possible Improvements"],
                          ["next_testing.html", "Improvement Testing"]],
   "eval_revisions.html": [["eval_revisions.html", "Forecasts against later estimates"], ["eval_observations.html", "Observations against the model"], ["eval_official.html", "Sector totals against official statistics"], ["evaluation.html", "What the data pin down"], ["accuracy.html", "Against ground truth"]]};
+// Pages about one world of the bundle: they show the world picker.
+M2.PER_WORLD = new Set(["world_entities.html", "world_observations.html", "world_bundle.html", "groupings.html",
+                        "forecast_config.html", "forecast_fit.html", "sector.html", "entity.html"]);
+// Tabs being rewritten for world bundles: for now they show one world, and say so.
+M2.IN_PROGRESS = new Set(["eval_revisions.html", "next_problems.html"]);
 // Pages reached through a sub-tab without being one: they light up that sub-tab.
 M2.SUBALIAS = {"entity.html": "sector.html", "groupings.html": "world_entities.html"};
 // The Forecasts sub-tab's search panel, on the left of sector.html and entity.html: facets narrow one list
@@ -118,6 +155,32 @@ M2.GROUPING_KINDS = {
   custom: ["Custom", "entities entered by hand"],
 };
 
+// Under the sub-tabs: on a page about one world, which world of the bundle it shows (a picker when the bundle
+// has several); on a tab still being rewritten for world bundles, a note saying it shows one world for now.
+M2.bundleNotes = (page, ch) => {
+  const top = Object.keys(M2.SUBPAGES).find((t) => M2.SUBPAGES[t].some(([h]) => h === page)) || page;
+  const progress = M2.IN_PROGRESS.has(top), perWorld = M2.PER_WORLD.has(page) || progress;
+  if (!perWorld || !ch.member) return;
+  const ms = ch.fs.members, built = ms.filter((m) => m.set);
+  const key = (m) => String(m.seed ?? m.world_catalog_id);
+  const pick = ms.length === 1
+    ? `<b>${M2.esc(M2.worldName(ch.member))}</b> <span class="muted">(the bundle's only world)</span>`
+    : `<select id="worldsel" aria-label="World shown">${ms.map((m) => `<option value="${M2.esc(key(m))}"${m === ch.member ? " selected" : ""}${m.set ? "" : " disabled"}>${M2.esc(M2.worldName(m))}${m.set ? "" : " (not built)"}</option>`).join("")}</select>
+       <span class="muted">${built.length} of ${ms.length} worlds in this bundle</span>`;
+  const html = `<div class="worldpick"><span class="k">World shown</span> ${pick}</div>` + (progress
+    ? `<p class="note"><b>In progress.</b> This tab is being rewritten to describe every world of the bundle together. For now
+       it describes one world, chosen above.</p>` : "");
+  const sub = document.querySelector("main > .subtabs");
+  if (sub) sub.insertAdjacentHTML("afterend", html); else document.querySelector("main").insertAdjacentHTML("afterbegin", html);
+  document.getElementById("worldsel")?.addEventListener("change", (e) => {
+    M2.store("m2.world", e.target.value);
+    const q = new URLSearchParams(location.search);
+    q.set("set", ch.fs.id);
+    q.set("world", e.target.value);
+    location.search = q.toString();
+  });
+};
+
 M2.header = (meta, page) => {
   const own = page;
   page = M2.SUBALIAS[page] || page;
@@ -142,13 +205,42 @@ M2.header = (meta, page) => {
   };
   pin();
   addEventListener("resize", pin);
-  // which forecast the site shows, top right; clicking lists the others to switch to. The forecast is the one
-  // choice: its world, model and fit follow from it, so they are shown as facts about each forecast
-  Promise.all([M2.sets(), M2.currentSet()]).then(([idx, cur]) => {
+  // which forecast set the site shows, top right; clicking lists the others to switch to. The forecast set is
+  // the one choice: its world bundle and model follow from it, so they are shown as facts about each set
+  Promise.all([M2.sets(), M2.choice()]).then(([idx, ch]) => {
     const wrap = document.getElementById("setpick"), btn = document.getElementById("worldtag"), menu = document.getElementById("setmenu");
-    const c = idx.sets.find((x) => x.id === cur);
-    if (!wrap || !c) return;
     const day = (t) => (t ? t.slice(0, 10) : "");
+    if (ch.fs && wrap) {
+      M2.bundleNotes(page, ch);
+      const n = (fs) => `${fs.size} world${fs.size === 1 ? "" : "s"}`;
+      btn.textContent = `World bundle ${ch.fs.world_bundle.slice(0, 8)} · ${n(ch.fs)} · computed ${day(ch.fs.made_utc)} ▾`;
+      btn.title = `Change the world bundle and forecasts this site shows (now: forecast set ${ch.fs.id}, world bundle ${ch.fs.world_bundle})`;
+      wrap.hidden = false;
+      const fsets = [...idx.forecast_sets].sort((a, b) => (b.made_utc || "").localeCompare(a.made_utc || ""));
+      const seeds = (fs) => fs.members.map((m) => m.seed).filter((s) => s != null);
+      menu.innerHTML = `<div class="sm-head">World bundle and forecasts shown</div>` + fsets.map((x) =>
+        `<div class="sm-row${x.id === ch.fs.id ? " on" : ""}">
+          <button type="button" class="sm-item" data-set="${M2.esc(x.id)}" role="option" aria-selected="${x.id === ch.fs.id}">
+          <span class="sm-w">World bundle <span class="sm-id">${M2.esc(x.world_bundle)}</span>${x.id === idx.default_forecast_set ? " <span class=\"sm-k\">· default</span>" : ""}</span>
+          <span class="sm-c">${n(x)}${x.kind === "synthetic" ? `, synthetic (${M2.esc(x.generator || "")}; seed${seeds(x).length === 1 ? "" : "s"} ${M2.esc(seeds(x).join(", "))})` : ", real"} · computed ${M2.esc(day(x.made_utc))}</span>
+          <span class="sm-f">Forecast set <span title="${M2.esc(x.id)}">${M2.esc(x.id.slice(0, 8))}</span>${x.model_commit ? ` · model ${M2.esc(x.model_commit)}` : ""} · as-of dates ${M2.esc((x.as_of || []).join(", "))}${x.complete ? "" : " · incomplete"}</span></button></div>`).join("");
+      const open = (on) => { menu.hidden = !on; btn.setAttribute("aria-expanded", on); };
+      btn.addEventListener("click", (e) => { e.stopPropagation(); open(menu.hidden); });
+      document.addEventListener("click", (e) => { if (!wrap.contains(e.target)) open(false); });
+      document.addEventListener("keydown", (e) => { if (e.key === "Escape") open(false); });
+      menu.addEventListener("click", (e) => {
+        const it = e.target.closest("button[data-set]");
+        if (!it) return;
+        M2.store("m2.fset", it.dataset.set);
+        const q = new URLSearchParams(location.search);
+        q.set("set", it.dataset.set);
+        q.delete("world");
+        location.search = q.toString();
+      });
+      return;
+    }
+    const cur = ch.set, c = idx.sets.find((x) => x.id === cur);
+    if (!wrap || !c) return;
     btn.textContent = `Forecast ${(c.forecast || c.id).slice(0, 8)} · computed ${day(c.made_utc)} ▾`;
     btn.title = `Change the forecast this site shows (now: forecast ${c.forecast || c.id}, world ${c.world_catalog_id || c.world})`;
     wrap.hidden = false;

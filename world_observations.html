@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Observations · Model 2</title>
-<link rel="stylesheet" href="assets/site.css?v=9d8600c-1794896387">
+<link rel="stylesheet" href="assets/site.css?v=f1f4148-1794919189">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Code+Pro:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800&display=swap">
-<link rel="stylesheet" href="assets/datamodel.css?v=9d8600c-1794896387">
+<link rel="stylesheet" href="assets/datamodel.css?v=f1f4148-1794919189">
 <style>
   .spark { display: block; }
   .spark rect { fill: var(--accent); fill-opacity: 0.55; }
@@ -80,7 +80,7 @@
   <div class="tablewrap dm"><table id="types"></table></div>
   </section>
 </main>
-<script src="assets/site.js?v=9d8600c-1794896387"></script>
+<script src="assets/site.js?v=f1f4148-1794919189"></script>
 <script>
 (async () => {
   try {
@@ -94,7 +94,7 @@
     const SUBJECT = { entity: "entity", company: "company", segment: "segment", site: "site", sector: "sector",
                       census_cell: "census cell", region: "region", custom: "custom grouping" };
     const first = R.published[0], last = R.published[N - 1];
-    document.getElementById("intro").innerHTML = `The world publishes ${N.toLocaleString()} observations of
+    document.getElementById("intro").innerHTML = `This world publishes ${N.toLocaleString()} observations of
       ${ob.types.length} kinds from ${ob.sources.length} sources, from ${first.slice(0, 7)} to ${last.slice(0, 7)}. Each is one
       reading about an entity or a grouping of entities, covering a month or a quarter, and published some time after.
       A forecast run sees only observations published on or before its date.`;

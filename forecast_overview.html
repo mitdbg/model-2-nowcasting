@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Model and Forecast · Model 2</title>
-<link rel="stylesheet" href="assets/site.css?v=9d8600c-1794896387">
+<link rel="stylesheet" href="assets/site.css?v=f1f4148-1794919189">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Code+Pro:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800&display=swap">
 <style>
@@ -20,72 +20,88 @@
 <main>
   <h1>Overview</h1>
   <div class="sub" id="intro"></div>
-  <style>#intro p { margin: 0 0 8px; }</style>
-  <h2>This forecast</h2>
+  <style>#intro p { margin: 0 0 8px; max-width: 90ch; }</style>
+  <h2>This forecast set</h2>
   <div class="wkv" id="run"></div>
-  <h2>The parameter fit it uses</h2>
-  <div class="wkv" id="fit"></div>
-  <h2>The fit, sector by sector</h2>
+  <h2>Its forecasts</h2>
+  <p class="sub">One row per world of the bundle: its forecast at the last as-of date, and the parameter fit that
+  forecast uses. The links show that world's fitted parameters and forecasts.</p>
+  <div class="tablewrap"><table id="members"></table></div>
+  <h2 id="secsh">The fit, sector by sector</h2>
   <p class="sub">Each sector is fitted on its own. The fit works in rounds: first every entity's parameters, holding the
   sector's numbers fixed, then the sector's numbers, holding the entities fixed. After each round it scores the fit as
   a whole (the marginal likelihood: how probable the data are under the fitted model, allowing for what remains
   uncertain), and it keeps the best round, not the last. The small chart traces that score round by round; the dot is
-  the round kept.</p>
+  the round kept. <span id="secsw"></span></p>
   <div class="tablewrap"><table id="secs"></table></div>
 </main>
-<script src="assets/site.js?v=9d8600c-1794896387"></script>
+<script src="assets/site.js?v=f1f4148-1794919189"></script>
 <script>
 (async () => {
   try {
-    const [meta, f, w] = await Promise.all([M2.load("meta.json"), M2.load("forecast.json"), M2.load("world.json").catch(() => ({}))]);
+    const [meta, f] = await Promise.all([M2.load("meta.json"), M2.load("forecast.json")]);
     M2.header(meta, "forecast_overview.html");
-    const [idx, sid] = [await M2.sets(), await M2.currentSet()];
-    const cur = idx.sets.find((x) => x.id === sid) || {};
-    const fid = cur.forecast || sid;   // the forecast's lasting id, and its fit's
-    const fitid = cur.fit_catalog_id || f.fit.id;
-    document.querySelector("h1").textContent = `Overview of Forecast ${fid}`;
-    const g = f.time_grid, n = (v) => (v ?? 0).toLocaleString(), fit = f.fit;
+    const [idx, ch] = [await M2.sets(), await M2.choice()];
+    const cur = idx.sets.find((x) => x.id === ch.set) || {};
+    // data from before forecast sets: the one forecast shown is a set of one
+    const fs = ch.fs || { id: null, world_bundle: null, size: 1, as_of: [f.as_of], model: cur.model, model_commit: cur.model_commit,
+      complete: null, members: [{ set: ch.set, seed: null, world_catalog_id: cur.world_catalog_id }] };
+    const me = ch.member || fs.members[0];
+    document.querySelector("h1").textContent = `Overview of Forecast Set ${fs.id || "(not in the catalog)"}`;
+    const g = f.time_grid, n = (v) => (v ?? 0).toLocaleString();
     const when = (u) => u ? `${u.slice(0, 10)} at ${u.slice(11, 16)} UTC` : null;
-    const mins = f.compute ? Math.round(f.compute.wall_seconds / 6) / 10 : null;
     const short = Object.fromEntries(meta.sectors.map((s) => [s.code, s]));
-    document.getElementById("intro").innerHTML = `<p>A forecast is made in two steps.</p>
-      <p>First a <b>parameter fit</b> sets the model's parameters (such as how fast each entity's capacity drifts, or how
-      strongly its prices follow its costs) from the observations known on the as-of date. Then the <b>filter</b> runs
-      every entity forward month by month with those parameters, correcting its hidden states with each month's
-      observations, to the last observed month (history), the months since (nowcast) and a year ahead (forecast).</p>
-      <p>It runs ${f.n_members} copies of the world at once, each with its own random shocks and its own draw of the
-      uncertain parameters; their spread gives the 90% band.</p>`;
+    document.getElementById("intro").innerHTML = `<p>A <b>forecast set</b> is one model's forecasts on every world of a
+      world bundle: for each world, a parameter fit and a forecast at each as-of date, all made with the same model (the
+      same code and configuration). Comparing the worlds shows which results hold across worlds and which come from one
+      world's random draws; a new version of the model makes a new forecast set on the same worlds, so the two compare
+      world by world.</p>
+      <p>Each forecast is made in two steps. First a <b>parameter fit</b> sets the model's parameters (such as how fast
+      each entity's capacity drifts, or how strongly its prices follow its costs) from the observations known on the as-of
+      date. Then the <b>filter</b> runs every entity forward month by month with those parameters, correcting its hidden
+      states with each month's observations, to the last observed month (history), the months since (nowcast) and a year
+      ahead (forecast).</p>
+      <p>Each forecast runs ${f.n_members} copies of its world at once, each with its own random shocks and its own draw
+      of the uncertain parameters; their spread gives the 90% band.</p>`;
     const row = (k, v) => v == null || v === "" ? "" : `<span class="k">${k}</span><span>${v}</span>`;
     const bi = f.band_inflation;
     document.getElementById("run").innerHTML = [
-      row("Forecast", `<span class="wid">${M2.esc(fid)}</span>`),
-      row("As-of date", `${f.as_of} <span class="muted">(uses only what was published by then)</span>`),
-      row("World", cur.world_catalog_id || w.id ? `<a href="world_overview.html" class="mono">${M2.esc(cur.world_catalog_id || w.id)}</a>
-        (${w.kind === "synthetic" ? "synthetic" : "real"}${w.id ? `, ${M2.esc(w.id)}` : ""})` : null),
-      row("Computed", when(f.started_utc) + (mins != null ? `, in ${mins} minutes` : "")),
+      row("Forecast set", `<span class="wid">${M2.esc(fs.id || "not in the catalog")}</span>`),
+      row("World bundle", fs.world_bundle ? `<a href="world_overview.html" class="mono">${M2.esc(fs.world_bundle)}</a>
+        <span class="muted">(${fs.size === 1 ? "one world" : `${fs.size} worlds`})</span>` : null),
+      row("Model", fs.model ? `<a href="forecast_config.html" class="mono">${M2.esc(fs.model)}</a>${fs.model_commit
+        ? ` <span class="muted">(code version ${M2.esc(fs.model_commit)}; the same for every world)</span>` : ""}` : null),
+      row("As-of dates", `${M2.esc((fs.as_of || []).join(", "))} <span class="muted">(each forecast uses only what was
+        published by its date)</span>`),
+      row("Complete", fs.complete == null ? null : fs.complete ? "yes: every world has a forecast at every as-of date"
+        : "no: some worlds lack a forecast at some as-of date"),
       row("Months covered", `history ${g.history_start} to ${g.last_observed}; nowcast to the as-of date; forecast to ${g.forecast_end}
-        <span class="muted">(${f.forecast_months} months past the last observed month)</span>`),
-      row("Copies of the world", `${f.n_members}, each run with its own shocks and parameter draw`),
-      row("Observations used", `${n(f.observations.attached)}, inside the ${f.window_years}-year window
-        <span class="muted">(${n(f.observations.outside_window)} older ones fall outside it; ${n(f.observations.unmatched)}
-        could not be tied to any entity or grouping)</span>`),
+        <span class="muted">(${f.forecast_months} months past the last observed month, at the last as-of date)</span>`),
+      row("Copies of each world", `${f.n_members} in each forecast, each run with its own shocks and parameter draw`),
       row("Band widening", bi ? `the published sector bands are widened ${bi.smoothed}× in history, ${bi.nowcast}× in the
         nowcast and ${bi.forecast}× in the forecast, because the model's own 90% bands held too little of the truth in
         backtests (see <a href="accuracy.html">Evaluation, Against ground truth</a>). Entity bands are not widened.` : "none"),
-      row("Random seed", f.seed),
     ].join("");
-    document.getElementById("fit").innerHTML = [
-      row("Fit", `<span class="wid">${M2.esc(fitid)}</span>`),
-      row("Computed", when(fit.fitted_utc) + (fit.compute ? `, in ${Math.round(fit.compute.wall_seconds / 6) / 10} minutes
-        <span class="muted">(its ${fit.compute.parts} sectors fitted side by side; the slowest,
-        ${M2.esc(short[fit.compute.slowest]?.short || fit.compute.slowest)}, set the time)</span>` : "")),
-      row("Data up to", `${fit.as_of} <span class="muted">(the fit, too, uses only what was published by the as-of date)</span>`),
-      row("What it covers", `${n(fit.entities)} entities in ${n(fit.groups)} groups (sector × size class × region), across
-        ${fit.sectors} sectors`),
-      row("Numbers fitted", `${n(fit.entity_params)} for single entities (each with an uncertainty, which the filter's copies
-        draw from) and ${n(fit.sector_params)} shared by a whole sector; plus each group's average entity`),
-      row("Copies of the world", `${fit.members_estimation} while fitting (fewer than the forecast's ${f.n_members}, to save time)`),
-    ].join("");
+    const fcs = await Promise.all(fs.members.map((m) => m.set ? M2.loadFor(m.set, "forecast.json").catch(() => null) : null));
+    const mins = (c) => (c ? `${Math.round(c.wall_seconds / 6) / 10} min` : "");
+    const link = (m, page, text) => m.set ? `<a href="${fs.id ? M2.worldHref(page, fs, m) : page}">${text}</a>` : text;
+    document.getElementById("members").innerHTML = `<tr><th>world</th><th class="n">seed</th><th>forecast</th><th>computed</th>
+      <th class="n">time</th><th class="n">observations used</th><th>fit</th><th>fitted</th><th class="n">fit time</th><th>show</th></tr>` +
+      fs.members.map((m, i) => {
+        const x = fcs[i], s = idx.sets.find((y) => y.id === m.set) || {};
+        if (!x) return `<tr><td class="mono">${M2.esc((m.world_catalog_id || "").slice(0, 8))}</td><td class="n">${M2.esc(m.seed ?? "")}</td>
+          <td colspan="8" class="muted">not built for the site</td></tr>`;
+        return `<tr${m === me && fs.size > 1 ? ' class="on"' : ""}><td class="mono" title="${M2.esc(m.world_catalog_id)}">${M2.esc((m.world_catalog_id || "").slice(0, 8))}</td>
+          <td class="n">${M2.esc(m.seed ?? "")}</td>
+          <td class="mono" title="${M2.esc(s.forecast || m.set)}">${M2.esc((s.forecast || m.set).slice(0, 8))}</td>
+          <td>${M2.esc(when(x.started_utc) || "")}</td><td class="n">${mins(x.compute)}</td>
+          <td class="n">${n(x.observations?.attached)}</td>
+          <td class="mono" title="${M2.esc(s.fit_catalog_id || x.fit?.id || "")}">${M2.esc((s.fit_catalog_id || x.fit?.id || "").slice(0, 8))}</td>
+          <td>${M2.esc(when(x.fit?.fitted_utc) || "")}</td><td class="n">${mins(x.fit?.compute)}</td>
+          <td>${link(m, "forecast_fit.html", "parameters")} · ${link(m, "sector.html", "forecasts")}</td></tr>`;
+      }).join("");
+    document.getElementById("secsh").textContent = fs.size > 1 ? `The fit, sector by sector: ${M2.worldName(me)}` : "The fit, sector by sector";
+    if (fs.size > 1) document.getElementById("secsw").textContent = "This table shows one world; another row's links above show another.";
     const spark = (m, best) => {
       if (!m.length) return "";
       const W = 120, H = 26, lo = Math.min(...m.slice(1)), hi = Math.max(...m);   // round 0 is the prior start, often far below

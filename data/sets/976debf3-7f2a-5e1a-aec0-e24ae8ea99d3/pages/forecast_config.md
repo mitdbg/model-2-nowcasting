@@ -1,10 +1,14 @@
 <!-- World Inputs › Model Configuration, for forecast 976debf3-7f2a-5e1a-aec0-e24ae8ea99d3; the page: https://mitdbg.github.io/model-2-nowcasting/forecast_config.html?set=976debf3-7f2a-5e1a-aec0-e24ae8ea99d3 -->
 
+World shown World seed 20261112 (the bundle's only world)
+
 # Model Configuration
 
 The model and forecast require several fixed values. These are not learned from the data. Some values are set by hand in the configuration, while some come from outside sources (such as geography or Census counts). A few are computed once from the data at the start of the fit window and then held fixed.
 
 The configuration also includes starting ranges for parameters that will be learned during model fitting.
+
+The configuration is the same for every world of the bundle. The values computed from the data are each world's own, so this page shows one world at a time.
 
 ## Fixed values in the equations
 
@@ -52,7 +56,7 @@ Wholesale | distribution  | 113.3 | -23.3  | $15.34B/month (2017 dollars)  | 6
 
 ## How the forecast runs
 
-Copies of the world100, each with its own shocks and parameter draw (entity, sector and group parameters all drawn)Fit window8 years of historyForecast horizon12 months past the last observed monthRandom seed12345Orders follow capacity shareyes (L6). Without it, an entity's orders ignore its own capacity, so an entity that loses capacity for good keeps its orders and its order book grows without bound.Starting stockseach copy starts its order book, input inventory and project pipeline spread by 0.3 (log) around the fitted startOrder level in the filtermoves with a spread of 0.05 (log) where a sector lets the filter correct itSector input bundleat most 45 days older than the as-of date; an older one stops the runBand wideningpublished sector bands widened 2.55× in history, 2.31× in the nowcast and 1.86× in the forecast. The model's own 90% bands held too little of the truth in a backtest on this world; these factors bring the published bands to about 90% (see Against ground truth).Order book in the filterSemiconductors (overdue, level)
+Copies of the world100, each with its own shocks and parameter draw (entity, sector and group parameters all drawn)Fit window8 years of historyForecast horizon12 months past the last observed monthRandom seed12345Orders follow capacity shareyes (L6). Without it, an entity's orders ignore its own capacity, so an entity that loses capacity for good keeps its orders and its order book grows without bound.Starting stockseach copy starts its order book, input inventory and project pipeline spread by 0.3 (log) around the fitted startOrder level in the filtermoves with a spread of 0.05 (log) where a sector lets the filter correct itSector input deliveryat most 45 days older than the as-of date; an older one stops the runBand wideningpublished sector bands widened 2.55× in history, 2.31× in the nowcast and 1.86× in the forecast. The model's own 90% bands held too little of the truth in a backtest on this world; these factors bring the published bands to about 90% (see Against ground truth).Order book in the filterSemiconductors (overdue, level)
 
 ## How the fit runs
 
@@ -326,8 +330,8 @@ Definitions behind the page's (i) marks:
 - Catalog: the model's default for every sector. This sector: chosen for this sector, with the reason given.
 - A kind of data the model reads, such as a company's revenue or a plant's stated capacity.
 - How far an observation of this kind typically strays from the truth, as a fraction of its value. Larger noise means the model trusts each reading less and moves less when it disagrees.
-- The official series, by its code in the sector input bundle.
-- Extra uncertainty, as a fraction of the statistic's value, combined with the uncertainty the bundle gives it, so the model never treats the statistic as exact. A larger floor makes the model follow it less closely.
+- The official series, by its code in the sector input delivery.
+- Extra uncertainty, as a fraction of the statistic's value, combined with the uncertainty the delivery gives it, so the model never treats the statistic as exact. A larger floor makes the model follow it less closely.
 - How much the statistic's uncertainty is multiplied when it already includes tracked companies' own reports, so the same information is not counted twice.
 - Monthly capacity of one small establishment. Multiplied by the Census count of small establishments in a region, it sizes that region's small representative entity.
 - Monthly capacity of one medium establishment, used the same way.

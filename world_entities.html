@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Entities · Model 2</title>
-<link rel="stylesheet" href="assets/site.css?v=9d8600c-1794896387">
+<link rel="stylesheet" href="assets/site.css?v=f1f4148-1794919189">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Code+Pro:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800&display=swap">
 <style>
@@ -71,7 +71,7 @@
   </div>
   </section>
 </main>
-<script src="assets/site.js?v=9d8600c-1794896387"></script>
+<script src="assets/site.js?v=f1f4148-1794919189"></script>
 <script>
 (async () => {
   try {
@@ -81,7 +81,7 @@
     const tracked = ents.filter((e) => e.kind === "tracked"), reps = ents.filter((e) => e.kind === "representative");
     const est = reps.reduce((a, e) => a + (e.n_establishments || 0), 0);
     const companies = new Set(tracked.map((e) => e.operator).filter(Boolean));
-    document.getElementById("intro").innerHTML = `The world has ${ents.length} entities in ${meta.sectors.length} sectors.
+    document.getElementById("intro").innerHTML = `This world has ${ents.length} entities in ${meta.sectors.length} sectors.
       <b>${tracked.length} tracked entities</b> are specific sites or networks, run by ${companies.size} companies, each with
       observations of its own. <b>${reps.length} representative entities</b> stand for the other ${est.toLocaleString()}
       establishments, one for each sector, size class and region, sized by the Census establishment counts.`;
