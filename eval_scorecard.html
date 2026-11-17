@@ -3,11 +3,12 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Scorecard · Model 2</title>
-<link rel="stylesheet" href="assets/site.css?v=ffa8a02-1794946371">
+<link rel="stylesheet" href="assets/site.css?v=38a24be-1794946751">
 <style>
   main > p, main > ul { max-width: 90ch; }
   .score td.v { font-size: 17px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .score td.what { max-width: 52ch; }
+  .score .infowrap { position: relative; }
+  .score .infotip { width: 360px; max-width: 80vw; left: -6px; right: auto; top: 22px; white-space: normal; font-weight: 400; }
   .grid td.n, .grid th.n { white-space: nowrap; }
   .grid td .k { color: var(--muted); font-size: 12px; margin-left: 4px; }
 </style>
@@ -42,7 +43,7 @@
   <div class="tablewrap"><table id="cells" class="grid"></table></div>
   </div>
 </main>
-<script src="assets/site.js?v=ffa8a02-1794946371"></script>
+<script src="assets/site.js?v=38a24be-1794946751"></script>
 <script>
 // quantity groups: one unit each, so their errors can be averaged
 const GROUPS = [
@@ -96,22 +97,27 @@ const fmt = (v, g, q) => v == null ? "–" : g === "months" ? `${v.toFixed(2)} m
     });
 
     // the scorecard: one row per measure, the bundle's mean, its range and each world's value
+    const avg = "averaged over the sectors and the four as-of dates.";
+    const HOVER = {
+      core: `Typical error of the nowcast for output, capacity, utilization, shipments, price, unit cost and load factor: a percentage error, except utilization and load factor in percentage points; ${avg}`,
+      orders: `Typical percentage error of the nowcast for new orders, the order book and lead time, ${avg}`,
+      stocks: `Typical percentage error of the nowcast for input inventory and for capacity announced, under construction and in use, ${avg}`,
+      months: `Finished inventory, overdue orders, phantom orders and lost demand. These are often zero or close to it: a sector may hold almost no finished goods, or have no orders past their due date. A percentage error means little there (missing a true value of 1 by 2 is a 200% error), so these are scored by the gap between the nowcast and the truth in months of the sector's output: 0.5 means the gap equals half a month of what the sector produces. The value is that gap, ${avg}`,
+    };
     const rows = [
-      ...GROUPS.map(([g, name, what]) => [`${name}, nowcast error`, what, per.map((p) => p.groupErr(g, "nowcast")), (v) => fmt(v, g)]),
-      ["Core quantities, error 12 months ahead", "the core quantities forecast a year past the last observed month",
+      ...GROUPS.map(([g, name]) => [`${name}, nowcast error`, HOVER[g], per.map((p) => p.groupErr(g, "nowcast")), (v) => fmt(v, g)]),
+      ["Core quantities, error 12 months ahead", `Typical error for the core quantities forecast a year past the last observed month, ${avg}`,
         per.map((p) => p.groupErr("core", "h+12")), (v) => fmt(v, "core")],
-      ["Coverage of the 90% bands", "share of nowcast values with the truth inside the published 90% band; about 90% is right, much less is overconfident",
+      ["Coverage of the 90% bands", "Share of nowcast values with the truth inside the published 90% band. About 90% is right; much less means the model is overconfident, much more that its bands are wider than they need to be.",
         per.map((p) => p.cov), (v) => (v == null ? "–" : M2.pct(v, 0))],
-      ["Failures", "sectors and quantities above the failure line, at the nowcast",
+      ["Failures", `Sectors and quantities whose nowcast error is above the failure line, out of the ${per[0].cells} combinations of sector and quantity scored. The failure line is an error above 25% for quantities scored as a percentage, above 25 points for utilization and load factor, and above one month of output for the quantities near zero.`,
         per.map((p) => p.fails), (v) => (v == null ? "–" : `${Math.round(v)} of ${per[0].cells}`)],
     ];
-    document.getElementById("score").innerHTML = `<tr><th>measure</th><th class="n">bundle mean</th><th class="n">range over worlds</th>
-      <th>what it measures</th></tr>` +
+    document.getElementById("score").innerHTML = `<tr><th>measure</th><th class="n">bundle mean</th><th class="n">range over worlds</th></tr>` +
       rows.map(([name, what, vals, f]) => {
         const v = vals.filter((x) => x != null), lo = Math.min(...v), hi = Math.max(...v);
-        return `<tr><td><b>${M2.esc(name)}</b></td><td class="n v">${f(mean(vals))}</td>
-          <td class="n">${N > 1 && v.length ? `${f(lo)} to ${f(hi)}` : "–"}</td>
-          <td class="what muted">${M2.esc(what)}</td></tr>`;
+        return `<tr><td><b>${M2.esc(name)}</b>${M2.info(what)}</td><td class="n v">${f(mean(vals))}</td>
+          <td class="n">${N > 1 && v.length ? `${f(lo)} to ${f(hi)}` : "–"}</td></tr>`;
       }).join("");
 
     // by sector: each group's error averaged over worlds, and in how many worlds it fails

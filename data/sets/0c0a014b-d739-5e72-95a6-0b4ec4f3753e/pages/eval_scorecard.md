@@ -1,4 +1,4 @@
-<!-- Evaluation › Scorecard, for forecast 0c0a014b-d739-5e72-95a6-0b4ec4f3753e; the page: https://mitdbg.github.io/model-2-nowcasting/eval_scorecard.html?set=0c0a014b-d739-5e72-95a6-0b4ec4f3753e; inputs 94286fa3a72abfed -->
+<!-- Evaluation › Scorecard, for forecast 0c0a014b-d739-5e72-95a6-0b4ec4f3753e; the page: https://mitdbg.github.io/model-2-nowcasting/eval_scorecard.html?set=0c0a014b-d739-5e72-95a6-0b4ec4f3753e; inputs 110e09ca9133a402 -->
 
 # Scorecard
 
@@ -10,21 +10,21 @@ How close the forecasts came to the truth, on every world of the bundle. The bac
 
 ## The bundle's scores
 
-measure | bundle mean | range over worlds  | what it measures
+measure | bundle mean | range over worlds
 
-Core quantities, nowcast error | 3.0%  | –  | output, capacity, utilization, shipments, price, unit cost, load factor
+Core quantities, nowcast error | 3.0%  | –
 
-Orders, nowcast error | 10.5%  | –  | new orders, order book, lead time
+Orders, nowcast error | 10.5%  | –
 
-Inputs and pipeline, nowcast error | 6.0%  | –  | input inventory, capacity announced, under construction and in use
+Inputs and pipeline, nowcast error | 6.0%  | –
 
-Quantities near zero, nowcast error | 0.34 mo  | –  | finished inventory, overdue orders, phantom orders, lost demand (months of output)
+Quantities near zero, nowcast error | 0.34 mo  | –
 
-Core quantities, error 12 months ahead | 4.6%  | –  | the core quantities forecast a year past the last observed month
+Core quantities, error 12 months ahead | 4.6%  | –
 
-Coverage of the 90% bands | 92%  | –  | share of nowcast values with the truth inside the published 90% band; about 90% is right, much less is overconfident
+Coverage of the 90% bands | 92%  | –
 
-Failures | 10 of 179  | –  | sectors and quantities above the failure line, at the nowcast
+Failures | 10 of 179  | –
 
 ## By sector
 
@@ -85,3 +85,12 @@ Machinery | Lead time | 29.6%fails in 1 of 1 | 29.6%
 Wholesale | Lead time | 29.2%fails in 1 of 1 | 29.2%
 
 Machinery | Price | 27.9%fails in 1 of 1 | 27.9%
+
+Definitions behind the page's (i) marks:
+- Typical error of the nowcast for output, capacity, utilization, shipments, price, unit cost and load factor: a percentage error, except utilization and load factor in percentage points; averaged over the sectors and the four as-of dates.
+- Typical percentage error of the nowcast for new orders, the order book and lead time, averaged over the sectors and the four as-of dates.
+- Typical percentage error of the nowcast for input inventory and for capacity announced, under construction and in use, averaged over the sectors and the four as-of dates.
+- Finished inventory, overdue orders, phantom orders and lost demand. These are often zero or close to it: a sector may hold almost no finished goods, or have no orders past their due date. A percentage error means little there (missing a true value of 1 by 2 is a 200% error), so these are scored by the gap between the nowcast and the truth in months of the sector's output: 0.5 means the gap equals half a month of what the sector produces. The value is that gap, averaged over the sectors and the four as-of dates.
+- Typical error for the core quantities forecast a year past the last observed month, averaged over the sectors and the four as-of dates.
+- Share of nowcast values with the truth inside the published 90% band. About 90% is right; much less means the model is overconfident, much more that its bands are wider than they need to be.
+- Sectors and quantities whose nowcast error is above the failure line, out of the 179 combinations of sector and quantity scored. The failure line is an error above 25% for quantities scored as a percentage, above 25 points for utilization and load factor, and above one month of output for the quantities near zero.
