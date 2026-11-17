@@ -1,4 +1,4 @@
-<!-- World Inputs › Entities, for forecast c288b02e-1d8d-5a88-89a8-2b7bb3a5ca84; the page: https://mitdbg.github.io/model-2-nowcasting/world_entities.html?set=c288b02e-1d8d-5a88-89a8-2b7bb3a5ca84; inputs ad18df1d1e1cd70c -->
+<!-- Inputs › Entities, for forecast c288b02e-1d8d-5a88-89a8-2b7bb3a5ca84; the page: https://mitdbg.github.io/model-2-nowcasting/world_entities.html?set=c288b02e-1d8d-5a88-89a8-2b7bb3a5ca84; inputs f6d1adac612714a9 -->
 
 World shown  5 of 5 worlds in this bundle
 

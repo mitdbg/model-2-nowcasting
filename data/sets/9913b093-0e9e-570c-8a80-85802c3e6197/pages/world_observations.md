@@ -1,4 +1,4 @@
-<!-- World Inputs › Observations, for forecast 9913b093-0e9e-570c-8a80-85802c3e6197; the page: https://mitdbg.github.io/model-2-nowcasting/world_observations.html?set=9913b093-0e9e-570c-8a80-85802c3e6197; inputs b99204f5224893c6 -->
+<!-- Inputs › Observations, for forecast 9913b093-0e9e-570c-8a80-85802c3e6197; the page: https://mitdbg.github.io/model-2-nowcasting/world_observations.html?set=9913b093-0e9e-570c-8a80-85802c3e6197; inputs a8e8ecd6e65c75eb -->
 
 World shown  5 of 5 worlds in this bundle
 

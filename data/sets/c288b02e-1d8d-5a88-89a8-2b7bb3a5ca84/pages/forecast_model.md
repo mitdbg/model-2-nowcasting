@@ -1,4 +1,4 @@
-<!-- Overview › Model Structure, for forecast c288b02e-1d8d-5a88-89a8-2b7bb3a5ca84; the page: https://mitdbg.github.io/model-2-nowcasting/forecast_model.html?set=c288b02e-1d8d-5a88-89a8-2b7bb3a5ca84; inputs 02fbe16a6d6099d0 -->
+<!-- Overview › Model Structure, for forecast c288b02e-1d8d-5a88-89a8-2b7bb3a5ca84; the page: https://mitdbg.github.io/model-2-nowcasting/forecast_model.html?set=c288b02e-1d8d-5a88-89a8-2b7bb3a5ca84; inputs 3967beb01aa83839 -->
 
 # Model Structure
 
@@ -374,7 +374,7 @@ capacity announced; under construction | Ann; U | lognormal
 
 employment of a size class and region (Census) | labor per unit × output of its representative entity | lognormal
 
-World Inputs, Observations lists every kind in this world.
+Inputs, Observations lists every kind in this world.
 
 ## Sector totals
 

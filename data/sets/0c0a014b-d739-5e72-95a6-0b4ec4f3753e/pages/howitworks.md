@@ -1,4 +1,4 @@
-<!-- Overview › How It Works, for forecast 0c0a014b-d739-5e72-95a6-0b4ec4f3753e; the page: https://mitdbg.github.io/model-2-nowcasting/howitworks.html?set=0c0a014b-d739-5e72-95a6-0b4ec4f3753e; inputs 14bf2b118e983311 -->
+<!-- Overview › How It Works, for forecast 0c0a014b-d739-5e72-95a6-0b4ec4f3753e; the page: https://mitdbg.github.io/model-2-nowcasting/howitworks.html?set=0c0a014b-d739-5e72-95a6-0b4ec4f3753e; inputs 837d13dc0e899afd -->
 
 # How It Works
 

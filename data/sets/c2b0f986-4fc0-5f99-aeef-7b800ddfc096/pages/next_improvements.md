@@ -1,4 +1,4 @@
-<!-- Next Version › Possible Improvements, for forecast c2b0f986-4fc0-5f99-aeef-7b800ddfc096; the page: https://mitdbg.github.io/model-2-nowcasting/next_improvements.html?set=c2b0f986-4fc0-5f99-aeef-7b800ddfc096; inputs 62339f224ab05c56 -->
+<!-- Next Version › Possible Improvements, for forecast c2b0f986-4fc0-5f99-aeef-7b800ddfc096; the page: https://mitdbg.github.io/model-2-nowcasting/next_improvements.html?set=c2b0f986-4fc0-5f99-aeef-7b800ddfc096; inputs 2156a37b0ef4c0f5 -->
 
 World shown  5 of 5 worlds in this bundle
 

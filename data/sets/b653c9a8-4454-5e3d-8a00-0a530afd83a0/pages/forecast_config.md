@@ -1,6 +1,4 @@
-<!-- World Inputs › Model Configuration, for forecast b653c9a8-4454-5e3d-8a00-0a530afd83a0; the page: https://mitdbg.github.io/model-2-nowcasting/forecast_config.html?set=b653c9a8-4454-5e3d-8a00-0a530afd83a0; inputs 34c23267884ccd17 -->
-
-World shown World seed 20261107 (the bundle's only world)
+<!-- Inputs › Model Configuration, for forecast b653c9a8-4454-5e3d-8a00-0a530afd83a0; the page: https://mitdbg.github.io/model-2-nowcasting/forecast_config.html?set=b653c9a8-4454-5e3d-8a00-0a530afd83a0; inputs 5c3f5bca72989c34 -->
 
 # Model Configuration
 
@@ -8,55 +6,49 @@ The model and forecast require several fixed values. These are not learned from 
 
 The configuration also includes starting ranges for parameters that will be learned during model fitting.
 
-The configuration is the same for every world of the bundle. The values computed from the data are each world's own, so this page shows one world at a time.
+The configuration is the same for every world of the bundle. The few fixed values computed from each world's own data are on Model and Forecast, Values Computed From Input Data.
 
 ## Fixed values in the equations
 
-The symbols marked "Fixed, not learned" on Model Structure, sector by sector. Here D̄ is shown as a demand index (January 2010 = 100), K₀ in the sector's own units and shipping time in days. Hover over (or tap) the ⓘ beside a value for what it means.
+The symbols marked "Fixed, not learned" on Model Structure that are set by hand or from outside sources, sector by sector. Hover over (or tap) the ⓘ beside a value for what it means.
 
-sector  | template  | D̄ (index)  | x̄  | K₀  | transit (days)
+sector  | template  | transit (days)
 
-Airlines | perishable service  | 104.0 | -25.2  | 95.87B seat-miles/month  | 0
+Airlines | perishable service  | 0
 
-Autos | make to stock  | 100.9 | -13.4  | 669.9k vehicles/month  | 9
+Autos | make to stock  | 9
 
-Chemicals | make to stock  | 107.7 | -15  | 3.42M tonnes/month  | 9
+Chemicals | make to stock  | 9
 
-Data centers | contracted capacity  | 202.8 | -7.24  | 2724 MW  | 0
+Data centers | contracted capacity  | 0
 
-Food | make to stock  | 106.3 | -14.5  | 2.08M tonnes/month  | 6
+Food | make to stock  | 6
 
-Hospitals | perishable service  | 113.9 | -14.6  | 2.38M patient-days/month  | 0
+Hospitals | perishable service  | 0
 
-Hotels | perishable service  | 100.9 | -14.7  | 2.33M room-nights/month  | 0
+Hotels | perishable service  | 0
 
-Housing | make to order  | 108.1 | -9.33  | 12.0k homes/month  | 0
+Housing | make to order  | 0
 
-Machinery | make to order  | 105.8 | -22.2  | $4.66B/month (2017 dollars)  | 15
+Machinery | make to order  | 15
 
-Oil and gas | pipeline producer  | 116.9 | -18.3  | 99.23M barrels of oil equivalent/month  | 0
+Oil and gas | pipeline producer  | 0
 
-Retail | distribution  | 119.7 | -22.9  | $10.73B/month (2017 dollars)  | 0
+Retail | distribution  | 0
 
-Semiconductors | pipeline producer  | 154.5 | -13.9  | 1.63M wafers/month  | 9
+Semiconductors | pipeline producer  | 9
 
-Steel | make to order  | 107.9 | -14.9  | 3.19M tonnes/month  | 15
+Steel | make to order  | 15
 
-Wholesale | distribution  | 111.0 | -23.1  | $12.32B/month (2017 dollars)  | 6
+Wholesale | distribution  | 6
 
-- D̄: average real sector demand over the fit window's first two years (L6). Orders move with demand against this level.
-
-- x̄: the sector's demand pressure at the start of the window: that average demand against the starting capacity (L3). Utilization rises when pressure is above it.
-
-- K₀: sector capacity at the start of the window (L6). An entity's share of orders follows its share of capacity measured against it.
-
-- transit: shipping time in months, from geography (L13), part of every quoted lead time.
+- transit: shipping time, from geography (L13), part of every quoted lead time; shown in days.
 
 - Congestion (L13), the extra wait as utilization nears full: on (κ_C = 1).
 
 ## How the forecast runs
 
-Copies of the world100, each with its own shocks and parameter draw (entity, sector and group parameters all drawn)Fit window8 years of historyForecast horizon12 months past the last observed monthRandom seed12345Orders follow capacity shareyes (L6). Without it, an entity's orders ignore its own capacity, so an entity that loses capacity for good keeps its orders and its order book grows without bound.Starting stockseach copy starts its order book, input inventory and project pipeline spread by 0.3 (log) around the fitted startOrder level in the filtermoves with a spread of 0.05 (log) where a sector lets the filter correct itSector input deliveryat most 45 days older than the as-of date; an older one stops the runBand wideningpublished sector bands widened 2.55× in history, 2.31× in the nowcast and 1.86× in the forecast. The model's own 90% bands held too little of the truth in a backtest on this world; these factors bring the published bands to about 90% (see Against ground truth).Order book in the filterSemiconductors (overdue, level)
+Copies of the world100, each with its own shocks and parameter draw (entity, sector and group parameters all drawn)Fit window8 years of historyForecast horizon12 months past the last observed monthRandom seed12345Orders follow capacity shareyes (L6). Without it, an entity's orders ignore its own capacity, so an entity that loses capacity for good keeps its orders and its order book grows without bound.Starting stockseach copy starts its order book, input inventory and project pipeline spread by 0.3 (log) around the fitted startOrder level in the filtermoves with a spread of 0.05 (log) where a sector lets the filter correct itSector input deliveryat most 45 days older than the as-of date; an older one stops the runBand wideningpublished sector bands widened 2.55× in history, 2.31× in the nowcast and 1.86× in the forecast. The model's own 90% bands held too little of the truth in an earlier backtest; these factors bring the published bands to about 90% (see Against ground truth).Order book in the filterSemiconductors (overdue, level)
 
 ## How the fit runs
 
@@ -271,57 +263,12 @@ Steel | 900 | 9000 | 60.0k | tonne per month
 Wholesale | 600.0k | 8.00M | 80.00M | usd 2017 per month
 
 Definitions behind the page's (i) marks:
-- Normal demand (L6). The sector's demand, adjusted for prices, averaged over the first two years of the fit window and written as an index: 100 is the January 2010 level, so 108 means 8% more. The model treats this as normal: firms get orders equal to their normal output when demand is here, more when it is higher, fewer when lower.
-- Starting demand-to-capacity ratio (L3): how much demand there was for each unit of capacity when the window began. Each month the model compares the current ratio with this one. If demand has grown faster than capacity, the ratio is higher and firms run their plants harder than normal; if capacity has grown faster, they run below normal. The number itself is the log of the ratio of a demand index to capacity, so its size depends on the units and means nothing alone; only changes from it matter.
-- The sector's capacity at the start of the window: the most all its firms together could produce in a month. It is the yardstick for market share: a firm's share of orders follows its capacity measured against it (L6).
 - Shipping time (L13): added to every lead time a firm quotes, so it is part of how long a customer waits.
-- From Oct 2018 to Sep 2020 this sector's demand, adjusted for prices, averaged 104.0 (January 2010 = 100). That is its normal demand: at this level firms get orders equal to their normal output, and each 1% more demand adds about 1% to their orders. In Sep 2026 demand is 132.9, 28% above normal, so orders run about 28% above normal on that account.
-- The ratio of demand to capacity when the window began. At this ratio the sector's firms run at their normal rate, about 90% of capacity; a higher ratio makes them run harder. By Sep 2026 the ratio is 11% higher (demand up 28%, capacity up 16%), so on that account firms run about 0.7 points above their normal rate. (The number itself only marks the starting point: it depends on the units and means nothing alone.)
-- The sector's capacity when the window began: 95.87B seat-miles a month. It is the yardstick for market share: a firm whose capacity grows 10% faster than the sector's since then gets about 10% more orders. By Sep 2026 the sector had 110.80B (up 16%).
 - Nothing is shipped: the service is used where it is sold.
-- From Oct 2018 to Sep 2020 this sector's demand, adjusted for prices, averaged 100.9 (January 2010 = 100). That is its normal demand: at this level firms get orders equal to their normal output, and each 1% more demand adds about 0.98% to their orders. In Sep 2026 demand is 101.8, close to normal, so orders run near normal on that account.
-- The ratio of demand to capacity when the window began. At this ratio the sector's firms run at their normal rate, about 79% of capacity; a higher ratio makes them run harder. By Sep 2026 the ratio is 6% lower (demand up 1%, capacity up 7%), so on that account firms run about 0.6 points below their normal rate. (The number itself only marks the starting point: it depends on the units and means nothing alone.)
-- The sector's capacity when the window began: 669.9k vehicles a month. It is the yardstick for market share: a firm whose capacity grows 10% faster than the sector's since then gets about 10% more orders. By Sep 2026 the sector had 718.7k (up 7%).
 - About 9 days of shipping, part of every quoted lead time.
-- From Oct 2018 to Sep 2020 this sector's demand, adjusted for prices, averaged 107.7 (January 2010 = 100). That is its normal demand: at this level firms get orders equal to their normal output, and each 1% more demand adds about 0.66% to their orders. In Sep 2026 demand is 114.6, 6% above normal, so orders run about 4% above normal on that account.
-- The ratio of demand to capacity when the window began. At this ratio the sector's firms run at their normal rate, about 76% of capacity; a higher ratio makes them run harder. By Sep 2026 the ratio is about the same (demand up 6%, capacity up 6%), so firms run near their normal rate on that account. (The number itself only marks the starting point: it depends on the units and means nothing alone.)
-- The sector's capacity when the window began: 3.42M tonnes a month. It is the yardstick for market share: a firm whose capacity grows 10% faster than the sector's since then gets about 10% more orders. By Sep 2026 the sector had 3.61M (up 6%).
-- From Oct 2018 to Sep 2020 this sector's demand, adjusted for prices, averaged 202.8 (January 2010 = 100). That is its normal demand: at this level firms get orders equal to their normal output, and each 1% more demand adds about 1% to their orders. In Sep 2026 demand is 321.9, 59% above normal, so orders run about 61% above normal on that account.
-- Not used here: a data center's utilization is set by how much is leased, not by how hard its sites run.
-- The sector's capacity when the window began: 2724 MW. It is the yardstick for market share: a firm whose capacity grows 10% faster than the sector's since then gets about 10% more orders. By Sep 2026 the sector had 3875 (up 42%).
-- From Oct 2018 to Sep 2020 this sector's demand, adjusted for prices, averaged 106.3 (January 2010 = 100). That is its normal demand: at this level firms get orders equal to their normal output, and each 1% more demand adds about 1% to their orders. In Sep 2026 demand is 114.8, 8% above normal, so orders run about 8% above normal on that account.
-- The ratio of demand to capacity when the window began. At this ratio the sector's firms run at their normal rate, about 83% of capacity; a higher ratio makes them run harder. By Sep 2026 the ratio is 4% higher (demand up 8%, capacity up 3%), so on that account firms run about the same their normal rate. (The number itself only marks the starting point: it depends on the units and means nothing alone.)
-- The sector's capacity when the window began: 2.08M tonnes a month. It is the yardstick for market share: a firm whose capacity grows 10% faster than the sector's since then gets about 10% more orders. By Sep 2026 the sector had 2.15M (up 3%).
 - About 6 days of shipping, part of every quoted lead time.
-- From Oct 2018 to Sep 2020 this sector's demand, adjusted for prices, averaged 113.9 (January 2010 = 100). That is its normal demand: at this level firms get orders equal to their normal output, and each 1% more demand adds about 0.93% to their orders. In Sep 2026 demand is 133.7, 17% above normal, so orders run about 16% above normal on that account.
-- The ratio of demand to capacity when the window began. At this ratio the sector's firms run at their normal rate, about 85% of capacity; a higher ratio makes them run harder. By Sep 2026 the ratio is 13% higher (demand up 17%, capacity up 4%), so on that account firms run about 1 points above their normal rate. (The number itself only marks the starting point: it depends on the units and means nothing alone.)
-- The sector's capacity when the window began: 2.38M patient-days a month. It is the yardstick for market share: a firm whose capacity grows 10% faster than the sector's since then gets about 10% more orders. By Sep 2026 the sector had 2.47M (up 4%).
-- From Oct 2018 to Sep 2020 this sector's demand, adjusted for prices, averaged 100.9 (January 2010 = 100). That is its normal demand: at this level firms get orders equal to their normal output, and each 1% more demand adds about 1.2% to their orders. In Sep 2026 demand is 122.4, 21% above normal, so orders run about 26% above normal on that account.
-- The ratio of demand to capacity when the window began. At this ratio the sector's firms run at their normal rate, about 87% of capacity; a higher ratio makes them run harder. By Sep 2026 the ratio is 20% higher (demand up 21%, capacity up 1%), so on that account firms run about 1 points above their normal rate. (The number itself only marks the starting point: it depends on the units and means nothing alone.)
-- The sector's capacity when the window began: 2.33M room-nights a month. It is the yardstick for market share: a firm whose capacity grows 10% faster than the sector's since then gets about 10% more orders. By Sep 2026 the sector had 2.36M (up 1%).
-- From Oct 2018 to Sep 2020 this sector's demand, adjusted for prices, averaged 108.1 (January 2010 = 100). That is its normal demand: at this level firms get orders equal to their normal output, and each 1% more demand adds about 0.93% to their orders. In Sep 2026 demand is 110.1, 2% above normal, so orders run about 2% above normal on that account.
-- The ratio of demand to capacity when the window began. At this ratio the sector's firms run at their normal rate, about 79% of capacity; a higher ratio makes them run harder. By Sep 2026 the ratio is 13% lower (demand up 2%, capacity up 17%), so on that account firms run about 1.1 points below their normal rate. (The number itself only marks the starting point: it depends on the units and means nothing alone.)
-- The sector's capacity when the window began: 12.0k homes a month. It is the yardstick for market share: a firm whose capacity grows 10% faster than the sector's since then gets about 10% more orders. By Sep 2026 the sector had 14.0k (up 17%).
 - The model counts no shipping time for this sector.
-- From Oct 2018 to Sep 2020 this sector's demand, adjusted for prices, averaged 105.8 (January 2010 = 100). That is its normal demand: at this level firms get orders equal to their normal output, and each 1% more demand adds about 1.1% to their orders. In Sep 2026 demand is 109.0, 3% above normal, so orders run about 3% above normal on that account.
-- The ratio of demand to capacity when the window began. At this ratio the sector's firms run at their normal rate, about 76% of capacity; a higher ratio makes them run harder. By Sep 2026 the ratio is 3% higher (demand up 3%, capacity unchanged), so on that account firms run about the same their normal rate. (The number itself only marks the starting point: it depends on the units and means nothing alone.)
-- The sector's capacity when the window began: 4.66B in 2017 dollars a month. It is the yardstick for market share: a firm whose capacity grows 10% faster than the sector's since then gets about 10% more orders. By Sep 2026 the sector had 4.64B (about the same).
 - About 15 days of shipping, part of every quoted lead time.
-- From Oct 2018 to Sep 2020 this sector's demand, adjusted for prices, averaged 116.9 (January 2010 = 100). That is its normal demand: at this level firms get orders equal to their normal output, and each 1% more demand adds about 0.99% to their orders. In Sep 2026 demand is 147.1, 26% above normal, so orders run about 26% above normal on that account.
-- The ratio of demand to capacity when the window began. At this ratio the sector's firms run at their normal rate, about 87% of capacity; a higher ratio makes them run harder. By Sep 2026 the ratio is 7% lower (demand up 26%, capacity up 35%), so on that account firms run about the same their normal rate. (The number itself only marks the starting point: it depends on the units and means nothing alone.)
-- The sector's capacity when the window began: 99.23M barrels of oil equivalent a month. It is the yardstick for market share: a firm whose capacity grows 10% faster than the sector's since then gets about 10% more orders. By Sep 2026 the sector had 134.20M (up 35%).
-- From Oct 2018 to Sep 2020 this sector's demand, adjusted for prices, averaged 119.7 (January 2010 = 100). That is its normal demand: at this level firms get orders equal to their normal output, and each 1% more demand adds about 1.5% to their orders. In Sep 2026 demand is 137.3, 15% above normal, so orders run about 22% above normal on that account.
-- The ratio of demand to capacity when the window began. At this ratio the sector's firms run at their normal rate, about 74% of capacity; a higher ratio makes them run harder. By Sep 2026 the ratio is 15% lower (demand up 15%, capacity up 34%), so on that account firms run about the same their normal rate. (The number itself only marks the starting point: it depends on the units and means nothing alone.)
-- The sector's capacity when the window began: 10.73B in 2017 dollars a month. It is the yardstick for market share: a firm whose capacity grows 10% faster than the sector's since then gets about 10% more orders. By Sep 2026 the sector had 14.43B (up 34%).
-- From Oct 2018 to Sep 2020 this sector's demand, adjusted for prices, averaged 154.5 (January 2010 = 100). That is its normal demand: at this level firms get orders equal to their normal output, and each 1% more demand adds about 1% to their orders. In Sep 2026 demand is 203.5, 32% above normal, so orders run about 32% above normal on that account.
-- The ratio of demand to capacity when the window began. At this ratio the sector's firms run at their normal rate, about 82% of capacity; a higher ratio makes them run harder. By Sep 2026 the ratio is 18% lower (demand up 32%, capacity up 60%), so on that account firms run about 1.5 points below their normal rate. (The number itself only marks the starting point: it depends on the units and means nothing alone.)
-- The sector's capacity when the window began: 1.63M wafers a month. It is the yardstick for market share: a firm whose capacity grows 10% faster than the sector's since then gets about 10% more orders. By Sep 2026 the sector had 2.61M (up 60%).
-- From Oct 2018 to Sep 2020 this sector's demand, adjusted for prices, averaged 107.9 (January 2010 = 100). That is its normal demand: at this level firms get orders equal to their normal output, and each 1% more demand adds about 0.98% to their orders. In Sep 2026 demand is 107.6, close to normal, so orders run near normal on that account.
-- The ratio of demand to capacity when the window began. At this ratio the sector's firms run at their normal rate, about 80% of capacity; a higher ratio makes them run harder. By Sep 2026 the ratio is 10% lower (demand unchanged, capacity up 11%), so on that account firms run about 0.8 points below their normal rate. (The number itself only marks the starting point: it depends on the units and means nothing alone.)
-- The sector's capacity when the window began: 3.19M tonnes a month. It is the yardstick for market share: a firm whose capacity grows 10% faster than the sector's since then gets about 10% more orders. By Sep 2026 the sector had 3.54M (up 11%).
-- From Oct 2018 to Sep 2020 this sector's demand, adjusted for prices, averaged 111.0 (January 2010 = 100). That is its normal demand: at this level firms get orders equal to their normal output, and each 1% more demand adds about 1.1% to their orders. In Sep 2026 demand is 117.9, 6% above normal, so orders run about 7% above normal on that account.
-- The ratio of demand to capacity when the window began. At this ratio the sector's firms run at their normal rate, about 79% of capacity; a higher ratio makes them run harder. By Sep 2026 the ratio is 7% lower (demand up 6%, capacity up 14%), so on that account firms run about 0.6 points below their normal rate. (The number itself only marks the starting point: it depends on the units and means nothing alone.)
-- The sector's capacity when the window began: 12.32B in 2017 dollars a month. It is the yardstick for market share: a firm whose capacity grows 10% faster than the sector's since then gets about 10% more orders. By Sep 2026 the sector had 14.05B (up 14%).
 - The parameter as it appears in the equations on Model Structure.
 - What the parameter controls, and the equation it appears in.
 - Entity: each firm gets its own value. Starting state: a firm's level in the first month of the window. Sector: one value shared by every firm in the sector.
