@@ -1,16 +1,16 @@
-<!-- Model and Forecast › Introduction, for forecast b653c9a8-4454-5e3d-8a00-0a530afd83a0; the page: https://mitdbg.github.io/model-2-nowcasting/forecast_overview.html?set=b653c9a8-4454-5e3d-8a00-0a530afd83a0; inputs d485c78aa701fd67 -->
+<!-- Model and Forecast › Introduction, for forecast b653c9a8-4454-5e3d-8a00-0a530afd83a0; the page: https://mitdbg.github.io/model-2-nowcasting/forecast_overview.html?set=b653c9a8-4454-5e3d-8a00-0a530afd83a0; inputs 391f2c58fc75496e -->
 
-# Overview of Forecast Set 1b817a6f-334a-510c-89d0-c6617fc49c8c
+# Overview of Forecast Bundle 1b817a6f-334a-510c-89d0-c6617fc49c8c
 
-A forecast set is one model's forecasts on every world of a world bundle: for each world, a parameter fit and a forecast at each as-of date, all made with the same model (the same code and configuration). Comparing the worlds shows which results hold across worlds and which come from one world's random draws; a new version of the model makes a new forecast set on the same worlds, so the two compare world by world.
+A forecast bundle is one model's forecasts on every world of a world bundle: for each world, a parameter fit and a forecast at each as-of date, all made with the same model (the same code and configuration). Comparing the worlds shows which results hold across worlds and which come from one world's random draws; a new version of the model makes a new forecast bundle on the same worlds, so the two compare world by world.
 
 Each forecast is made in two steps. First a parameter fit sets the model's parameters (such as how fast each entity's capacity drifts, or how strongly its prices follow its costs) from the observations known on the as-of date. Then the filter runs every entity forward month by month with those parameters, correcting its hidden states with each month's observations, to the last observed month (history), the months since (nowcast) and a year ahead (forecast).
 
 Each forecast runs 100 copies of its world at once, each with its own random shocks and its own draw of the uncertain parameters; their spread gives the 90% band.
 
-## This forecast set
+## This forecast bundle
 
-Forecast set1b817a6f-334a-510c-89d0-c6617fc49c8cWorld bundle6d0bcec7-2b0d-5434-9dfb-e3fe24aa7605 (one world)Model5cbe5e41-3076-5c38-9c17-7cf014193fd5 (code version de7dbd9; the same for every world)As-of dates2023-09-30, 2024-09-30, 2025-09-30, 2026-09-30 (each forecast uses only what was published by its date)Completeno: some worlds lack a forecast at some as-of dateMonths coveredhistory 2018-10 to 2026-09; nowcast to the as-of date; forecast to 2027-09 (12 months past the last observed month, at the last as-of date)Copies of each world100 in each forecast, each run with its own shocks and parameter drawBand wideningthe published sector bands are widened 2.55× in history, 2.31× in the nowcast and 1.86× in the forecast, because the model's own 90% bands held too little of the truth in backtests (see Evaluation, Against ground truth). Entity bands are not widened.
+Forecast bundle1b817a6f-334a-510c-89d0-c6617fc49c8cWorld bundle6d0bcec7-2b0d-5434-9dfb-e3fe24aa7605 (one world)Model5cbe5e41-3076-5c38-9c17-7cf014193fd5 (code version de7dbd9; the same for every world)As-of dates2023-09-30, 2024-09-30, 2025-09-30, 2026-09-30 (each forecast uses only what was published by its date)Completeno: some worlds lack a forecast at some as-of dateMonths coveredhistory 2018-10 to 2026-09; nowcast to the as-of date; forecast to 2027-09 (12 months past the last observed month, at the last as-of date)Copies of each world100 in each forecast, each run with its own shocks and parameter drawBand wideningthe published sector bands are widened 2.55× in history, 2.31× in the nowcast and 1.86× in the forecast, because the model's own 90% bands held too little of the truth in backtests (see Evaluation, Against ground truth). Entity bands are not widened.
 
 ## Its forecasts
 

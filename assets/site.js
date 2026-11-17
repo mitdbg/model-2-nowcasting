@@ -169,7 +169,7 @@ M2.bundleNotes = (page, ch) => {
   const key = (m) => String(m.seed ?? m.world_catalog_id);
   const name = (m) => forecast ? M2.forecastName(m) : M2.worldName(m);
   const pick = ms.length === 1
-    ? `<b>${M2.esc(name(ch.member))}</b> <span class="muted">(${forecast ? "the set's only forecast" : "the bundle's only world"})</span>`
+    ? `<b>${M2.esc(name(ch.member))}</b> <span class="muted">(${forecast ? "the forecast bundle's only forecast" : "the bundle's only world"})</span>`
     : `<select id="worldsel" aria-label="${forecast ? "Forecast" : "World"} shown">${ms.map((m) => `<option value="${M2.esc(key(m))}"${m === ch.member ? " selected" : ""}${m.set ? "" : " disabled"}>${M2.esc(name(m))}${m.set ? "" : " (not built)"}</option>`).join("")}</select>
        <span class="muted">${forecast ? `one forecast for each of the bundle's ${ms.length} worlds` : `${built.length} of ${ms.length} worlds in this bundle`}</span>`;
   const html = `<div class="worldpick"><span class="k">${forecast ? "Forecast" : "World"} shown</span> ${pick}</div>` + (progress
@@ -218,17 +218,17 @@ M2.header = (meta, page) => {
     if (ch.fs && wrap) {
       M2.bundleNotes(page, ch);
       const n = (fs) => `${fs.size} world${fs.size === 1 ? "" : "s"}`;
-      btn.textContent = `World bundle ${ch.fs.world_bundle.slice(0, 8)} · ${n(ch.fs)} · computed ${day(ch.fs.made_utc)} ▾`;
-      btn.title = `Change the world bundle and forecasts this site shows (now: forecast set ${ch.fs.id}, world bundle ${ch.fs.world_bundle})`;
+      btn.textContent = `Forecast bundle ${ch.fs.id.slice(0, 8)} · ${n(ch.fs)} · computed ${day(ch.fs.made_utc)} ▾`;
+      btn.title = `Change the forecast bundle this site shows (now: forecast bundle ${ch.fs.id}, made on world bundle ${ch.fs.world_bundle})`;
       wrap.hidden = false;
       const fsets = [...idx.forecast_sets].sort((a, b) => (b.made_utc || "").localeCompare(a.made_utc || ""));
       const seeds = (fs) => fs.members.map((m) => m.seed).filter((s) => s != null);
-      menu.innerHTML = `<div class="sm-head">World bundle and forecasts shown</div>` + fsets.map((x) =>
+      menu.innerHTML = `<div class="sm-head">Forecast bundle shown</div>` + fsets.map((x) =>
         `<div class="sm-row${x.id === ch.fs.id ? " on" : ""}">
           <button type="button" class="sm-item" data-set="${M2.esc(x.id)}" role="option" aria-selected="${x.id === ch.fs.id}">
-          <span class="sm-w">World bundle <span class="sm-id">${M2.esc(x.world_bundle)}</span>${x.id === idx.default_forecast_set ? " <span class=\"sm-k\">· default</span>" : ""}</span>
+          <span class="sm-w">Forecast bundle <span class="sm-id">${M2.esc(x.id)}</span>${x.id === idx.default_forecast_set ? " <span class=\"sm-k\">· default</span>" : ""}</span>
           <span class="sm-c">${n(x)}${x.kind === "synthetic" ? `, synthetic (${M2.esc(x.generator || "")}; seed${seeds(x).length === 1 ? "" : "s"} ${M2.esc(seeds(x).join(", "))})` : ", real"} · computed ${M2.esc(day(x.made_utc))}</span>
-          <span class="sm-f">Forecast set <span title="${M2.esc(x.id)}">${M2.esc(x.id.slice(0, 8))}</span>${x.model_commit ? ` · model ${M2.esc(x.model_commit)}` : ""} · as-of dates ${M2.esc((x.as_of || []).join(", "))}${x.complete ? "" : " · incomplete"}</span></button></div>`).join("");
+          <span class="sm-f">World bundle <span title="${M2.esc(x.world_bundle)}">${M2.esc(x.world_bundle.slice(0, 8))}</span>${x.model_commit ? ` · model ${M2.esc(x.model_commit)}` : ""} · as-of dates ${M2.esc((x.as_of || []).join(", "))}${x.complete ? "" : " · incomplete"}</span></button></div>`).join("");
       const open = (on) => { menu.hidden = !on; btn.setAttribute("aria-expanded", on); };
       btn.addEventListener("click", (e) => { e.stopPropagation(); open(menu.hidden); });
       document.addEventListener("click", (e) => { if (!wrap.contains(e.target)) open(false); });

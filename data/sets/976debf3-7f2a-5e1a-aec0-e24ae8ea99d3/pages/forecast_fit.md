@@ -1,6 +1,6 @@
-<!-- Model and Forecast › Fitted Parameters, for forecast 976debf3-7f2a-5e1a-aec0-e24ae8ea99d3; the page: https://mitdbg.github.io/model-2-nowcasting/forecast_fit.html?set=976debf3-7f2a-5e1a-aec0-e24ae8ea99d3; inputs d0354b46496f371c -->
+<!-- Model and Forecast › Fitted Parameters, for forecast 976debf3-7f2a-5e1a-aec0-e24ae8ea99d3; the page: https://mitdbg.github.io/model-2-nowcasting/forecast_fit.html?set=976debf3-7f2a-5e1a-aec0-e24ae8ea99d3; inputs b2f1932b1838677e -->
 
-Forecast shown Forecast 976debf3, world seed 20261112 (the set's only forecast)
+Forecast shown Forecast 976debf3, world seed 20261112 (the forecast bundle's only forecast)
 
 # Fitted Parameters
 

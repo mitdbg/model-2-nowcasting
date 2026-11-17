@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Model and Forecast · Model 2</title>
-<link rel="stylesheet" href="assets/site.css?v=ea4e0f3-1794924809">
+<link rel="stylesheet" href="assets/site.css?v=81658e6-1794925297">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Code+Pro:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800&display=swap">
 <style>
@@ -21,7 +21,7 @@
   <h1>Overview</h1>
   <div class="sub" id="intro"></div>
   <style>#intro p { margin: 0 0 8px; max-width: 90ch; }</style>
-  <h2>This forecast set</h2>
+  <h2>This forecast bundle</h2>
   <div class="wkv" id="run"></div>
   <h2>Its forecasts</h2>
   <p class="sub">One row per world of the bundle: its forecast at the last as-of date, and the parameter fit that
@@ -35,7 +35,7 @@
   the round kept. <span id="secsw"></span></p>
   <div class="tablewrap"><table id="secs"></table></div>
 </main>
-<script src="assets/site.js?v=ea4e0f3-1794924809"></script>
+<script src="assets/site.js?v=81658e6-1794925297"></script>
 <script>
 (async () => {
   try {
@@ -47,14 +47,14 @@
     const fs = ch.fs || { id: null, world_bundle: null, size: 1, as_of: [f.as_of], model: cur.model, model_commit: cur.model_commit,
       complete: null, members: [{ set: ch.set, seed: null, world_catalog_id: cur.world_catalog_id }] };
     const me = ch.member || fs.members[0];
-    document.querySelector("h1").textContent = `Overview of Forecast Set ${fs.id || "(not in the catalog)"}`;
+    document.querySelector("h1").textContent = `Overview of Forecast Bundle ${fs.id || "(not in the catalog)"}`;
     const g = f.time_grid, n = (v) => (v ?? 0).toLocaleString();
     const when = (u) => u ? `${u.slice(0, 10)} at ${u.slice(11, 16)} UTC` : null;
     const short = Object.fromEntries(meta.sectors.map((s) => [s.code, s]));
-    document.getElementById("intro").innerHTML = `<p>A <b>forecast set</b> is one model's forecasts on every world of a
+    document.getElementById("intro").innerHTML = `<p>A <b>forecast bundle</b> is one model's forecasts on every world of a
       world bundle: for each world, a parameter fit and a forecast at each as-of date, all made with the same model (the
       same code and configuration). Comparing the worlds shows which results hold across worlds and which come from one
-      world's random draws; a new version of the model makes a new forecast set on the same worlds, so the two compare
+      world's random draws; a new version of the model makes a new forecast bundle on the same worlds, so the two compare
       world by world.</p>
       <p>Each forecast is made in two steps. First a <b>parameter fit</b> sets the model's parameters (such as how fast
       each entity's capacity drifts, or how strongly its prices follow its costs) from the observations known on the as-of
@@ -66,7 +66,7 @@
     const row = (k, v) => v == null || v === "" ? "" : `<span class="k">${k}</span><span>${v}</span>`;
     const bi = f.band_inflation;
     document.getElementById("run").innerHTML = [
-      row("Forecast set", `<span class="wid">${M2.esc(fs.id || "not in the catalog")}</span>`),
+      row("Forecast bundle", `<span class="wid">${M2.esc(fs.id || "not in the catalog")}</span>`),
       row("World bundle", fs.world_bundle ? `<a href="world_overview.html" class="mono">${M2.esc(fs.world_bundle)}</a>
         <span class="muted">(${fs.size === 1 ? "one world" : `${fs.size} worlds`})</span>` : null),
       row("Model", fs.model ? `<a href="forecast_config.html" class="mono">${M2.esc(fs.model)}</a>${fs.model_commit
