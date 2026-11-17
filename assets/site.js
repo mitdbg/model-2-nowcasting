@@ -65,7 +65,7 @@ M2.param = (k) => new URLSearchParams(location.search).get(k);
 M2.esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
 M2.PAGES = [["index.html", "Overview"], ["world_overview.html", "Inputs"], ["forecast_overview.html", "Model and Forecast"],
-            ["eval_revisions.html", "Evaluation"], ["next_problems.html", "Next Version"],
+            ["eval_scorecard.html", "Evaluation"], ["next_problems.html", "Next Version"],
             ["ai.html", "AI Access"]];
 // Pages shown as sub-tabs under a top-level tab, chosen near the top of the page.
 M2.SUBPAGES = {"index.html": [["index.html", "Introduction"], ["howitworks.html", "How It Works"], ["datamodel.html", "Data Model"], ["forecast_model.html", "Model Structure"]],
@@ -75,12 +75,13 @@ M2.SUBPAGES = {"index.html": [["index.html", "Introduction"], ["howitworks.html"
                              ["forecast_fit.html", "Fitted Parameters"], ["sector.html", "Forecasts"]],
   "next_problems.html": [["next_problems.html", "Current Problems"], ["next_improvements.html", "Possible Improvements"],
                          ["next_testing.html", "Improvement Testing"]],
-  "eval_revisions.html": [["eval_revisions.html", "Forecasts against later estimates"], ["eval_observations.html", "Observations against the model"], ["eval_official.html", "Sector totals against official statistics"], ["evaluation.html", "What the data pin down"], ["accuracy.html", "Against ground truth"]]};
+  "eval_scorecard.html": [["eval_scorecard.html", "Scorecard"], ["eval_revisions.html", "Forecasts against later estimates"], ["eval_observations.html", "Observations against the model"], ["eval_official.html", "Sector totals against official statistics"], ["evaluation.html", "What the data pin down"], ["accuracy.html", "Against ground truth"]]};
 // Pages about one world of the bundle: they show the world picker.
 M2.PER_WORLD = new Set(["world_entities.html", "world_observations.html", "world_bundle.html", "groupings.html",
                         "forecast_computed.html", "forecast_fit.html", "sector.html", "entity.html"]);
-// Tabs being rewritten for world bundles: for now they show one world, and say so.
-M2.IN_PROGRESS = new Set(["eval_revisions.html", "next_problems.html"]);
+// Pages being rewritten for world bundles: for now they show one world, and say so.
+M2.IN_PROGRESS = new Set(["eval_revisions.html", "eval_observations.html", "eval_official.html", "evaluation.html", "accuracy.html",
+                          "next_problems.html", "next_improvements.html", "next_testing.html"]);
 // Pages reached through a sub-tab without being one: they light up that sub-tab.
 M2.SUBALIAS = {"entity.html": "sector.html", "groupings.html": "world_entities.html"};
 // The Forecasts sub-tab's search panel, on the left of sector.html and entity.html: facets narrow one list
@@ -163,7 +164,7 @@ M2.GROUPING_KINDS = {
 // still being rewritten for world bundles, a note saying it shows one world for now.
 M2.bundleNotes = (page, ch) => {
   const top = Object.keys(M2.SUBPAGES).find((t) => M2.SUBPAGES[t].some(([h]) => h === page)) || page;
-  const progress = M2.IN_PROGRESS.has(top), perWorld = M2.PER_WORLD.has(page) || progress;
+  const progress = M2.IN_PROGRESS.has(page), perWorld = M2.PER_WORLD.has(page) || progress;
   if (!perWorld || !ch.member) return;
   const forecast = top === "forecast_overview.html";
   const ms = ch.fs.members, built = ms.filter((m) => m.set);
@@ -174,7 +175,7 @@ M2.bundleNotes = (page, ch) => {
     : `<select id="worldsel" aria-label="${forecast ? "Forecast" : "World"} shown">${ms.map((m) => `<option value="${M2.esc(key(m))}"${m === ch.member ? " selected" : ""}${m.set ? "" : " disabled"}>${M2.esc(name(m))}${m.set ? "" : " (not built)"}</option>`).join("")}</select>
        <span class="muted">${forecast ? `one forecast for each of the bundle's ${ms.length} worlds` : `${built.length} of ${ms.length} worlds in this bundle`}</span>`;
   const html = `<div class="worldpick"><span class="k">${forecast ? "Forecast" : "World"} shown</span> ${pick}</div>` + (progress
-    ? `<p class="note"><b>In progress.</b> This tab is being rewritten to describe every world of the bundle together. For now
+    ? `<p class="note"><b>In progress.</b> This page is being rewritten to describe every world of the bundle together. For now
        it describes one world, chosen above.</p>` : "");
   const sub = document.querySelector("main > .subtabs");
   if (sub) sub.insertAdjacentHTML("afterend", html); else document.querySelector("main").insertAdjacentHTML("afterbegin", html);

@@ -1,4 +1,4 @@
-<!-- Overview › Introduction, for forecast b653c9a8-4454-5e3d-8a00-0a530afd83a0; the page: https://mitdbg.github.io/model-2-nowcasting/index.html?set=b653c9a8-4454-5e3d-8a00-0a530afd83a0; inputs 576aaa9399e17b2f -->
+<!-- Overview › Introduction, for forecast b653c9a8-4454-5e3d-8a00-0a530afd83a0; the page: https://mitdbg.github.io/model-2-nowcasting/index.html?set=b653c9a8-4454-5e3d-8a00-0a530afd83a0; inputs 90acf4ed2c7aa330 -->
 
 # A fine-grained model of the economy
 

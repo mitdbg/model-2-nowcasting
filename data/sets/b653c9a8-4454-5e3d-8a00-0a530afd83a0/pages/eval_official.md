@@ -1,8 +1,8 @@
-<!-- Evaluation › Sector totals against official statistics, for forecast b653c9a8-4454-5e3d-8a00-0a530afd83a0; the page: https://mitdbg.github.io/model-2-nowcasting/eval_official.html?set=b653c9a8-4454-5e3d-8a00-0a530afd83a0; inputs e386b45129399c50 -->
+<!-- Evaluation › Sector totals against official statistics, for forecast b653c9a8-4454-5e3d-8a00-0a530afd83a0; the page: https://mitdbg.github.io/model-2-nowcasting/eval_official.html?set=b653c9a8-4454-5e3d-8a00-0a530afd83a0; inputs 471874f4cdce96d9 -->
 
 World shown World seed 20261107 (the bundle's only world)
 
-In progress. This tab is being rewritten to describe every world of the bundle together. For now it describes one world, chosen above.
+In progress. This page is being rewritten to describe every world of the bundle together. For now it describes one world, chosen above.
 
 # Sector totals against official statistics
 

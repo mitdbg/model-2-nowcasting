@@ -1,8 +1,8 @@
-<!-- Evaluation › Against ground truth, for forecast e05174ab-92f2-5d55-9c37-d06ebf3ce165; the page: https://mitdbg.github.io/model-2-nowcasting/accuracy.html?set=e05174ab-92f2-5d55-9c37-d06ebf3ce165; inputs 28fee3e05affae6e -->
+<!-- Evaluation › Against ground truth, for forecast e05174ab-92f2-5d55-9c37-d06ebf3ce165; the page: https://mitdbg.github.io/model-2-nowcasting/accuracy.html?set=e05174ab-92f2-5d55-9c37-d06ebf3ce165; inputs e5a4d6a38979b789 -->
 
 World shown  5 of 5 worlds in this bundle
 
-In progress. This tab is being rewritten to describe every world of the bundle together. For now it describes one world, chosen above.
+In progress. This page is being rewritten to describe every world of the bundle together. For now it describes one world, chosen above.
 
 # Against ground truth
 

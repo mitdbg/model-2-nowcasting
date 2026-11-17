@@ -1,8 +1,8 @@
-<!-- Evaluation › Sector totals against official statistics, for forecast e05174ab-92f2-5d55-9c37-d06ebf3ce165; the page: https://mitdbg.github.io/model-2-nowcasting/eval_official.html?set=e05174ab-92f2-5d55-9c37-d06ebf3ce165; inputs 1be1cbef3b3a64cc -->
+<!-- Evaluation › Sector totals against official statistics, for forecast e05174ab-92f2-5d55-9c37-d06ebf3ce165; the page: https://mitdbg.github.io/model-2-nowcasting/eval_official.html?set=e05174ab-92f2-5d55-9c37-d06ebf3ce165; inputs c3f60b27c584f560 -->
 
 World shown  5 of 5 worlds in this bundle
 
-In progress. This tab is being rewritten to describe every world of the bundle together. For now it describes one world, chosen above.
+In progress. This page is being rewritten to describe every world of the bundle together. For now it describes one world, chosen above.
 
 # Sector totals against official statistics
 

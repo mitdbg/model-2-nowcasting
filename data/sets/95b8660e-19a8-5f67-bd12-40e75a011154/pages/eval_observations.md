@@ -1,8 +1,8 @@
-<!-- Evaluation › Observations against the model, for forecast 95b8660e-19a8-5f67-bd12-40e75a011154; the page: https://mitdbg.github.io/model-2-nowcasting/eval_observations.html?set=95b8660e-19a8-5f67-bd12-40e75a011154; inputs ec7b56967fe35014 -->
+<!-- Evaluation › Observations against the model, for forecast 95b8660e-19a8-5f67-bd12-40e75a011154; the page: https://mitdbg.github.io/model-2-nowcasting/eval_observations.html?set=95b8660e-19a8-5f67-bd12-40e75a011154; inputs adb12545540467d1 -->
 
 World shown  5 of 5 worlds in this bundle
 
-In progress. This tab is being rewritten to describe every world of the bundle together. For now it describes one world, chosen above.
+In progress. This page is being rewritten to describe every world of the bundle together. For now it describes one world, chosen above.
 
 # Observations against the model
 

@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scorecard · Model 2</title>
+<link rel="stylesheet" href="assets/site.css?v=422f9d2-1794945854">
+<style>
+  main > p, main > ul { max-width: 90ch; }
+  .score td.v { font-size: 17px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .score td.w { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 13px; }
+  .score td.what { max-width: 52ch; }
+  .grid td.n, .grid th.n { white-space: nowrap; }
+  .grid td .k { color: var(--muted); font-size: 12px; margin-left: 4px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Scorecard</h1>
+  <p class="sub" id="real" hidden>No ground truth is available for real worlds, so a real bundle has no scorecard; the
+  other Evaluation pages check it without the truth.</p>
+  <div id="truthonly">
+  <p class="sub">How close the forecasts came to the truth, on every world of the bundle. The backtest runs the model at
+  each as-of date using only what was published by then and scores every sector total against the world's truth. Each
+  number below is computed for each world, then averaged over the worlds; the range and each world's own value show
+  whether a result holds across worlds or comes from one world's random draws. Every sector and quantity counts
+  equally.</p>
+  <ul class="plain sub">
+    <li>Errors are the typical distance between the forecast's median and the truth, at the nowcast (the as-of date's
+      own months) unless the row says otherwise, averaged over the four as-of dates. Most quantities are scored as a
+      percentage error; utilization and load factor in percentage points; quantities often near zero (finished
+      inventory, overdue orders, phantom orders, lost demand) in months of the sector's output, since a percentage of a
+      number near zero says little.</li>
+    <li>A sector and quantity <b>fails</b> when its error is above 25% (or 25 points), or above one month of output for
+      the quantities scored in months.</li>
+  </ul>
+
+  <h2>The bundle's scores</h2>
+  <div class="tablewrap"><table id="score" class="score"></table></div>
+
+  <h2>By sector</h2>
+  <p class="sub">Each cell is the sector's error for that group of quantities, averaged over the worlds; "fails in k of
+  N" counts the worlds where it is above the failure line. A failure in most worlds is a tendency of the model; a
+  failure in one world may be that world's luck.</p>
+  <div class="tablewrap"><table id="bysec" class="grid"></table></div>
+
+  <h2>By sector and quantity</h2>
+  <p class="sub">The same, quantity by quantity. Only cells that fail in at least one world are listed, worst first.</p>
+  <div class="tablewrap"><table id="cells" class="grid"></table></div>
+  </div>
+</main>
+<script src="assets/site.js?v=422f9d2-1794945854"></script>
+<script>
+// quantity groups: one unit each, so their errors can be averaged
+const GROUPS = [
+  ["core", "Core quantities", "output, capacity, utilization, shipments, price, unit cost, load factor",
+   ["output", "capacity", "utilization", "shipments", "price", "unit_cost", "load_factor"]],
+  ["orders", "Orders", "new orders, order book, lead time", ["new_orders", "backlog", "lead_time"]],
+  ["stocks", "Inputs and pipeline", "input inventory, capacity announced, under construction and in use",
+   ["input_inventory", "capacity_announced", "capacity_under_construction", "capacity_in_use"]],
+  ["months", "Quantities near zero", "finished inventory, overdue orders, phantom orders, lost demand (months of output)",
+   ["finished_stock", "backlog_overdue", "phantom_backlog", "lost_demand"]],
+];
+const GROUP_OF = Object.fromEntries(GROUPS.flatMap(([g, , , vs]) => vs.map((v) => [v, g])));
+const FAIL = (g) => (g === "months" ? 1.0 : 0.25);
+const POINTS = new Set(["utilization", "load_factor"]);
+const mean = (xs) => { const v = xs.filter((x) => x != null && isFinite(x)); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; };
+const fmt = (v, g, q) => v == null ? "–" : g === "months" ? `${v.toFixed(2)} mo` : (q && POINTS.has(q)) ? `${(100 * v).toFixed(1)} pts` : `${(100 * v).toFixed(1)}%`;
+
+(async () => {
+  try {
+    const meta = await M2.load("meta.json");
+    M2.header(meta, "eval_scorecard.html");
+    const ch = await M2.choice();
+    const short = Object.fromEntries(meta.sectors.map((s) => [s.code, s.short]));
+    // the bundle's worlds that are on the site, each with its scores against the truth
+    const members = (ch.fs ? ch.fs.members : [{ set: ch.set, seed: null }]).filter((m) => m.set);
+    const worlds = await Promise.all(members.map(async (m) => {
+      const w = await M2.loadFor(m.set, "world.json").catch(() => ({}));
+      const a = w.kind === "synthetic" ? await M2.loadFor(m.set, "accuracy.json").catch(() => null) : null;
+      return { m, a };
+    }));
+    const scored = worlds.filter((x) => x.a && x.a.scores);
+    if (!scored.length) { document.getElementById("truthonly").hidden = true; document.getElementById("real").hidden = false; return; }
+    const N = scored.length;
+    const label = (x) => (x.m.seed != null ? String(x.m.seed) : (x.m.set || "").slice(0, 8));
+
+    // per world: each sector × quantity's error (nowcast and 12 months ahead) and coverage of the published bands
+    const per = scored.map((x) => {
+      const cell = {}, cov = [];
+      for (const r of x.a.scores) {
+        if (!GROUP_OF[r.variable]) continue;
+        const k = `${r.sector}|${r.variable}`;
+        cell[k] ||= {};
+        cell[k][r.horizon] = r.err;
+        if (r.horizon === "nowcast" && r.cov != null) cov.push([r.cov, r.n]);
+      }
+      const groupErr = (g, h, sec) => mean(Object.entries(cell).filter(([k]) => GROUP_OF[k.split("|")[1]] === g && (!sec || k.split("|")[0] === sec))
+        .map(([, v]) => v[h]));
+      const fails = Object.entries(cell).filter(([k, v]) => v.nowcast != null && v.nowcast > FAIL(GROUP_OF[k.split("|")[1]])).length;
+      const n = cov.reduce((a, [, k]) => a + k, 0);
+      return { x, cell, groupErr, fails, cells: Object.keys(cell).length, cov: n ? cov.reduce((a, [c, k]) => a + c * k, 0) / n : null };
+    });
+
+    // the scorecard: one row per measure, the bundle's mean, its range and each world's value
+    const rows = [
+      ...GROUPS.map(([g, name, what]) => [`${name}, nowcast error`, what, per.map((p) => p.groupErr(g, "nowcast")), (v) => fmt(v, g)]),
+      ["Core quantities, error 12 months ahead", "the core quantities forecast a year past the last observed month",
+        per.map((p) => p.groupErr("core", "h+12")), (v) => fmt(v, "core")],
+      ["Coverage of the 90% bands", "share of nowcast values with the truth inside the published 90% band; about 90% is right, much less is overconfident",
+        per.map((p) => p.cov), (v) => (v == null ? "–" : M2.pct(v, 0))],
+      ["Failures", "sectors and quantities above the failure line, at the nowcast",
+        per.map((p) => p.fails), (v) => (v == null ? "–" : `${Math.round(v)} of ${per[0].cells}`)],
+    ];
+    document.getElementById("score").innerHTML = `<tr><th>measure</th><th class="n">bundle mean</th><th class="n">range over worlds</th>
+      <th>each world${N > 1 ? " (by seed)" : ""}</th><th>what it measures</th></tr>` +
+      rows.map(([name, what, vals, f]) => {
+        const v = vals.filter((x) => x != null), lo = Math.min(...v), hi = Math.max(...v);
+        return `<tr><td><b>${M2.esc(name)}</b></td><td class="n v">${f(mean(vals))}</td>
+          <td class="n">${N > 1 && v.length ? `${f(lo)} to ${f(hi)}` : "–"}</td>
+          <td class="w">${vals.map((x, i) => `${M2.esc(label(scored[i]))}: ${f(x)}`).join("<br>")}</td>
+          <td class="what muted">${M2.esc(what)}</td></tr>`;
+      }).join("");
+
+    // by sector: each group's error averaged over worlds, and in how many worlds it fails
+    const secs = [...meta.sectors].sort((a, b) => a.short.localeCompare(b.short));
+    const cellHtml = (vals, g, q) => {
+      const v = vals.filter((x) => x != null);
+      if (!v.length) return `<td class="n muted">–</td>`;
+      const k = v.filter((x) => x > FAIL(g)).length;
+      const cls = k === 0 ? "" : 2 * k > v.length ? "bad" : "warn";
+      return `<td class="n ${cls}">${fmt(mean(v), g, q)}${k ? `<span class="k">fails in ${k} of ${v.length}</span>` : ""}</td>`;
+    };
+    document.getElementById("bysec").innerHTML = `<tr><th>sector</th>${GROUPS.map(([, name]) => `<th class="n">${M2.esc(name)}</th>`).join("")}</tr>` +
+      secs.map((s) => `<tr><td><a href="sector.html?s=${s.code}">${M2.esc(s.short)}</a></td>` +
+        GROUPS.map(([g]) => cellHtml(per.map((p) => p.groupErr(g, "nowcast", s.code)), g)).join("") + "</tr>").join("");
+
+    // every sector × quantity that fails in at least one world, the most failing and largest first
+    const keys = [...new Set(per.flatMap((p) => Object.keys(p.cell)))];
+    const fail = keys.map((k) => {
+      const [sec, q] = k.split("|"), g = GROUP_OF[q];
+      const vals = per.map((p) => p.cell[k]?.nowcast ?? null);
+      return { sec, q, g, vals, k: vals.filter((x) => x != null && x > FAIL(g)).length, m: mean(vals) };
+    }).filter((r) => r.k).sort((a, b) => b.k - a.k || b.m / FAIL(b.g) - a.m / FAIL(a.g));
+    document.getElementById("cells").innerHTML = fail.length
+      ? `<tr><th>sector</th><th>quantity</th><th class="n">mean error</th>${scored.map((x) => `<th class="n">${M2.esc(label(x))}</th>`).join("")}</tr>` +
+        fail.map((r) => `<tr><td><a href="sector.html?s=${r.sec}">${M2.esc(short[r.sec] || r.sec)}</a></td><td>${M2.esc(M2.SHORT_VAR[r.q] || r.q)}</td>` +
+          cellHtml(r.vals, r.g, r.q) + r.vals.map((v) => `<td class="n${v != null && v > FAIL(r.g) ? " bad" : ""}">${fmt(v, r.g, r.q)}</td>`).join("") + "</tr>").join("")
+      : `<tr><td class="muted">No sector and quantity fails in any world.</td></tr>`;
+  } catch (e) { M2.fail(e); }
+})();
+</script>
+</body>
+</html>

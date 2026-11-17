@@ -1,8 +1,8 @@
-<!-- Evaluation › What the data pin down, for forecast e05174ab-92f2-5d55-9c37-d06ebf3ce165; the page: https://mitdbg.github.io/model-2-nowcasting/evaluation.html?set=e05174ab-92f2-5d55-9c37-d06ebf3ce165; inputs 1c315433a7601436 -->
+<!-- Evaluation › What the data pin down, for forecast e05174ab-92f2-5d55-9c37-d06ebf3ce165; the page: https://mitdbg.github.io/model-2-nowcasting/evaluation.html?set=e05174ab-92f2-5d55-9c37-d06ebf3ce165; inputs f3a22e631d438a2d -->
 
 World shown  5 of 5 worlds in this bundle
 
-In progress. This tab is being rewritten to describe every world of the bundle together. For now it describes one world, chosen above.
+In progress. This page is being rewritten to describe every world of the bundle together. For now it describes one world, chosen above.
 
 # What the data pin down
 

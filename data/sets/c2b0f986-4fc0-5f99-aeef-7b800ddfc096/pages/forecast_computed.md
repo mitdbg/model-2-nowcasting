@@ -1,4 +1,4 @@
-<!-- Model and Forecast › Values Computed From Input Data, for forecast c2b0f986-4fc0-5f99-aeef-7b800ddfc096; the page: https://mitdbg.github.io/model-2-nowcasting/forecast_computed.html?set=c2b0f986-4fc0-5f99-aeef-7b800ddfc096; inputs 01c8128d80098ed4 -->
+<!-- Model and Forecast › Values Computed From Input Data, for forecast c2b0f986-4fc0-5f99-aeef-7b800ddfc096; the page: https://mitdbg.github.io/model-2-nowcasting/forecast_computed.html?set=c2b0f986-4fc0-5f99-aeef-7b800ddfc096; inputs fcb5d636e59c8a2e -->
 
 Forecast shown  one forecast for each of the bundle's 5 worlds
 
