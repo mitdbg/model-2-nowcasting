@@ -1,4 +1,4 @@
-<!-- AI Access › AI Access, for forecast 95b8660e-19a8-5f67-bd12-40e75a011154; the page: https://mitdbg.github.io/model-2-nowcasting/ai.html?set=95b8660e-19a8-5f67-bd12-40e75a011154; inputs 8f34ac1fadeb0a92 -->
+<!-- AI Access › AI Access, for forecast 95b8660e-19a8-5f67-bd12-40e75a011154; the page: https://mitdbg.github.io/model-2-nowcasting/ai.html?set=95b8660e-19a8-5f67-bd12-40e75a011154; inputs a1536b2f132d0b8c -->
 
 # AI Access
 

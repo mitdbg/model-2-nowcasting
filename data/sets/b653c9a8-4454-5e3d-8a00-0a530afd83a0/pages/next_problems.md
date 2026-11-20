@@ -1,12 +1,8 @@
-<!-- Next Version › Current Problems, for forecast b653c9a8-4454-5e3d-8a00-0a530afd83a0; the page: https://mitdbg.github.io/model-2-nowcasting/next_problems.html?set=b653c9a8-4454-5e3d-8a00-0a530afd83a0; inputs a574b81d40432233 -->
-
-World shown World seed 20261107 (the bundle's only world)
-
-In progress. This page is being rewritten to describe every world of the bundle together. For now it describes one world, chosen above.
+<!-- Next Version › Current Problems, for forecast b653c9a8-4454-5e3d-8a00-0a530afd83a0; the page: https://mitdbg.github.io/model-2-nowcasting/next_problems.html?set=b653c9a8-4454-5e3d-8a00-0a530afd83a0; inputs 78cfb702802d25e8 -->
 
 # Current Problems
 
-This analysis was written by an AI evaluator that saw only the Evaluation pages that need no ground truth. It had no access to the true values, the model's code, or how the model was developed. This analysis has not been human-reviewed.
+This analysis was written by an AI evaluator that saw only the Evaluation pages that need no ground truth, for the bundle's one world. It had no access to the true values, the model's code, or how the model was developed. This analysis has not been human-reviewed.
 
 Overall assessment. Taken one entity at a time, the model fits well: 89% of its entity parameters are narrowed by the data, and its forecasts usually land within about 2% of its own later estimates. The trouble is in how the parts add up and how they are linked. The filter is unsettled in several sectors, the sector totals for Machinery and Oil and gas disagree with official statistics, and the model's stated uncertainty is uneven: too wide for most observations and forecasts, too narrow for capacity and sector totals. The main headline check, forecasts against later estimates, flatters the model, because many of the quantities it scores come mostly from the model itself rather than from data.
 

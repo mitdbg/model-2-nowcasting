@@ -1,4 +1,4 @@
-<!-- Overview › Data Model, for forecast c2b0f986-4fc0-5f99-aeef-7b800ddfc096; the page: https://mitdbg.github.io/model-2-nowcasting/datamodel.html?set=c2b0f986-4fc0-5f99-aeef-7b800ddfc096; inputs 789eabb4930631b7 -->
+<!-- Overview › Data Model, for forecast c2b0f986-4fc0-5f99-aeef-7b800ddfc096; the page: https://mitdbg.github.io/model-2-nowcasting/datamodel.html?set=c2b0f986-4fc0-5f99-aeef-7b800ddfc096; inputs 50dc6c17e318cf50 -->
 
 # Data Model
 

@@ -1,4 +1,4 @@
-<!-- Inputs › Sector input delivery, for forecast c288b02e-1d8d-5a88-89a8-2b7bb3a5ca84; the page: https://mitdbg.github.io/model-2-nowcasting/world_bundle.html?set=c288b02e-1d8d-5a88-89a8-2b7bb3a5ca84; inputs df8d58274fdd5037 -->
+<!-- Inputs › Sector input delivery, for forecast c288b02e-1d8d-5a88-89a8-2b7bb3a5ca84; the page: https://mitdbg.github.io/model-2-nowcasting/world_bundle.html?set=c288b02e-1d8d-5a88-89a8-2b7bb3a5ca84; inputs 9cac8a610a38d379 -->
 
 World shown  5 of 5 worlds in this bundle
 

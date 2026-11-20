@@ -1,4 +1,4 @@
-<!-- Evaluation › Against ground truth, for forecast 958bc61e-85e2-5352-970c-bb52c97226a3; the page: https://mitdbg.github.io/model-2-nowcasting/accuracy.html?set=958bc61e-85e2-5352-970c-bb52c97226a3; inputs b4bc99d29856860c -->
+<!-- Evaluation › Against ground truth, for forecast 958bc61e-85e2-5352-970c-bb52c97226a3; the page: https://mitdbg.github.io/model-2-nowcasting/accuracy.html?set=958bc61e-85e2-5352-970c-bb52c97226a3; inputs 6eecafb16f95b402 -->
 
 World shown World seed 20261117 (the bundle's only world)
 

@@ -65,7 +65,7 @@ The site's list of forecasts is https://mitdbg.github.io/model-2-nowcasting/data
 - [Evaluation › Sector totals against official statistics](https://mitdbg.github.io/model-2-nowcasting/data/sets/e05174ab-92f2-5d55-9c37-d06ebf3ce165/pages/eval_official.md): The model's totals against official series.
 - [Evaluation › What the data pin down](https://mitdbg.github.io/model-2-nowcasting/data/sets/e05174ab-92f2-5d55-9c37-d06ebf3ce165/pages/evaluation.md): Which quantities and parameters the data determine.
 - [Evaluation › Against ground truth](https://mitdbg.github.io/model-2-nowcasting/data/sets/e05174ab-92f2-5d55-9c37-d06ebf3ce165/pages/accuracy.md): Errors against the true values (synthetic worlds only).
-- [Next Version › Current Problems](https://mitdbg.github.io/model-2-nowcasting/data/sets/e05174ab-92f2-5d55-9c37-d06ebf3ce165/pages/next_problems.md): An AI evaluator's analysis of what is wrong.
+- [Next Version › Current Problems](https://mitdbg.github.io/model-2-nowcasting/data/sets/e05174ab-92f2-5d55-9c37-d06ebf3ce165/pages/next_problems.md): An AI evaluator's analysis of what holds the forecast bundle's Scorecard back, over all its worlds.
 - [Next Version › Possible Improvements](https://mitdbg.github.io/model-2-nowcasting/data/sets/e05174ab-92f2-5d55-9c37-d06ebf3ce165/pages/next_improvements.md): Proposed fixes, with odds, time and cost.
 - [Next Version › Improvement Testing](https://mitdbg.github.io/model-2-nowcasting/data/sets/e05174ab-92f2-5d55-9c37-d06ebf3ce165/pages/next_testing.md): Every possible fix and what testing it found.
 - [AI Access › AI Access](https://mitdbg.github.io/model-2-nowcasting/data/sets/e05174ab-92f2-5d55-9c37-d06ebf3ce165/pages/ai.md): How AI agents connect to this site (MCP, llms.txt).

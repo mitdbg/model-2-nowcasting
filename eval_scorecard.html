@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Scorecard · Model 2</title>
-<link rel="stylesheet" href="assets/site.css?v=38a24be-1794946751">
+<link rel="stylesheet" href="assets/site.css?v=a082cd5-1795199876">
 <style>
   main > p, main > ul { max-width: 90ch; }
   .score td.v { font-size: 17px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
@@ -43,7 +43,7 @@
   <div class="tablewrap"><table id="cells" class="grid"></table></div>
   </div>
 </main>
-<script src="assets/site.js?v=38a24be-1794946751"></script>
+<script src="assets/site.js?v=a082cd5-1795199876"></script>
 <script>
 // quantity groups: one unit each, so their errors can be averaged
 const GROUPS = [
@@ -76,6 +76,7 @@ const fmt = (v, g, q) => v == null ? "–" : g === "months" ? `${v.toFixed(2)} m
     }));
     const scored = worlds.filter((x) => x.a && x.a.scores);
     if (!scored.length) { document.getElementById("truthonly").hidden = true; document.getElementById("real").hidden = false; return; }
+    document.getElementById("real").remove();   // not just hidden: page texts for agents keep hidden text
     const N = scored.length;
     const label = (x) => (x.m.seed != null ? String(x.m.seed) : (x.m.set || "").slice(0, 8));
 

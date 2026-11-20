@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Current Problems · Model 2</title>
-<link rel="stylesheet" href="assets/site.css?v=38a24be-1794946751">
+<link rel="stylesheet" href="assets/site.css?v=a082cd5-1795199876">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Code+Pro:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800&display=swap">
 <style>
@@ -51,26 +51,33 @@
   <nav class="toc" id="toc" aria-label="On this page" hidden><a href="#sectors">Weakest sectors</a><a href="#quantities">Weakest hidden quantities</a><a href="#problems">Problems</a></nav>
   <div id="report" class="ai" data-ai="AI generated" aria-label="Analysis written by an AI evaluator"></div>
 </main>
-<script src="assets/site.js?v=38a24be-1794946751"></script>
+<script src="assets/site.js?v=a082cd5-1795199876"></script>
 <script>
 (async () => {
   try {
     const meta = await M2.load("meta.json");
     M2.header(meta, "next_problems.html");
-    const [idx, sid] = [await M2.sets(), await M2.currentSet()];
-    const set = idx.sets.find((x) => x.id === sid) || {};
-    const which = `the world ${M2.esc(set.world_catalog_id || set.world || "shown")} and its forecast for ${M2.esc(set.as_of || meta.as_of)}`;
+    const ch = await M2.choice();
+    const which = ch.fs ? `forecast bundle ${M2.esc(ch.fs.id.slice(0, 8))}, ${ch.fs.members.length} world${ch.fs.members.length === 1 ? "" : "s"}`
+      : `the forecast ${M2.esc((ch.set || "").slice(0, 8))}`;
     let rep = null;
-    try { rep = await M2.load("problems.json"); } catch (e) { /* no summary for this set */ }
+    try { rep = await M2.loadNext("problems.json"); } catch (e) { /* no summary for this bundle */ }
     const how = document.getElementById("how");
     if (!rep) {
-      how.innerHTML = `No problem summary has been written for this world and forecast yet (${which}). Choose another
-        world and forecast at the top right to see one that has a summary.`;
+      how.innerHTML = `No problem summary has been written for this forecast bundle yet (${which}). Choose another
+        forecast bundle at the top right to see one that has a summary.`;
       return;
     }
-    how.innerHTML = `This analysis was written by an AI evaluator that saw only the
-      <a href="eval_revisions.html">Evaluation pages</a> that need no ground truth. It had no access to the true values,
-      the model's code, or how the model was developed. This analysis has not been human-reviewed.`;
+    how.innerHTML = rep.scope === "bundle"
+      ? `The problems of the forecast bundle as a whole (${which}), across all of its worlds and forecasts. This
+        analysis was written by an AI evaluator that saw only the <a href="eval_scorecard.html">Evaluation pages</a>:
+        the bundle's Scorecard, and each world's other Evaluation pages, including Against ground truth. It was asked to
+        find what most holds the Scorecard back, and to prefer problems that appear in most worlds. It had no access to
+        the model's code or how the model was developed. This analysis has not been human-reviewed.`
+      : `This analysis was written by an AI evaluator that saw only the
+        <a href="eval_revisions.html">Evaluation pages</a> that need no ground truth, for the bundle's one world. It had no
+        access to the true values, the model's code, or how the model was developed. This analysis has not been
+        human-reviewed.`;
     document.getElementById("report").innerHTML = rep.html;
     document.getElementById("toc").hidden = false;
     const go = () => {   // the report arrives after load, so mark and scroll to the linked problem here

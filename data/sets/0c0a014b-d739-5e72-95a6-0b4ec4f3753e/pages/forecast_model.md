@@ -1,4 +1,4 @@
-<!-- Overview › Model Structure, for forecast 0c0a014b-d739-5e72-95a6-0b4ec4f3753e; the page: https://mitdbg.github.io/model-2-nowcasting/forecast_model.html?set=0c0a014b-d739-5e72-95a6-0b4ec4f3753e; inputs b0fb99a47c2388b5 -->
+<!-- Overview › Model Structure, for forecast 0c0a014b-d739-5e72-95a6-0b4ec4f3753e; the page: https://mitdbg.github.io/model-2-nowcasting/forecast_model.html?set=0c0a014b-d739-5e72-95a6-0b4ec4f3753e; inputs 2bbe63cc25601638 -->
 
 # Model Structure
 

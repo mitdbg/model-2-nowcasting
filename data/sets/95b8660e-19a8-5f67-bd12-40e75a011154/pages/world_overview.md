@@ -1,4 +1,4 @@
-<!-- Inputs › Introduction, for forecast 95b8660e-19a8-5f67-bd12-40e75a011154; the page: https://mitdbg.github.io/model-2-nowcasting/world_overview.html?set=95b8660e-19a8-5f67-bd12-40e75a011154; inputs 4cfea48eb2a1e8cc -->
+<!-- Inputs › Introduction, for forecast 95b8660e-19a8-5f67-bd12-40e75a011154; the page: https://mitdbg.github.io/model-2-nowcasting/world_overview.html?set=95b8660e-19a8-5f67-bd12-40e75a011154; inputs f3c58eb9e9fe7485 -->
 
 # Overview of World Bundle 2ca91773-e0b9-5d10-a633-37dd1d165a3a
 
@@ -36,7 +36,7 @@ world | seed | created  | entities | tracked | companies | observations  | secto
 
 443daf3f w36-margin-seed2026111702 | 2026111702  | 2026-11-17  | 274 | 115  | 77 | 42,955  | 4  | 2010-01 to 2027-09
 
-96dceaa9 w36-margin-seed2026111703 | 2026111703  | 2026-11-17  | 275 | 115  | 77 | 42,964  | 4  | 2010-01 to 2027-09
+96dceaa9-c9cc-5835-b78e-5d36c09aa477 | 2026111703  | not built for the site
 
 e8b09131 w36-margin-seed2026111704 | 2026111704  | 2026-11-17  | 275 | 115  | 77 | 42,963  | 4  | 2010-01 to 2027-09
 

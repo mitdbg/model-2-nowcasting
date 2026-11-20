@@ -1,8 +1,6 @@
-<!-- Evaluation › Scorecard, for forecast 0c0a014b-d739-5e72-95a6-0b4ec4f3753e; the page: https://mitdbg.github.io/model-2-nowcasting/eval_scorecard.html?set=0c0a014b-d739-5e72-95a6-0b4ec4f3753e; inputs 110e09ca9133a402 -->
+<!-- Evaluation › Scorecard, for forecast 0c0a014b-d739-5e72-95a6-0b4ec4f3753e; the page: https://mitdbg.github.io/model-2-nowcasting/eval_scorecard.html?set=0c0a014b-d739-5e72-95a6-0b4ec4f3753e; inputs 4680b603574fe04d -->
 
 # Scorecard
-
-No ground truth is available for real worlds, so a real bundle has no scorecard; the other Evaluation pages check it without the truth.
 
 How close the forecasts came to the truth, on every world of the bundle. The backtest runs the model at each as-of date using only what was published by then and scores every sector total against the world's truth. Each number below is computed for each world, then averaged over the worlds; the range shows whether a result holds across worlds or comes from one world's random draws. Every sector and quantity counts equally.
 

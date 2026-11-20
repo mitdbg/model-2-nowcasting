@@ -1,4 +1,4 @@
-<!-- Model and Forecast › Values Computed From Input Data, for forecast 958bc61e-85e2-5352-970c-bb52c97226a3; the page: https://mitdbg.github.io/model-2-nowcasting/forecast_computed.html?set=958bc61e-85e2-5352-970c-bb52c97226a3; inputs 8ed082fe901f8047 -->
+<!-- Model and Forecast › Values Computed From Input Data, for forecast 958bc61e-85e2-5352-970c-bb52c97226a3; the page: https://mitdbg.github.io/model-2-nowcasting/forecast_computed.html?set=958bc61e-85e2-5352-970c-bb52c97226a3; inputs aa771cae49c2836c -->
 
 Forecast shown Forecast 958bc61e, world seed 20261117 (the forecast bundle's only forecast)
 

@@ -1,12 +1,8 @@
-<!-- Next Version › Current Problems, for forecast 976debf3-7f2a-5e1a-aec0-e24ae8ea99d3; the page: https://mitdbg.github.io/model-2-nowcasting/next_problems.html?set=976debf3-7f2a-5e1a-aec0-e24ae8ea99d3; inputs 13a7cf61c2ada0c4 -->
-
-World shown World seed 20261112 (the bundle's only world)
-
-In progress. This page is being rewritten to describe every world of the bundle together. For now it describes one world, chosen above.
+<!-- Next Version › Current Problems, for forecast 976debf3-7f2a-5e1a-aec0-e24ae8ea99d3; the page: https://mitdbg.github.io/model-2-nowcasting/next_problems.html?set=976debf3-7f2a-5e1a-aec0-e24ae8ea99d3; inputs 9c34cf3d727a0663 -->
 
 # Current Problems
 
-This analysis was written by an AI evaluator that saw only the Evaluation pages that need no ground truth. It had no access to the true values, the model's code, or how the model was developed. This analysis has not been human-reviewed.
+This analysis was written by an AI evaluator that saw only the Evaluation pages that need no ground truth, for the bundle's one world. It had no access to the true values, the model's code, or how the model was developed. This analysis has not been human-reviewed.
 
 Overall assessment. On the headline numbers the model looks sound: 94 of 100 later estimates fall inside the forecast range, the typical forecast gap is about 2.5%, and 91% of parameters are learned from data. Underneath, two sectors (Wholesale and Machinery) fail clearly. Several quantities, new orders and inventories above all, are set by the model's assumptions rather than by data, and its uncertainty is miscalibrated in both directions: too wide for most quantities, too narrow for capacity and some official statistics.
 

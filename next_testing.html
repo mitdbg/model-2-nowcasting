@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Improvement Testing · Model 2</title>
-<link rel="stylesheet" href="assets/site.css?v=38a24be-1794946751">
+<link rel="stylesheet" href="assets/site.css?v=a082cd5-1795199876">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Code+Pro:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800&display=swap">
 <style>
@@ -50,18 +50,18 @@
   <div class="how" id="how"></div>
   <div class="tablewrap" id="wrap"></div>
 </main>
-<script src="assets/site.js?v=38a24be-1794946751"></script>
+<script src="assets/site.js?v=a082cd5-1795199876"></script>
 <script>
 (async () => {
   try {
     const meta = await M2.load("meta.json");
     M2.header(meta, "next_testing.html");
     let t = null, rep = null;
-    try { t = await M2.load("testing.json"); } catch (e) { /* no possible fixes for this set */ }
-    try { rep = await M2.load("improvements.json"); } catch (e) { /* none */ }
+    try { t = await M2.loadNext("testing.json"); } catch (e) { /* no possible fixes for this bundle */ }
+    try { rep = await M2.loadNext("improvements.json"); } catch (e) { /* none */ }
     const how = document.getElementById("how");
     if (!t) {
-      how.innerHTML = `No possible improvements have been written for this world and forecast yet, so none has been tested.`;
+      how.innerHTML = `No possible improvements have been written for this forecast bundle yet, so none has been tested.`;
       return;
     }
     how.innerHTML = `<p>Every possible improvement, and what became of it. Each test was carried out by an AI agent that

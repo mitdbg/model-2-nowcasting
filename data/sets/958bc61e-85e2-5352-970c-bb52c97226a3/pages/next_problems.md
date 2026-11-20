@@ -1,12 +1,8 @@
-<!-- Next Version › Current Problems, for forecast 958bc61e-85e2-5352-970c-bb52c97226a3; the page: https://mitdbg.github.io/model-2-nowcasting/next_problems.html?set=958bc61e-85e2-5352-970c-bb52c97226a3; inputs 551ec4a5cf9884e2 -->
-
-World shown World seed 20261117 (the bundle's only world)
-
-In progress. This page is being rewritten to describe every world of the bundle together. For now it describes one world, chosen above.
+<!-- Next Version › Current Problems, for forecast 958bc61e-85e2-5352-970c-bb52c97226a3; the page: https://mitdbg.github.io/model-2-nowcasting/next_problems.html?set=958bc61e-85e2-5352-970c-bb52c97226a3; inputs 7455599aefa83da9 -->
 
 # Current Problems
 
-This analysis was written by an AI evaluator that saw only the Evaluation pages that need no ground truth. It had no access to the true values, the model's code, or how the model was developed. This analysis has not been human-reviewed.
+This analysis was written by an AI evaluator that saw only the Evaluation pages that need no ground truth, for the bundle's one world. It had no access to the true values, the model's code, or how the model was developed. This analysis has not been human-reviewed.
 
 Overall assessment. On the headline numbers the model looks well behaved: forecast gaps average about 2.1%, and 19 of 22 official statistics agree. Underneath, its uncertainty is miscalibrated in both directions: too wide almost everywhere, yet too tight where it disagrees with official numbers. Many sector totals for orders, inventories and lead times come from the equations rather than the data, or are unsettled by the data. A few sectors (Wholesale, Oil and gas, Food, Hotels) carry most of the visible weakness.
 

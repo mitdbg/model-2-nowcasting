@@ -1,9 +1,5 @@
-<!-- Next Version › Possible Improvements, for forecast c2b0f986-4fc0-5f99-aeef-7b800ddfc096; the page: https://mitdbg.github.io/model-2-nowcasting/next_improvements.html?set=c2b0f986-4fc0-5f99-aeef-7b800ddfc096; inputs 60c9aafe2b419e99 -->
-
-World shown  5 of 5 worlds in this bundle
-
-In progress. This page is being rewritten to describe every world of the bundle together. For now it describes one world, chosen above.
+<!-- Next Version › Possible Improvements, for forecast c2b0f986-4fc0-5f99-aeef-7b800ddfc096; the page: https://mitdbg.github.io/model-2-nowcasting/next_improvements.html?set=c2b0f986-4fc0-5f99-aeef-7b800ddfc096; inputs 4fd872a73223c43d -->
 
 # Possible Improvements
 
-No possible improvements have been written for this world and forecast yet (the world e8b09131-f559-5630-addb-4f9a53926270 and its forecast for 2026-09-30).
+No possible improvements have been written for this forecast bundle yet (forecast bundle 38a0cf1a).

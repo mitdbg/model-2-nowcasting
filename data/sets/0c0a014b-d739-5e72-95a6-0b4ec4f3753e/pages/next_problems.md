@@ -1,12 +1,8 @@
-<!-- Next Version › Current Problems, for forecast 0c0a014b-d739-5e72-95a6-0b4ec4f3753e; the page: https://mitdbg.github.io/model-2-nowcasting/next_problems.html?set=0c0a014b-d739-5e72-95a6-0b4ec4f3753e; inputs f87b6539d4362dd9 -->
-
-World shown World seed 20261115 (the bundle's only world)
-
-In progress. This page is being rewritten to describe every world of the bundle together. For now it describes one world, chosen above.
+<!-- Next Version › Current Problems, for forecast 0c0a014b-d739-5e72-95a6-0b4ec4f3753e; the page: https://mitdbg.github.io/model-2-nowcasting/next_problems.html?set=0c0a014b-d739-5e72-95a6-0b4ec4f3753e; inputs 45cde21fade96788 -->
 
 # Current Problems
 
-This analysis was written by an AI evaluator that saw only the Evaluation pages that need no ground truth. It had no access to the true values, the model's code, or how the model was developed. This analysis has not been human-reviewed.
+This analysis was written by an AI evaluator that saw only the Evaluation pages that need no ground truth, for the bundle's one world. It had no access to the true values, the model's code, or how the model was developed. This analysis has not been human-reviewed.
 
 Overall assessment. On average the model tracks official statistics closely (0.7% typical gap) and forecasts stay near later estimates (about 2.5%). But its uncertainty is sized badly in both directions: too wide in most sectors, too narrow for capacity, Oil and gas and Wholesale. Machinery, Wholesale and Oil and gas fail clearly. Across sectors, demand-side and inventory quantities (new orders, input and finished inventory, lost demand) are poorly determined by the data or unsettled. Many entity parameters are learned only from their group, not from the entity's own data.
 

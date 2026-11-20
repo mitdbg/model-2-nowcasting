@@ -1,4 +1,4 @@
-<!-- Inputs › Model Configuration, for forecast 95b8660e-19a8-5f67-bd12-40e75a011154; the page: https://mitdbg.github.io/model-2-nowcasting/forecast_config.html?set=95b8660e-19a8-5f67-bd12-40e75a011154; inputs 53c1077e2d342abc -->
+<!-- Inputs › Model Configuration, for forecast 95b8660e-19a8-5f67-bd12-40e75a011154; the page: https://mitdbg.github.io/model-2-nowcasting/forecast_config.html?set=95b8660e-19a8-5f67-bd12-40e75a011154; inputs 623312610a653945 -->
 
 # Model Configuration
 

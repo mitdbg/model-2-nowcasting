@@ -1,4 +1,4 @@
-<!-- Model and Forecast › Introduction, for forecast 976debf3-7f2a-5e1a-aec0-e24ae8ea99d3; the page: https://mitdbg.github.io/model-2-nowcasting/forecast_overview.html?set=976debf3-7f2a-5e1a-aec0-e24ae8ea99d3; inputs 71add97a74a6fc48 -->
+<!-- Model and Forecast › Introduction, for forecast 976debf3-7f2a-5e1a-aec0-e24ae8ea99d3; the page: https://mitdbg.github.io/model-2-nowcasting/forecast_overview.html?set=976debf3-7f2a-5e1a-aec0-e24ae8ea99d3; inputs 860e4923dd977871 -->
 
 # Overview of Forecast Bundle 8591882c-e0d7-55cd-b5a2-eb213df5b688
 

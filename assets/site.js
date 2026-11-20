@@ -57,6 +57,17 @@ M2.loadFor = async (set, path) => {
   if (!r.ok) throw new Error(`${set}/${path}: ${r.status}`);
   return r.json();
 };
+// Next Version data (problems, possible fixes, their testing): the forecast bundle's, or for a bundle of one world
+// reported on before forecast bundles, that world's forecast's
+M2.loadNext = async (path) => {
+  const ch = await M2.choice();
+  if (ch.fs) {
+    const r = await M2.fetch(`data/bundles/${encodeURIComponent(ch.fs.id)}/${path}`);
+    if (r.ok) return r.json();
+    if (ch.fs.members.length > 1) throw new Error(`${ch.fs.id}/${path}: ${r.status}`);
+  }
+  return M2.load(path);
+};
 // a link to a page showing one world of the forecast set
 M2.worldHref = (page, fs, m) => `${page}?set=${encodeURIComponent(fs.id)}&world=${encodeURIComponent(String(m.seed ?? m.world_catalog_id))}`;
 
@@ -80,8 +91,7 @@ M2.SUBPAGES = {"index.html": [["index.html", "Introduction"], ["howitworks.html"
 M2.PER_WORLD = new Set(["world_entities.html", "world_observations.html", "world_bundle.html", "groupings.html",
                         "forecast_computed.html", "forecast_fit.html", "sector.html", "entity.html"]);
 // Pages being rewritten for world bundles: for now they show one world, and say so.
-M2.IN_PROGRESS = new Set(["eval_revisions.html", "eval_observations.html", "eval_official.html", "evaluation.html", "accuracy.html",
-                          "next_problems.html", "next_improvements.html", "next_testing.html"]);
+M2.IN_PROGRESS = new Set(["eval_revisions.html", "eval_observations.html", "eval_official.html", "evaluation.html", "accuracy.html"]);
 // Pages reached through a sub-tab without being one: they light up that sub-tab.
 M2.SUBALIAS = {"entity.html": "sector.html", "groupings.html": "world_entities.html"};
 // The Forecasts sub-tab's search panel, on the left of sector.html and entity.html: facets narrow one list
