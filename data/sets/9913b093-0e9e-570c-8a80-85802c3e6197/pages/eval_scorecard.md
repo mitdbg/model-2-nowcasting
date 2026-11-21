@@ -1,4 +1,4 @@
-<!-- Evaluation › Scorecard, for forecast 9913b093-0e9e-570c-8a80-85802c3e6197; the page: https://mitdbg.github.io/model-2-nowcasting/eval_scorecard.html?set=9913b093-0e9e-570c-8a80-85802c3e6197; inputs cce986501bc4bc09 -->
+<!-- Evaluation › Scorecard, for forecast 9913b093-0e9e-570c-8a80-85802c3e6197; the page: https://mitdbg.github.io/model-2-nowcasting/eval_scorecard.html?set=9913b093-0e9e-570c-8a80-85802c3e6197; inputs de14ae50cf563e8f -->
 
 # Scorecard
 

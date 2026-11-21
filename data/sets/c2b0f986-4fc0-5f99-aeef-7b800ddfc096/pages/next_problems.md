@@ -1,5 +1,200 @@
-<!-- Next Version › Current Problems, for forecast c2b0f986-4fc0-5f99-aeef-7b800ddfc096; the page: https://mitdbg.github.io/model-2-nowcasting/next_problems.html?set=c2b0f986-4fc0-5f99-aeef-7b800ddfc096; inputs c0e6252bb229a402 -->
+<!-- Next Version › Current Problems, for forecast c2b0f986-4fc0-5f99-aeef-7b800ddfc096; the page: https://mitdbg.github.io/model-2-nowcasting/next_problems.html?set=c2b0f986-4fc0-5f99-aeef-7b800ddfc096; inputs c88e51beb0f8ed24 -->
 
 # Current Problems
 
-No problem summary has been written for this forecast bundle yet (forecast bundle 38a0cf1a, 5 worlds). Choose another forecast bundle at the top right to see one that has a summary.
+The problems of the forecast bundle as a whole (forecast bundle 38a0cf1a, 5 worlds), across all of its worlds and forecasts. This analysis was written by an AI evaluator that saw only the Evaluation pages: the bundle's Scorecard, and each world's other Evaluation pages, including Against ground truth. It was asked to find what most holds the Scorecard back, and to prefer problems that appear in most worlds. It had no access to the model's code or how the model was developed. This analysis has not been human-reviewed.
+
+Overall assessment. The core quantities are good (nowcast error 3.2%, range 2.3% to 4.4%), and the published bands hold 94% of the truth. The weak part is the order side: the Orders error is 9.1% (6.7% to 13.5%), and lead time and the order book account for about half of the 7 failures in a typical world. Housing is the main source of failures, with three of five worlds failing, and the results depend heavily on the world: failures run from 1 of 179 to 12 of 179.
+
+## Weakest sectors (weakest first)
+
+# | Sector | Core quantities  | Orders  | Inputs and pipeline  | Quantities near zero  | Failures  | Note
+
+1 | Housing | 7.3% | 26.3% (fails in 3 of 5) | 3.2% | 2.87 mo (fails in 2 of 5) | 2.8 of 13 per world (0 to 7) | Order book, lead time, overdue and phantom orders are far off in 3 of 5 worlds (01, 03, 05), while output stays within about 1%.
+
+2 | Autos | 5.4% | 16.5% (fails in 2 of 5) | 5.3% | 0.24 mo | 1.2 of 13 per world (0 to 5) | Lead time fails in 2 of 5 worlds. World 01 also has unit cost 51.9%, order book 55.2% and price 35.2%.
+
+3 | Oil and gas | 3.0% | 18.4% (fails in 1 of 5) | 12.0% (fails in 1 of 5) | 0.14 mo | 1.0 of 15 per world (0 to 4) | Lead time fails in 2 of 5 worlds. World 04 misses the order book (47.6%) and capacity under construction (50.0%). Industrial production disagrees with the official figure in 3 worlds.
+
+4 | Machinery | 6.5% | 7.8% | 5.2% | 0.69 mo (fails in 1 of 5) | 1.0 of 13 per world (0 to 5) | Collapses in world 03 only: price 61.4%, unit cost 40.5%, finished inventory 4.03 mo, and output 32.5% off the official figure.
+
+5 | Wholesale | 4.8% | 10.9% | – | 0.06 mo | 0.4 of 12 per world (0 to 1) | Lead time is 10.5% to 35.6% in every world and fails in 2. It is mostly from the model (spread ratio about 0.9).
+
+6 | Semiconductors | 1.9% | 8.1% | 8.0% | 0.24 mo | 0.2 of 15 per world (0 to 1) | Lead time 38.0% in world 03. Capacity announced and under construction are 4% to 21% across worlds.
+
+7 | Retail | 3.6% | 8.1% | – | 0.33 mo | 0.2 of 12 per world (0 to 1) | Finished inventory is 0.25 to 1.01 mo and fails in world 05. Order totals are unsettled by the data (spread ratios 1.7 to 3.1).
+
+8 | Food | 3.0% | 7.0% | 0.9% | 0.04 mo | 0.2 of 13 per world (0 to 1) | Lead time 29.7% in world 05. Unit cost has a level error in worlds 02 and 05 (9.9%, 16.0%), and its bands miss.
+
+The stronger sectors are Hospitals, Steel, Chemicals, Data centers, Hotels and Airlines. They have core errors of 1.2% to 2.1%, Orders errors of 3.0% to 5.8%, and no failing cell in any world. Data centers' new orders are still unsettled by the data (spread ratio about 2.7 in every world shown).
+
+## Weakest hidden quantities (weakest first)
+
+# | Quantity | Nowcast error  | Range over worlds  | Failures  | Worst sectors  | Note
+
+1 | Lead time | 15.3% | 11.4% to 23.6% | 11 of 70 | Housing 36.2%, fails in 3 of 5; Oil and gas 32.0%, fails in 2 of 5; Autos 30.8%, fails in 2 of 5 | Fails in 6 sectors and in every world. The error is about the same in the last 12 months as at the nowcast, so it is a lasting level offset.
+
+2 | Order book | 8.6% | 5.7% to 12.5% | 6 of 70 | Housing 34.7%, fails in 3 of 5; Oil and gas 19.2%, fails in 1 of 5; Autos 16.7%, fails in 1 of 5 | Misses come together with lead-time misses in the same sector and world.
+
+3 | Overdue orders | 0.85 mo | 0.05 mo to 2.42 mo | 5 of 45 | Housing 5.65 mo, fails in 3 of 5; Machinery 0.83 mo, fails in 1 of 5; Autos 0.48 mo, fails in 1 of 5 | Housing world 03 is 17.05 mo off.
+
+4 | Price | 5.3% | 2.7% to 9.3% | 3 of 70 | Machinery 15.5%, fails in 1 of 5; Housing 12.7%, fails in 1 of 5; Autos 11.0%, fails in 1 of 5 | Follows unit cost errors.
+
+5 | Unit cost | 5.2% | 3.1% to 7.6% | 2 of 70 | Autos 16.8%, fails in 1 of 5; Machinery 11.1%, fails in 1 of 5; Housing 8.7% | Level errors that stay flat at every horizon, with coverage often near 0%.
+
+6 | Phantom orders | 0.39 mo | 0.02 mo to 1.39 mo | 2 of 45 | Housing 2.79 mo, fails in 2 of 5; Semiconductors 0.30 mo; Machinery 0.21 mo | Housing world 03: 10.87 mo.
+
+7 | Capacity announced | 12.4% | 7.4% to 20.5% | 1 of 15 | Oil and gas 18.1%, fails in 1 of 5; Semiconductors 12.8%; Data centers 6.3% | High in every world, but only fails once.
+
+8 | Capacity under construction | 7.9% | 4.3% to 18.0% | 1 of 15 | Oil and gas 13.3%, fails in 1 of 5; Semiconductors 8.0%; Data centers 2.4% | Oil and gas world 04: 50.0%.
+
+9 | Finished inventory | 0.26 mo | 0.13 mo to 0.51 mo | 2 of 50 | Machinery 1.02 mo, fails in 1 of 5; Retail 0.63 mo, fails in 1 of 5; Housing 0.17 mo | Machinery world 03: 4.03 mo.
+
+10 | New orders | 3.5% | 2.8% to 4.7% | 0 of 70 | Housing 7.9%; Machinery 5.5%; Retail 5.5% | Housing worlds 01 and 03: 15.6% and 18.3%.
+
+## Problems
+
+### 1. Lead time is wrong by a lasting margin in many sectors
+
+ID 8f884406-e1fb-42c4-99e8-9b981614aab1
+
+EvidenceLead time causes the most failures on the Scorecard (my count from its failing cells), about 2.2 of the 7 failures in a typical world:
+
+- Housing fails in 3 of 5 worlds (mean 36.2%). - Oil and gas fails in 2 of 5 (mean 32.0%). - Autos fails in 2 of 5 (mean 30.8%). - Wholesale fails in 2 of 5 (mean 22.5%). - Food fails in 1 of 5 (mean 15.9%). - Semiconductors fails in 1 of 5 (mean 14.8%).
+
+On Against ground truth, the error at the nowcast nearly equals the error over the last 12 months, which were observed: Housing world 03 is 81.3% history versus 82.3% nowcast, and Wholesale world 04 is 37.3% versus 35.6%. The published bands still hold the truth: lead-time coverage is 100% in most rows, and Forecasts against later estimates calls lead time "wider than needed" in all five worlds. Wholesale lead time has spread ratios of 0.94 (world 03) and 0.89 (world 04).
+
+Why it mattersLead time is how long a buyer waits. The model reports the wrong level, keeps it there month after month, and gives itself a band wide enough to hide the miss.
+
+Likely causesThe model's lead time may be tied to quoted lead times through a bias or scale that the data cannot separate from the true level. In some sectors the value may rest mostly on the model's equations.
+
+ConfidenceHigh. It appears in 6 sectors and in all five worlds.
+
+### 2. Housing's order side fails in most worlds while its output is right
+
+ID b792a717-e945-4a61-b4ff-57c8ecf452a8
+
+EvidenceOn the Scorecard, Housing has these failing cells:
+
+- Overdue orders 5.65 mo, fails in 3 of 5 worlds. - Lead time 36.2%, fails in 3 of 5. - Order book 34.7%, fails in 3 of 5. - Phantom orders 2.79 mo, fails in 2 of 5.
+
+Its Orders cell is 26.3%. In world 03, Against ground truth shows order book 77.1%, overdue orders 17.05 mo and phantom orders 10.87 mo, but output only 0.8%. Housing completions agree with the official statistic in all worlds (0.4% to 1.2% gap). In every world shown, "What the data pin down" gives Housing new orders a spread ratio above 1.2: 4.34, 5.20, 3.74, 11.50 and 5.50.
+
+Why it mattersHousing is the single largest source of failures. The model gets the homes built right but not the backlog of sales behind them.
+
+Likely causesOutput alone may not pin down how big the backlog is. The new-orders total is unsettled by the data in every world shown, which suggests the filter is unstable at the entrance to the order chain. Errors may then build up in the stock of orders.
+
+ConfidenceHigh. It appears in 3 of 5 worlds, and the new-orders sign appears in all five.
+
+### 3. The order book, overdue orders and phantom orders go wrong together with lead time
+
+ID 785ad295-84c1-46ad-8124-4b72e2b5bebe
+
+Evidence
+
+- Autos world 01: order book 55.2%, lead time 50.0%, overdue orders 1.88 mo. - Oil and gas world 04: order book 47.6%, lead time 61.1%. - Machinery world 03: order book 25.6%, overdue orders 3.41 mo.
+
+These cells are all on the Scorecard. On Against ground truth, the unwidened coverage for Housing's order book is 25% (world 01) and 50% (world 03).
+
+Why it mattersThe order quantities build on each other. One mistaken backlog level spreads into three or four failing quantities.
+
+Likely causesLead time, the order book and the other order quantities may be tied together so that one wrong level carries through all of them.
+
+ConfidenceMedium. The pattern is clear, but each instance is one or two worlds.
+
+### 4. Unit cost has level errors, with bands that miss it
+
+ID fbcda83f-eaaa-4e58-a4fd-fe78cf2478b9
+
+EvidenceOn the Scorecard, Autos unit cost is 16.8% and fails in 1 of 5 worlds (51.9% in world 01), and Machinery unit cost is 11.1% (40.5% in world 03). On Against ground truth, the error is flat across horizons: Autos world 01 is 52.2% to 52.3%, and Food world 05 is 16.0% to 16.7%. Coverage is very low: published coverage of 0% in Autos world 01 and Housing world 01, 0% for Machinery in world 03, and 2% for Food in world 02. In world 03, the starting unit cost was recovered with a bias of 1.75 prior sds in Machinery and 1.04 in Housing. On Forecasts against later estimates, unit cost bands are "too narrow" in worlds 02 and 03.
+
+Why it mattersThe model is confidently wrong about costs. Its bands claim a certainty it does not have.
+
+Likely causesThe starting unit cost may be poorly identified. A wrong starting level may then never be corrected.
+
+ConfidenceHigh for the low coverage, which appears in every world. Medium for the large misses.
+
+### 5. Price errors follow the unit cost errors
+
+ID 57af3d31-ff11-4efc-a7b9-194bceb28f71
+
+EvidenceOn the Scorecard, prices fail in 3 cells: Machinery 15.5% (61.4% in world 03), Autos 11.0% (35.2% in world 01) and Housing 12.7% (30.8% in world 01). Each happens in the same world as a large unit cost error: 40.5%, 51.9% and 21.0% respectively (Against ground truth). Food world 05 has price 16.7% and unit cost 16.0%. In world 03, the starting markup was recovered with biases of −1.04 (Housing) and −0.54 (Machinery) prior sds.
+
+Why it mattersPrices are a headline output. When the cost level is wrong, the price follows it.
+
+Likely causesThe model may not be able to separate cost from markup, so a cost error passes into the price.
+
+ConfidenceMedium. Each case is in one world, but the pairing repeats.
+
+### 6. Machinery breaks down entirely in one world
+
+ID 37f41ed0-098b-45a6-a676-2009ec4a8561
+
+EvidenceOn the Scorecard, five of Machinery's failing cells come from world 03: finished inventory 4.03 mo, overdue orders 3.41 mo, price 61.4%, unit cost 40.5% and order book 25.6%. On Sector totals against official statistics for world 03, Machinery industrial production agrees in 1 of 100 months with a 32.5% gap, and capacity utilization agrees in 9 of 100 months with a 22.4% gap. On Observations against the model, Machinery's observation fit is "misses too many" (81/100). On Forecasts against later estimates, Machinery covers 58/100. Its output spread ratio is 6.14 in world 03 and 8.70 in world 04.
+
+Why it mattersOne world's collapse adds several failures. It also shows the model can lock onto a wrong state even against official statistics it is pulled toward.
+
+Likely causesThe filter may be unstable in Machinery: spread ratios above 1.2 for output in two worlds point that way. It may fall into a wrong state when the starting costs are off.
+
+ConfidenceMedium. The collapse is in one world, but the instability signs appear in two.
+
+### 7. Oil and gas capacity pipeline and output disagree with official figures
+
+ID 6a0d3e97-dc5b-497f-a1f3-740124bff9c3
+
+EvidenceOn the Scorecard, Oil and gas fails in 1 of 5 worlds on order book (19.2% mean), capacity announced (18.1%) and capacity under construction (13.3%), all in world 04 (47.6%, 44.2%, 50.0%). On Sector totals against official statistics, industrial production disagrees in 3 of 5 worlds: 40/100 in world 02, 28/100 in world 03 and 39/100 in world 05. Capacity announced averages 12.4% across worlds (my average from Against ground truth).
+
+Why it mattersNew capacity coming online is a key forward-looking signal. Here it is both inaccurate and inconsistent with the official numbers.
+
+Likely causesThe capacity pipeline may be modeled loosely, or the model's totals for this sector may differ from the official measure's definition.
+
+ConfidenceMedium. The official mismatch is general; the big misses are in one world.
+
+### 8. Sector inventories do not fit the data, and several order totals are unsettled
+
+ID e288ddb7-ed8d-4ca8-8d34-1bc804878642
+
+EvidenceOn Observations against the model, sector inventories fall in range 32/100 (world 03), 42/100 (world 05) and 60/100 (world 02), all "misses too many". New-order spread ratios are above 1.2 in Housing, Data centers and Retail in every world shown. Retail's finished inventory fails in world 05 (1.01 mo, Scorecard).
+
+Why it mattersThe model is inconsistent with some of its own data, which can quietly distort the stock levels it reports.
+
+Likely causesThe model's inventory definitions may not match how the sector statistic is measured, or the filter may be unstable for some totals.
+
+ConfidenceMedium. It appears in 3 of 5 worlds.
+
+### 9. The model's own bands are too narrow and rely on heavy widening
+
+ID eb07858f-7281-4f78-a98f-ef5892d730dc
+
+EvidenceOn Against ground truth, unwidened nowcast coverage is 75% to 79% across worlds. Published bands are widened 2.31× at the nowcast. In world 03, the sector widening factors run from 0.507× (Food) to 6.91× (Machinery).
+
+Why it mattersThe 94% coverage on the Scorecard is earned by blanket widening. That widening makes some bands too wide (lead time) while others stay too narrow (unit cost).
+
+Likely causesThe model's own uncertainty may leave out how unsure it is about its parameters.
+
+ConfidenceHigh. It appears in all five worlds.
+
+Connections. Problems 1, 2 and 3 seem to share one cause: a wrong level in the order chain (new orders, then the order book, then lead time and overdue orders) that output data cannot correct. Housing's unsettled new orders make it the clearest case. Problems 4, 5 and 6 seem to share a wrong starting cost or markup level that never corrects and is given bands that are too narrow. Machinery world 03 shows the most extreme form. Problem 9 links them: one widening factor cannot both cover these level errors and stay sized correctly elsewhere.
+
+What the pages cannot tell me:
+
+- What made worlds 01, 03 and 05 differ from 02 and 04 in Housing.
+
+- How lead time is linked to quoted lead times and to the order book inside the model.
+
+- Whether the error in the starting unit cost comes from the prior or from the data.
+
+- Why Machinery's filter goes unstable in world 03.
+
+- Whether the official oil and gas statistic measures the same thing as the model's total.
+
+Definitions behind the page's (i) marks:
+- The sector's typical error against the truth for output, capacity, utilization, shipments, price, unit cost and load factor, at the nowcast, averaged over the four as-of dates and then over the bundle's worlds. "Fails in k of N" counts the worlds where it is above 25%.
+- As for the core quantities, for new orders, the order book and lead time.
+- As for the core quantities, for input inventory and capacity announced, under construction and in use.
+- Finished inventory, overdue orders, phantom orders and lost demand, which are often near zero, so their error is measured in months of the sector's output (0.5 mo is half a month of what the sector produces). "Fails" means above one month.
+- How many of the sector's quantities fail in a typical world (an error above 25%, 25 points, or one month of output), out of the quantities scored, with the fewest and most over the worlds.
+- The quantity's typical error against the truth at the nowcast, averaged over the sectors, the four as-of dates and the bundle's worlds: a percentage, in points (pts) for utilization and load factor, or in months of output (mo) for the quantities often near zero.
+- The same error for each world on its own: the lowest and highest over the bundle's worlds.
+- How many sector and world combinations fail for this quantity (an error above 25%, 25 points, or one month of output), out of all of them.
+- The sectors where the quantity is worst: its error averaged over the worlds, and in how many worlds it fails.

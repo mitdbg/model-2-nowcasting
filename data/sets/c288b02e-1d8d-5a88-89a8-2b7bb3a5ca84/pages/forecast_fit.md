@@ -1,4 +1,4 @@
-<!-- Model and Forecast › Fitted Parameters, for forecast c288b02e-1d8d-5a88-89a8-2b7bb3a5ca84; the page: https://mitdbg.github.io/model-2-nowcasting/forecast_fit.html?set=c288b02e-1d8d-5a88-89a8-2b7bb3a5ca84; inputs 4a8fdc7c3ac0b6d8 -->
+<!-- Model and Forecast › Fitted Parameters, for forecast c288b02e-1d8d-5a88-89a8-2b7bb3a5ca84; the page: https://mitdbg.github.io/model-2-nowcasting/forecast_fit.html?set=c288b02e-1d8d-5a88-89a8-2b7bb3a5ca84; inputs 00fd5ae8ac543b62 -->
 
 Forecast shown  one forecast for each of the bundle's 5 worlds
 

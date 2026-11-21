@@ -1,4 +1,4 @@
-<!-- Model and Forecast › Forecasts, for forecast c288b02e-1d8d-5a88-89a8-2b7bb3a5ca84; the page: https://mitdbg.github.io/model-2-nowcasting/sector.html?set=c288b02e-1d8d-5a88-89a8-2b7bb3a5ca84; inputs 497dd2a59518ae81 -->
+<!-- Model and Forecast › Forecasts, for forecast c288b02e-1d8d-5a88-89a8-2b7bb3a5ca84; the page: https://mitdbg.github.io/model-2-nowcasting/sector.html?set=c288b02e-1d8d-5a88-89a8-2b7bb3a5ca84; inputs 9a9ff1d6450669c2 -->
 
 Forecast shown  one forecast for each of the bundle's 5 worlds
 
